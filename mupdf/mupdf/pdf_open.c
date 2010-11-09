@@ -18,13 +18,15 @@ loadversion(pdf_xref *xref)
 	fz_error error;
 	char buf[20];
 
-	error = fz_seek(xref->file, 0, 0);
+	/*error = fz_seek(xref->file, 0, 0);
 	if (error)
 		return fz_rethrow(error, "cannot seek to beginning of file");
 
 	error = fz_readline(xref->file, buf, sizeof buf);
 	if (error)
-		return fz_rethrow(error, "cannot read version marker");
+		return fz_rethrow(error, "cannot read version marker");*/
+	fz_seek(xref->file, 0, 0);
+	fz_readline(xref->file, buf, sizeof buf);
 	if (memcmp(buf, "%PDF-", 5) != 0)
 		return fz_throw("cannot recognize version marker");
 
@@ -43,19 +45,25 @@ readstartxref(pdf_xref *xref)
 	int t, n;
 	int i;
 
-	error = fz_seek(xref->file, 0, 2);
+/*	error = fz_seek(xref->file, 0, 2);
 	if (error)
 		return fz_rethrow(error, "cannot seek to end of file");
 
 	t = MAX(0, fz_tell(xref->file) - ((int)sizeof buf));
 	error = fz_seek(xref->file, t, 0);
+
 	if (error)
 		return fz_rethrow(error, "cannot seek to offset %d", t);
-
+*/
+	fz_seek(xref->file, 0, 2);
+	t = MAX(0, fz_tell(xref->file) - ((int)sizeof buf));
+	fz_seek(xref->file, t, 0);
+/*
 	error = fz_read(&n, xref->file, buf, sizeof buf);
 	if (error)
 		return fz_rethrow(error, "cannot read from file");
-
+*/
+	fz_read(&n, xref->file, buf, sizeof buf);
 	for (i = n - 9; i >= 0; i--)
 	{
 		if (memcmp(buf + i, "startxref", 9) == 0)
@@ -87,10 +95,12 @@ readoldtrailer(pdf_xref *xref, char *buf, int cap)
 	int c;
 
 	pdf_logxref("load old xref format trailer\n");
-
+/*
 	error = fz_readline(xref->file, buf, cap);
 	if (error)
 		return fz_rethrow(error, "cannot read xref marker");
+*/
+	fz_readline(xref->file, buf, cap);
 	if (strncmp(buf, "xref", 4) != 0)
 		return fz_throw("cannot find xref marker");
 
@@ -99,11 +109,12 @@ readoldtrailer(pdf_xref *xref, char *buf, int cap)
 		c = fz_peekbyte(xref->file);
 		if (!(c >= '0' && c <= '9'))
 			break;
-
+/*
 		error = fz_readline(xref->file, buf, cap);
 		if (error)
 			return fz_rethrow(error, "cannot read xref count");
-
+*/
+		fz_readline(xref->file, buf, cap);
 		s = buf;
 		ofs = atoi(strsep(&s, " "));
 		if (!s)
@@ -216,10 +227,12 @@ readoldxref(fz_obj **trailerp, pdf_xref *xref, char *buf, int cap)
 	int c;
 
 	pdf_logxref("load old xref format\n");
-
+/*
 	error = fz_readline(xref->file, buf, cap);
 	if (error)
 		return fz_rethrow(error, "cannot read xref marker");
+*/
+	fz_readline(xref->file, buf, cap);
 	if (strncmp(buf, "xref", 4) != 0)
 		return fz_throw("cannot find xref marker");
 
@@ -228,11 +241,12 @@ readoldxref(fz_obj **trailerp, pdf_xref *xref, char *buf, int cap)
 		c = fz_peekbyte(xref->file);
 		if (!(c >= '0' && c <= '9'))
 			break;
-
+/*
 		error = fz_readline(xref->file, buf, cap);
 		if (error)
 			return fz_rethrow(error, "cannot read xref count");
-
+*/
+		fz_readline(xref->file, buf, cap);
 		s = buf;
 		ofs = atoi(strsep(&s, " "));
 		len = atoi(strsep(&s, " "));

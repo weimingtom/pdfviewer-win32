@@ -19,10 +19,14 @@ private:
 	double _width;
 	double _height;
 	bool _antialias;
-
+	bool _isBitmap;
 public:
 	AuxOutputDev(SplashOutputDev *splash);
 	~AuxOutputDev();
+
+	void SetBitmap(HBITMAP hbmp);
+	HBITMAP GetBitmap();
+	bool IsBitmap();
 
 	void *GetDataPtr();
 	void SetDataPtr(void *data);

@@ -1,6 +1,7 @@
-#include "fitz_base.h"
-#include "fitz_tree.h"
-#include "fitz_draw.h"
+#include "fitz.h"
+
+#define BBOX_MIN -(1<<20)
+#define BBOX_MAX (1<<20)
 
 /* divide and floor towards -inf */
 static inline int fz_idiv(int a, int b)
@@ -18,41 +19,32 @@ enum { HSCALE = 17, VSCALE = 15, SF = 1 };
  * See Mike Abrash -- Graphics Programming Black Book (notably chapter 40)
  */
 
-fz_error
-fz_newgel(fz_gel **gelp)
+fz_gel *
+fz_newgel(void)
 {
 	fz_gel *gel;
 
-	gel = *gelp = fz_malloc(sizeof(fz_gel));
-	if (!gel)
-		return fz_rethrow(-1, "out of memory");
-
-	gel->edges = nil;
-
+	gel = fz_malloc(sizeof(fz_gel));
 	gel->cap = 512;
 	gel->len = 0;
 	gel->edges = fz_malloc(sizeof(fz_edge) * gel->cap);
-	if (!gel->edges) {
-		fz_free(gel);
-		return fz_rethrow(-1, "out of memory");
-	}
 
-	gel->clip.x0 = gel->clip.y0 = INT_MAX;
-	gel->clip.x1 = gel->clip.y1 = INT_MIN;
+	gel->clip.x0 = gel->clip.y0 = BBOX_MAX;
+	gel->clip.x1 = gel->clip.y1 = BBOX_MIN;
 
-	gel->bbox.x0 = gel->bbox.y0 = INT_MAX;
-	gel->bbox.x1 = gel->bbox.y1 = INT_MIN;
+	gel->bbox.x0 = gel->bbox.y0 = BBOX_MAX;
+	gel->bbox.x1 = gel->bbox.y1 = BBOX_MIN;
 
-	return fz_okay;
+	return gel;
 }
 
 void
-fz_resetgel(fz_gel *gel, fz_irect clip)
+fz_resetgel(fz_gel *gel, fz_bbox clip)
 {
 	if (fz_isinfiniterect(clip))
 	{
-		gel->clip.x0 = gel->clip.y0 = INT_MAX;
-		gel->clip.x1 = gel->clip.y1 = INT_MIN;
+		gel->clip.x0 = gel->clip.y0 = BBOX_MAX;
+		gel->clip.x1 = gel->clip.y1 = BBOX_MIN;
 	}
 	else {
 		gel->clip.x0 = clip.x0 * HSCALE;
@@ -61,23 +53,25 @@ fz_resetgel(fz_gel *gel, fz_irect clip)
 		gel->clip.y1 = clip.y1 * VSCALE;
 	}
 
-	gel->bbox.x0 = gel->bbox.y0 = INT_MAX;
-	gel->bbox.x1 = gel->bbox.y1 = INT_MIN;
+	gel->bbox.x0 = gel->bbox.y0 = BBOX_MAX;
+	gel->bbox.x1 = gel->bbox.y1 = BBOX_MIN;
 
 	gel->len = 0;
 }
 
 void
-fz_dropgel(fz_gel *gel)
+fz_freegel(fz_gel *gel)
 {
 	fz_free(gel->edges);
 	fz_free(gel);
 }
 
-fz_irect
+fz_bbox
 fz_boundgel(fz_gel *gel)
 {
-	fz_irect bbox;
+	fz_bbox bbox;
+	if (gel->len == 0)
+		return fz_emptybbox;
 	bbox.x0 = fz_idiv(gel->bbox.x0, HSCALE);
 	bbox.y0 = fz_idiv(gel->bbox.y0, VSCALE);
 	bbox.x1 = fz_idiv(gel->bbox.x1, HSCALE) + 1;
@@ -114,34 +108,17 @@ cliplerpx(int val, int m, int x0, int y0, int x1, int y1, int *out)
 	}
 }
 
-fz_error
-fz_insertgel(fz_gel *gel, float fx0, float fy0, float fx1, float fy1)
+static void
+fz_insertgelraw(fz_gel *gel, int x0, int y0, int x1, int y1)
 {
 	fz_edge *edge;
 	int dx, dy;
 	int winding;
 	int width;
 	int tmp;
-	int v;
-	int d;
-
-	int x0 = fz_floor(fx0 * HSCALE);
-	int y0 = fz_floor(fy0 * VSCALE);
-	int x1 = fz_floor(fx1 * HSCALE);
-	int y1 = fz_floor(fy1 * VSCALE);
-
-	d = cliplerpy(gel->clip.y0, 0, x0, y0, x1, y1, &v);
-	if (d == OUTSIDE) return fz_okay;
-	if (d == LEAVE) { y1 = gel->clip.y0; x1 = v; }
-	if (d == ENTER) { y0 = gel->clip.y0; x0 = v; }
-
-	d = cliplerpy(gel->clip.y1, 1, x0, y0, x1, y1, &v);
-	if (d == OUTSIDE) return fz_okay;
-	if (d == LEAVE) { y1 = gel->clip.y1; x1 = v; }
-	if (d == ENTER) { y0 = gel->clip.y1; x0 = v; }
 
 	if (y0 == y1)
-		return fz_okay;
+		return;
 
 	if (y0 > y1) {
 		winding = -1;
@@ -160,19 +137,15 @@ fz_insertgel(fz_gel *gel, float fx0, float fy0, float fx1, float fy1)
 	if (y1 > gel->bbox.y1) gel->bbox.y1 = y1;
 
 	if (gel->len + 1 == gel->cap) {
-		int newcap = gel->cap + 512;
-		fz_edge *newedges = fz_realloc(gel->edges, sizeof(fz_edge) * newcap);
-		if (!newedges)
-			return fz_rethrow(-1, "out of memory");
-		gel->cap = newcap;
-		gel->edges = newedges;
+		gel->cap = gel->cap + 512;
+		gel->edges = fz_realloc(gel->edges, sizeof(fz_edge) * gel->cap);
 	}
 
 	edge = &gel->edges[gel->len++];
 
 	dy = y1 - y0;
 	dx = x1 - x0;
-	width = dx < 0 ? -dx : dx;
+	width = ABS(dx);
 
 	edge->xdir = dx > 0 ? 1 : -1;
 	edge->ydir = winding;
@@ -198,8 +171,65 @@ fz_insertgel(fz_gel *gel, float fx0, float fy0, float fx1, float fy1)
 		edge->xmove = (width / dy) * edge->xdir;
 		edge->adjup = width % dy;
 	}
+}
 
-	return fz_okay;
+void
+fz_insertgel(fz_gel *gel, float fx0, float fy0, float fx1, float fy1)
+{
+	int x0, y0, x1, y1;
+	int d, v;
+
+	fx0 = floorf(fx0 * HSCALE);
+	fx1 = floorf(fx1 * HSCALE);
+	fy0 = floorf(fy0 * VSCALE);
+	fy1 = floorf(fy1 * VSCALE);
+
+	x0 = CLAMP(fx0, BBOX_MIN, BBOX_MAX);
+	y0 = CLAMP(fy0, BBOX_MIN, BBOX_MAX);
+	x1 = CLAMP(fx1, BBOX_MIN, BBOX_MAX);
+	y1 = CLAMP(fy1, BBOX_MIN, BBOX_MAX);
+
+	d = cliplerpy(gel->clip.y0, 0, x0, y0, x1, y1, &v);
+	if (d == OUTSIDE) return;
+	if (d == LEAVE) { y1 = gel->clip.y0; x1 = v; }
+	if (d == ENTER) { y0 = gel->clip.y0; x0 = v; }
+
+	d = cliplerpy(gel->clip.y1, 1, x0, y0, x1, y1, &v);
+	if (d == OUTSIDE) return;
+	if (d == LEAVE) { y1 = gel->clip.y1; x1 = v; }
+	if (d == ENTER) { y0 = gel->clip.y1; x0 = v; }
+
+	d = cliplerpx(gel->clip.x0, 0, x0, y0, x1, y1, &v);
+	if (d == OUTSIDE) {
+		x0 = x1 = gel->clip.x0;
+	}
+	if (d == LEAVE) {
+		fz_insertgelraw(gel, gel->clip.x0, v, gel->clip.x0, y1);
+		x1 = gel->clip.x0;
+		y1 = v;
+	}
+	if (d == ENTER) {
+		fz_insertgelraw(gel, gel->clip.x0, y0, gel->clip.x0, v);
+		x0 = gel->clip.x0;
+		y0 = v;
+	}
+
+	d = cliplerpx(gel->clip.x1, 1, x0, y0, x1, y1, &v);
+	if (d == OUTSIDE) {
+		x0 = x1 = gel->clip.x1;
+	}
+	if (d == LEAVE) {
+		fz_insertgelraw(gel, gel->clip.x1, v, gel->clip.x1, y1);
+		x1 = gel->clip.x1;
+		y1 = v;
+	}
+	if (d == ENTER) {
+		fz_insertgelraw(gel, gel->clip.x1, y0, gel->clip.x1, v);
+		x0 = gel->clip.x1;
+		y0 = v;
+	}
+
+	fz_insertgelraw(gel, x0, y0, x1, y1);
 }
 
 void
@@ -239,32 +269,38 @@ fz_sortgel(fz_gel *gel)
 	}
 }
 
+int
+fz_isrectgel(fz_gel *gel)
+{
+	/* a rectangular path is converted into two vertical edges of identical height */
+	if (gel->len == 2)
+	{
+		fz_edge *a = gel->edges + 0;
+		fz_edge *b = gel->edges + 1;
+		return a->y == b->y && a->h == b->h &&
+			a->xmove == 0 && a->adjup == 0 &&
+			b->xmove == 0 && b->adjup == 0;
+	}
+	return 0;
+}
+
 /*
  * Active Edge List -- keep track of active edges while sweeping
  */
 
-fz_error
-fz_newael(fz_ael **aelp)
+fz_ael *
+fz_newael(void)
 {
 	fz_ael *ael;
-
-	ael = *aelp = fz_malloc(sizeof(fz_ael));
-	if (!ael)
-		return fz_rethrow(-1, "out of memory");
-
+	ael = fz_malloc(sizeof(fz_ael));
 	ael->cap = 64;
 	ael->len = 0;
 	ael->edges = fz_malloc(sizeof(fz_edge*) * ael->cap);
-	if (!ael->edges) {
-		fz_free(ael);
-		return fz_rethrow(-1, "out of memory");
-	}
-
-	return fz_okay;
+	return ael;
 }
 
 void
-fz_dropael(fz_ael *ael)
+fz_freeael(fz_ael *ael)
 {
 	fz_free(ael->edges);
 	fz_free(ael);
@@ -311,8 +347,6 @@ insertael(fz_ael *ael, fz_gel *gel, int y, int *e)
 		if (ael->len + 1 == ael->cap) {
 			int newcap = ael->cap + 64;
 			fz_edge **newedges = fz_realloc(ael->edges, sizeof(fz_edge*) * newcap);
-			if (!newedges)
-				return fz_rethrow(-1, "out of memory");
 			ael->edges = newedges;
 			ael->cap = newcap;
 		}
@@ -423,7 +457,8 @@ evenodd(fz_ael *ael, unsigned char *list, int xofs)
 	}
 }
 
-static inline void toalpha(unsigned char *list, int n)
+static inline void
+undelta(unsigned char *list, int n)
 {
 	int d = 0;
 	while (n--)
@@ -433,34 +468,22 @@ static inline void toalpha(unsigned char *list, int n)
 	}
 }
 
-static inline void blit(fz_pixmap *pix, int x, int y,
-	unsigned char *list, int skipx, int len,
-	unsigned char *argb, int over)
+static inline void
+blit(fz_pixmap *dest, int x, int y, unsigned char *mp, int w, unsigned char *color)
 {
-	unsigned char *dst;
-	unsigned char cov;
+	unsigned char *dp;
 
-	dst = pix->samples + ( (y - pix->y) * pix->w + (x - pix->x) ) * pix->n;
-	cov = 0;
+	dp = dest->samples + ( (y - dest->y) * dest->w + (x - dest->x) ) * dest->n;
 
-	while (skipx--)
-	{
-		cov += *list;
-		*list = 0;
-		++list;
-	}
-
-	if (argb)
-		fz_path_w4i1o4(argb, list, cov, len, dst);
-	else if (over)
-		fz_path_1o1(list, cov, len, dst);
+	if (color)
+		fz_paintspancolor(dp, mp, dest->n, w, color);
 	else
-		fz_path_1c1(list, cov, len, dst);
+		fz_paintspan(dp, mp, 1, w, 255);
 }
 
 fz_error
-fz_scanconvert(fz_gel *gel, fz_ael *ael, int eofill, fz_irect clip,
-	fz_pixmap *pix, unsigned char *argb, int over)
+fz_scanconvert(fz_gel *gel, fz_ael *ael, int eofill, fz_bbox clip,
+	fz_pixmap *dest, unsigned char *color)
 {
 	fz_error error;
 	unsigned char *deltas;
@@ -475,16 +498,13 @@ fz_scanconvert(fz_gel *gel, fz_ael *ael, int eofill, fz_irect clip,
 	int skipx = clip.x0 - xmin;
 	int clipn = clip.x1 - clip.x0;
 
-	assert(clip.x0 >= xmin);
-	assert(clip.x1 <= xmax);
-
 	if (gel->len == 0)
 		return fz_okay;
 
-	deltas = fz_malloc(xmax - xmin + 1);
-	if (!deltas)
-		return fz_rethrow(-1, "out of memory");
+	assert(clip.x0 >= xmin);
+	assert(clip.x1 <= xmax);
 
+	deltas = fz_malloc(xmax - xmin + 1);
 	memset(deltas, 0, xmax - xmin + 1);
 
 	e = 0;
@@ -499,7 +519,9 @@ fz_scanconvert(fz_gel *gel, fz_ael *ael, int eofill, fz_irect clip,
 		{
 			if (yd >= clip.y0 && yd < clip.y1)
 			{
-				blit(pix, xmin + skipx, yd, deltas, skipx, clipn, argb, over);
+				undelta(deltas, skipx + clipn);
+				blit(dest, xmin + skipx, yd, deltas + skipx, clipn, color);
+				memset(deltas, 0, skipx + clipn);
 			}
 		}
 		yd = yc;
@@ -528,10 +550,10 @@ fz_scanconvert(fz_gel *gel, fz_ael *ael, int eofill, fz_irect clip,
 
 	if (yd >= clip.y0 && yd < clip.y1)
 	{
-		blit(pix, xmin + skipx, yd, deltas, skipx, clipn, argb, over);
+		undelta(deltas, skipx + clipn);
+		blit(dest, xmin + skipx, yd, deltas + skipx, clipn, color);
 	}
 
 	fz_free(deltas);
 	return fz_okay;
 }
-

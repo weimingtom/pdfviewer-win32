@@ -150,19 +150,23 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\cmap_chinese_s.c"
+				RelativePath=".\cmap_cns.c"
 				>
 			</File>
 			<File
-				RelativePath=".\cmap_chinese_t.c"
+				RelativePath=".\cmap_gb.c"
 				>
 			</File>
 			<File
-				RelativePath=".\cmap_japanese.c"
+				RelativePath=".\cmap_japan.c"
 				>
 			</File>
 			<File
-				RelativePath=".\cmap_korean.c"
+				RelativePath=".\cmap_korea.c"
+				>
+			</File>
+			<File
+				RelativePath=".\cmap_tounicode.c"
 				>
 			</File>
 			<File

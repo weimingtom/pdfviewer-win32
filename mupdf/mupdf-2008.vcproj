@@ -41,7 +41,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="fitz; ..\jpeg; fitzdraw; ..\zlib; mupdf; ..\freetype-2.3.1\include; jbig2dec; ..\libopenjpeg"
-				PreprocessorDefinitions="WIN32; _WIN32; _DEBUG; OPJ_STATIC; NEED_MATH; NEED_GETTIMEOFDAY; HAVE_JBIG2DEC; USE_HINTING; HAVE_OPENJPEG; HAVE_STRING_H=1"
+				PreprocessorDefinitions="WIN32; _WIN32; _DEBUG; OPJ_STATIC; NEED_MATH; NEED_GETTIMEOFDAY; HAVE_JBIG2DEC; USE_HINTING; HAVE_OPENJPEG; HAVE_STRING_H=1; NOCJKFONT; NOCJK"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -61,7 +61,7 @@
 			<Tool
 				Name="VCLibrarianTool"
 				LinkLibraryDependencies="true"
-				AdditionalDependencies="..\bin\freetype231_D.lib ..\bin\libjpeg_D.lib ..\bin\zlib_D.lib ..\bin\mapsfonts.lib"
+				AdditionalDependencies="..\bin\freetype231_D.lib ..\bin\libjpeg_D.lib ..\bin\zlib_D.lib ..\bin\mapsfonts.lib gdiplus.lib"
 				OutputFile="..\bin\$(ProjectName)_D.lib"
 			/>
 			<Tool
@@ -110,7 +110,7 @@
 				FavorSizeOrSpeed="1"
 				OmitFramePointers="false"
 				AdditionalIncludeDirectories="fitz; ..\jpeg; fitzdraw; ..\zlib; mupdf; ..\freetype-2.3.1\include; jbig2dec; ..\libopenjpeg"
-				PreprocessorDefinitions="WIN32; _WIN32; OPJ_STATIC; NEED_MATH; NEED_GETTIMEOFDAY; HAVE_JBIG2DEC; USE_HINTING; HAVE_OPENJPEG; HAVE_STRING_H=1"
+				PreprocessorDefinitions="WIN32; _WIN32; OPJ_STATIC; NEED_MATH; NEED_GETTIMEOFDAY; HAVE_JBIG2DEC; USE_HINTING; HAVE_OPENJPEG; HAVE_STRING_H=1;  NOCJKFONT; NOCJK"
 				RuntimeLibrary="2"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
@@ -127,7 +127,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				AdditionalDependencies="..\bin\freetype231.lib ..\bin\libjpeg.lib ..\bin\zlib.lib ..\bin\mapsfonts.lib "
+				AdditionalDependencies="..\bin\freetype231.lib ..\bin\libjpeg.lib ..\bin\zlib.lib ..\bin\mapsfonts.lib gdiplus.lib"
 				OutputFile="..\bin\$(ProjectName).lib"
 			/>
 			<Tool
@@ -180,11 +180,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\mupdf\pdf_colorspace1.c"
-				>
-			</File>
-			<File
-				RelativePath=".\mupdf\pdf_colorspace2.c"
+				RelativePath=".\mupdf\pdf_colorspace.c"
 				>
 			</File>
 			<File
@@ -208,7 +204,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\mupdf\pdf_fontfilems.c"
+				RelativePath=".\mupdf\pdf_fontfile.c"
 				>
 			</File>
 			<File
@@ -265,14 +261,6 @@
 			</File>
 			<File
 				RelativePath=".\mupdf\pdf_shade.c"
-				>
-			</File>
-			<File
-				RelativePath=".\mupdf\pdf_shade1.c"
-				>
-			</File>
-			<File
-				RelativePath=".\mupdf\pdf_shade4.c"
 				>
 			</File>
 			<File
@@ -336,6 +324,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\fitz\base_geometry.c"
+				>
+			</File>
+			<File
+				RelativePath=".\fitz\base_getopt.c"
+				>
+			</File>
+			<File
 				RelativePath=".\fitz\base_hash.c"
 				>
 			</File>
@@ -348,11 +344,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\fitz\base_rect.c"
+				RelativePath=".\fitz\base_string.c"
 				>
 			</File>
 			<File
-				RelativePath=".\fitz\base_string.c"
+				RelativePath=".\fitz\base_time.c"
 				>
 			</File>
 			<File
@@ -376,19 +372,31 @@
 				>
 			</File>
 			<File
-				RelativePath=".\fitz\filt_a85e.c"
+				RelativePath=".\fitz\dev_bbox.c"
 				>
 			</File>
 			<File
-				RelativePath=".\fitz\filt_aesd.c"
+				RelativePath=".\fitz\dev_draw.c"
 				>
 			</File>
 			<File
-				RelativePath=".\fitz\filt_ahxe.c"
+				RelativePath=".\fitz\dev_gdiplus.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\fitz\filt_arc4.c"
+				RelativePath=".\fitz\dev_list.c"
+				>
+			</File>
+			<File
+				RelativePath=".\fitz\dev_null.c"
+				>
+			</File>
+			<File
+				RelativePath=".\fitz\dev_text.c"
+				>
+			</File>
+			<File
+				RelativePath=".\fitz\dev_trace.c"
 				>
 			</File>
 			<File
@@ -396,19 +404,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\fitz\filt_dctc.h"
-				>
-			</File>
-			<File
 				RelativePath=".\fitz\filt_dctd.c"
-				>
-			</File>
-			<File
-				RelativePath=".\fitz\filt_dcte.c"
-				>
-			</File>
-			<File
-				RelativePath=".\fitz\filt_faxc.h"
 				>
 			</File>
 			<File
@@ -417,18 +413,6 @@
 			</File>
 			<File
 				RelativePath=".\fitz\filt_faxd.h"
-				>
-			</File>
-			<File
-				RelativePath=".\fitz\filt_faxdtab.c"
-				>
-			</File>
-			<File
-				RelativePath=".\fitz\filt_faxe.h"
-				>
-			</File>
-			<File
-				RelativePath=".\fitz\filt_faxetab.c"
 				>
 			</File>
 			<File
@@ -448,63 +432,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\fitz\filt_lzwe.c"
-				>
-			</File>
-			<File
-				RelativePath=".\fitz\filt_pipeline.c"
-				>
-			</File>
-			<File
 				RelativePath=".\fitz\filt_predict.c"
 				>
 			</File>
 			<File
-				RelativePath=".\fitz\filt_rle.c"
-				>
-			</File>
-			<File
 				RelativePath=".\fitz\fitz.h"
-				>
-			</File>
-			<File
-				RelativePath=".\fitz\fitz_base.h"
-				>
-			</File>
-			<File
-				RelativePath=".\fitz\fitz_draw.h"
-				>
-			</File>
-			<File
-				RelativePath=".\fitz\fitz_stream.h"
-				>
-			</File>
-			<File
-				RelativePath=".\fitz\fitz_tree.h"
-				>
-			</File>
-			<File
-				RelativePath=".\fitz\node_misc1.c"
-				>
-			</File>
-			<File
-				RelativePath=".\fitz\node_misc2.c"
-				>
-			</File>
-			<File
-				RelativePath=".\fitz\node_path.c"
-				>
-			</File>
-			<File
-				RelativePath=".\fitz\node_text.c"
-				>
-			</File>
-			<File
-				RelativePath=".\fitz\node_toxml.c"
-				>
-			</File>
-			<File
-				RelativePath=".\fitz\node_tree.c"
 				>
 			</File>
 			<File
@@ -536,7 +468,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\fitz\res_image.c"
+				RelativePath=".\fitz\res_path.c"
+				>
+			</File>
+			<File
+				RelativePath=".\fitz\res_pixmap.c"
 				>
 			</File>
 			<File
@@ -544,15 +480,11 @@
 				>
 			</File>
 			<File
+				RelativePath=".\fitz\res_text.c"
+				>
+			</File>
+			<File
 				RelativePath=".\fitz\stm_buffer.c"
-				>
-			</File>
-			<File
-				RelativePath=".\fitz\stm_filter.c"
-				>
-			</File>
-			<File
-				RelativePath=".\fitz\stm_misc.c"
 				>
 			</File>
 			<File
@@ -576,15 +508,11 @@
 			Name="fitzdraw"
 			>
 			<File
-				RelativePath=".\fitzdraw\archppc.c"
+				RelativePath=".\fitzdraw\archarm.c"
 				>
 			</File>
 			<File
-				RelativePath=".\fitzdraw\archsparc.c"
-				>
-			</File>
-			<File
-				RelativePath=".\fitzdraw\archx86.c"
+				RelativePath=".\fitzdraw\archport.c"
 				>
 			</File>
 			<File
@@ -601,6 +529,10 @@
 			</File>
 			<File
 				RelativePath=".\fitzdraw\imagescale.c"
+				>
+			</File>
+			<File
+				RelativePath=".\fitzdraw\imagesmooth.c"
 				>
 			</File>
 			<File
@@ -624,15 +556,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\fitzdraw\pixmap.c"
-				>
-			</File>
-			<File
 				RelativePath=".\fitzdraw\porterduff.c"
-				>
-			</File>
-			<File
-				RelativePath=".\fitzdraw\render.c"
 				>
 			</File>
 		</Filter>

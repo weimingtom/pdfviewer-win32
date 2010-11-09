@@ -2,15 +2,18 @@
 
 #include "dynarray.h"
 class Queue {
+private:
+	int _limit;
 public:
 	//----------------
 	// Queue
 	//----------------
 	Queue(UINT limit)
 	{
+		_limit = limit;
 		handles[SemaphoreIndex] = ::CreateSemaphore(NULL,  // no security attributes
 			0,     // initial count
-			limit, // max count
+			2*limit, // max count
 			NULL); // anonymous
 
 		handles[StopperIndex] = ::CreateEvent(NULL,        // no security attributes
@@ -24,6 +27,11 @@ public:
 			FALSE,       // initially non-signaled
 			NULL);       // anonymous
 
+		handles[CancelHead] = ::CreateEvent(NULL,        // no security attributes
+			TRUE,        // manual reset
+			FALSE,       // initially non-signaled
+			NULL);       // anonymous
+		
 		::InitializeCriticalSection(&lock);
 	} // Queue
 
@@ -44,12 +52,23 @@ public:
 	BOOL AddTail(LPVOID p)
 	{ 
 		BOOL result;
-		::EnterCriticalSection(&lock);
+
+		enterlock();
+		if(queue.GetSize() >= this->_limit);
+		{
+			while(queue.GetSize() > this->_limit-1)
+			{
+				::WaitForSingleObject(handles[SemaphoreIndex], 1);
+				queue.Delete(0);
+			}
+		}
+			
 		queue.Add(p);
 		result = ::ReleaseSemaphore(handles[SemaphoreIndex], 1, NULL);
 		if(!result)
 			queue.Delete(0);
-		::LeaveCriticalSection(&lock);
+		
+		unlock();
 		return result;
 	}
 
@@ -59,28 +78,28 @@ public:
 		lastResult=mylastResult;
 		switch(::WaitForMultipleObjects(3, handles, FALSE, INFINITE))
 		{
+		
 		case CancelIndex:
 			if(queue.GetCount()>0){
-				::EnterCriticalSection(&lock);
+				enterlock();
 				result = queue[0];
 				queue.Delete(0);
 				delete result;
-				::LeaveCriticalSection(&lock);
+				unlock();
 			}else
 				::ResetEvent(handles[CancelIndex]);
-			return NULL;
 			break;
 		case StopperIndex:   // shut down thread
 			ExitThread(0); //KillThread
-			return NULL;     
+			break;
 		case SemaphoreIndex: // semaphore
-			::EnterCriticalSection(&lock);
+			enterlock();
 			result = queue[0];
 			delQueue.Add(result);
 			queue.Delete(0);
 			lastResult=result;
 			mylastResult=result;
-			::LeaveCriticalSection(&lock);
+			unlock();
 			return result;
 		}
 		return NULL;
@@ -111,12 +130,14 @@ public:
 
 	}
 protected:
-	enum {StopperIndex, SemaphoreIndex, CancelIndex};
+	enum {StopperIndex, SemaphoreIndex, CancelIndex, CancelHead };
 	HANDLE handles[3];
+
 	CRITICAL_SECTION lock;
 	LPVOID lastResult;
 	LPVOID mylastResult;
 public:
 	DynArray<LPVOID> queue;
 	DynArray<LPVOID> delQueue;
+	DynArray<LPVOID> outQueue;
 };

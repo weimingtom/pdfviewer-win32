@@ -38,7 +38,9 @@
 
 	struct threadParamThumb {
 
-		threadParamThumb(HDC hdc,SplashOutputDev *outDev,PDFDoc *pdfdoc,int page,Queue *queued, void *finishCallback){
+		threadParamThumb(HDC hdc,SplashOutputDev *outDev,PDFDoc *pdfdoc,int page,Queue *queued, void *finishCallback)
+		{
+			
 			pageToRender=page;
 			doc =pdfdoc;
 			out = new AuxOutputDev(outDev);
@@ -46,6 +48,14 @@
 			finishNotify=(PAGERENDERNOTIFY)finishCallback;
 			que = queued;
 			hDC = hdc;
+		}
+		~threadParamThumb()
+		{
+			delete out;
+			out=0;
+			que=0;
+			pdfDoc=0;
+			finishNotify=0;			
 		}
 		double renderDPI;
 		int width;
@@ -533,7 +543,7 @@
 	, m_PageRenderedByThread(0)
 	, m_sliceBox(0,0,0,0)
 	, m_LastOpenedStream(0)
-	, m_QueuedThumbs(15)
+	, m_QueuedThumbs(6)
 	, m_renderThumbs(0)
 	, m_thumbOut(0)
 #ifdef _MUPDF
@@ -963,7 +973,7 @@
 						m_splashOut=0;
 					}
 					threadParam *tp =new threadParam(this,m_PageToRenderByThread);
-					//Note: the alignment is given by GDI requirements: bitmaps have to be 16-bit aligned.
+					//Note: the alignment is given by GDI requirements: bitmaps have to be 16-bit aligned.					
 					tp->out=new AuxOutputDev(new SplashOutputDev(splashModeBGR8, 4, gFalse, paperColor,gTrue,globalParams->getAntialias()));
 					tp->out->startDoc(m_PDFDoc->getXRef());
 					tp->out->clearModRegion();
@@ -973,6 +983,7 @@
 					ResetEvent(this->hRenderFinished);
 					m_renderingThread = CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)AFPDFDoc::RenderingThread,(LPVOID)tp,CREATE_SUSPENDED,0);
 					ResumeThread(m_renderingThread);
+
 				}
 			} catch(void *){
 				return errOutOfMemory;
@@ -1007,11 +1018,17 @@
 		if(!bmpMem || (bmpMem && ( bmpMem->Width != bmWidth || bmpMem->Height != bmHeight)))
 		{
 			bmpMem = new PageMemory();
-			bmpMem->Create(clientDC,bmWidth,bmHeight,m_renderDPI, out->getDefCTM(),out->getDefICTM());	
+			if(out->IsBitmap())
+				bmpMem->Create(out->GetBitmap(),bmWidth,bmHeight,m_renderDPI, out->getDefCTM(),out->getDefICTM());	
+			else	
+				bmpMem->Create(clientDC,bmWidth,bmHeight,m_renderDPI, out->getDefCTM(),out->getDefICTM());	
 		}
 		//********START DIB
 		bmpMem->SetDimensions(bmWidth,bmHeight,m_renderDPI);
-		bmpMem->SetDIBits(clientDC,(void *)out->GetDataPtr());
+		if(!out->IsBitmap())
+			bmpMem->SetDIBits(clientDC,(void *)out->GetDataPtr());
+		else
+			bmpMem->SetBitmap(out->GetBitmap());
 		//********END DIB
 		AddBitmapCache(bmpMem,page);
 		//If was called by render current, then update the current Bitmap, if not just save in cache	
@@ -1283,7 +1300,11 @@
 			}
 
 			if(!m_QueuedThumbs.AddTail(tp))
+			{
+				if(tp->finishNotify)
+					tp->finishNotify(page,false);
 				return -1;
+			}
 
 			return 0;
 		}else{
@@ -1301,10 +1322,18 @@
 				if(SupportsMuPDF() && GetUseMuPDF()){
 					if(LoadFromMuPDF())
 					{
+#ifdef _MUPDF_GDIPLUS
+						int w =0; int h=0;
+						HBITMAP im = _mupdf->renderBitmap(page,renderDPI/72,m_Rotation,NULL,callbackAbortDisplay,this, &w, &h);
+						tp->out->SetBitmap(im);
+						tp->out->setSize(w,h);
+#else
 						fz_pixmap *im = _mupdf->display(tp->out,page,m_Rotation,renderDPI/72,callbackAbortDisplay,this);
 						tp->out->SetDataPtr((void *)im->samples);
 						tp->out->setSize(im->w,im->h);
 						tp->out->setPixmap(im);
+						
+#endif
 						Page *p = doc->getCatalog()->getPage(page);
 						double ctm[6];
 						double ictm[6];
@@ -1319,6 +1348,7 @@
 						ictm[4] = (ctm[2] * ctm[5] - ctm[3] * ctm[4]) * det;
 						ictm[5] = (ctm[1] * ctm[4] - ctm[0] * ctm[5]) * det;
 						tp->out->setDefICTM(ictm);
+
 						render =false;
 					}
 				}
@@ -1345,7 +1375,8 @@
 					
 					bmpMem->Dispose();
 					delete bmpMem;
-					delete tp;
+					//BUG: http://www.codeproject.com/Messages/3653534/Modify-and-use-the-project.aspx
+					//delete tp;
 					bmpMem=0;
 					return 0;
 				}
@@ -1359,7 +1390,7 @@
 	{
 		Queue *q=(Queue *)value;
 		PDFDoc *doc;
-		threadParamThumb *param;
+		threadParamThumb *param = NULL;
 		double renderDPI=18;
 		PageMemory *bmpMem=0;
 		int page=0;
@@ -1379,10 +1410,17 @@
 				if(param->pdfDoc->SupportsMuPDF() && param->pdfDoc->GetUseMuPDF()){
 					if(param->pdfDoc->LoadFromMuPDF())
 					{
+#ifdef _MUPDF_GDIPLUS
+					int w =0; int h=0;
+					HBITMAP im = _mupdf->renderBitmap(page,renderDPI/72,m_Rotation,NULL,callbackAbortDisplay,this, &w, &h);
+					tp->out->SetBitmap(im);
+					tp->out->setSize(w,h);
+#else
 						fz_pixmap *im = param->pdfDoc->_mupdf->display(param->out,page,param->pdfDoc->m_Rotation,renderDPI/72,callbackAbortDisplay,param->pdfDoc);
 						param->out->SetDataPtr((void *)im->samples);
 						param->out->setSize(im->w,im->h);
 						param->out->setPixmap(im);
+#endif
 						Page *p = doc->getCatalog()->getPage(page);
 						double ctm[6];
 						double ictm[6];
@@ -1431,15 +1469,14 @@
 				bmpMem=0;
 				bSuccess=true;
 			}
-			if(param->finishNotify)
-				 param->finishNotify(page,bSuccess);
 			if(param){
+				if(param->finishNotify)
+					param->finishNotify(page,bSuccess);
 				param->que->delQueue.Delete(0);
 				delete param;
 				param=0;
 			}
 		}
-		
 	}
 	//Rendering thread
 	UINT AFPDFDoc::RenderingThread( LPVOID value )
@@ -1465,12 +1502,21 @@
 			if(pdfDoc->SupportsMuPDF() && pdfDoc->GetUseMuPDF()){
 				if(pdfDoc->LoadFromMuPDF())
 				{
+#ifdef _MUPDF_GDIPLUS
+					int w =0; int h=0;
+					HBITMAP im = _mupdf->renderBitmap(page,renderDPI/72,m_Rotation,NULL,callbackAbortDisplay,this, &w, &h);
+					tp->out->SetBitmap(im);
+					tp->out->setSize(w,h);
+#else
 					fz_pixmap *im = pdfDoc->_mupdf->display(param->out,page,pdfDoc->m_Rotation,renderDPI/72,callbackAbortDisplay,pdfDoc);
 					if(im!=NULL){
 						param->out->SetDataPtr((void *)im->samples);
 						param->out->setSize(im->w,im->h);
 						param->out->setPixmap(im);
-						
+					}
+#endif
+					if(im!=NULL)
+					{
 						Page *p = pdfDoc->m_PDFDoc->getCatalog()->getPage(page);
 						double ctm[6];
 						double ictm[6];

@@ -8,6 +8,7 @@ extern "C"
 {
 	#include <fitz.h>
 	#include <mupdf.h>
+	//#include <fitz_draw.h>
 }
 
 #define MUPDF_PAGES_CACHE 32
@@ -17,7 +18,8 @@ class mupdfEngine
 		pdf_xref *      _xref;		//Current xRef
 		pdf_page **     _pages;		//Pages cache
 		pdf_page *		_page;		//Pages cache
-		fz_renderer *   _rast;		//Rasterizer
+		fz_glyphcache * _drawcache;
+		//fz_renderer *   _rast;		//Rasterizer
 	//Load from file, expect an utf8 encoded string
 public:
 	mupdfEngine();
@@ -28,4 +30,8 @@ public:
 	fz_pixmap* display(AuxOutputDev *out,int page, int rotate, double zoom,
 		   GBool (*abortCheckCbk)(void *data),
 		   void *abortCheckCbkData);
+	HBITMAP renderBitmap( int pageNo, double zoomReal, int rotation,
+                           fz_rect *pageRect,
+                           BOOL (*abortCheckCbkA)(void *data),
+                           void *abortCheckCbkDataA, int *width, int *height);
 };

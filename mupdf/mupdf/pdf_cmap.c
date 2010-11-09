@@ -114,24 +114,24 @@ pdf_debugcmap(pdf_cmap *cmap)
 	printf("cmap $%p /%s {\n", (void *) cmap, cmap->cmapname);
 
 	if (cmap->usecmapname[0])
-		printf("  usecmap /%s\n", cmap->usecmapname);
+		printf("\tusecmap /%s\n", cmap->usecmapname);
 	if (cmap->usecmap)
-		printf("  usecmap $%p\n", (void *) cmap->usecmap);
+		printf("\tusecmap $%p\n", (void *) cmap->usecmap);
 
-	printf("  wmode %d\n", cmap->wmode);
+	printf("\twmode %d\n", cmap->wmode);
 
-	printf("  codespaces {\n");
+	printf("\tcodespaces {\n");
 	for (i = 0; i < cmap->ncspace; i++)
 	{
-		printf("    <%x> <%x>\n", cmap->cspace[i].low, cmap->cspace[i].high);
+		printf("\t\t<%x> <%x>\n", cmap->cspace[i].low, cmap->cspace[i].high);
 	}
-	printf("  }\n");
+	printf("\t}\n");
 
-	printf("  ranges (%d,%d) {\n", cmap->rlen, cmap->tlen);
+	printf("\tranges (%d,%d) {\n", cmap->rlen, cmap->tlen);
 	for (i = 0; i < cmap->rlen; i++)
 	{
 		pdf_range *r = &cmap->ranges[i];
-		printf("    <%04x> <%04x> ", r->low, r->high);
+		printf("\t\t<%04x> <%04x> ", r->low, r->high);
 		if (r->flag == PDF_CMAP_TABLE)
 		{
 			printf("[ ");
@@ -150,7 +150,7 @@ pdf_debugcmap(pdf_cmap *cmap)
 		else
 			printf("%d\n", r->offset);
 	}
-	printf("  }\n}\n");
+	printf("\t}\n}\n");
 }
 
 /*
@@ -181,7 +181,7 @@ addtable(pdf_cmap *cmap, int value)
 {
 	if (cmap->tlen + 1 > cmap->tcap)
 	{
-		cmap->tcap = cmap->tcap == 0 ? 256 : (cmap->tcap * 3) / 2;
+		cmap->tcap = cmap->tcap > 1 ? (cmap->tcap * 3) / 2 : 256;
 		cmap->table = fz_realloc(cmap->table, cmap->tcap * sizeof(unsigned short));
 	}
 	cmap->table[cmap->tlen++] = value;
@@ -195,7 +195,7 @@ addrange(pdf_cmap *cmap, int low, int high, int flag, int offset)
 {
 	if (cmap->rlen + 1 > cmap->rcap)
 	{
-		cmap->rcap = cmap->rcap == 0 ? 256 : (cmap->rcap * 3) / 2;
+		cmap->rcap = cmap->rcap > 1 ? (cmap->rcap * 3) / 2 : 256;
 		cmap->ranges = fz_realloc(cmap->ranges, cmap->rcap * sizeof(pdf_range));
 	}
 	cmap->ranges[cmap->rlen].low = low;
@@ -240,6 +240,12 @@ pdf_maponetomany(pdf_cmap *cmap, int low, int *values, int len)
 	{
 		addrange(cmap, low, low, PDF_CMAP_SINGLE, values[0]);
 		return;
+	}
+
+	if (len > 8)
+	{
+		fz_warn("one to many mapping is too large (%d); truncating", len);
+		len = 8;
 	}
 
 	offset = cmap->tlen;
@@ -376,7 +382,7 @@ pdf_lookupcmap(pdf_cmap *cmap, int cpt)
 			if (cmap->ranges[m].flag == PDF_CMAP_TABLE)
 				return cmap->table[i];
 			if (cmap->ranges[m].flag == PDF_CMAP_MULTI)
-				return -1;
+				return cmap->table[cmap->ranges[m].offset + 1]; /* first char */
 			return i;
 		}
 	}
@@ -385,6 +391,50 @@ pdf_lookupcmap(pdf_cmap *cmap, int cpt)
 		return pdf_lookupcmap(cmap->usecmap, cpt);
 
 	return -1;
+}
+
+int
+pdf_lookupcmapfull(pdf_cmap *cmap, int cpt, int *out)
+{
+	int i, k, n;
+	int l = 0;
+	int r = cmap->rlen - 1;
+	int m;
+
+	while (l <= r)
+	{
+		m = (l + r) >> 1;
+		if (cpt < cmap->ranges[m].low)
+			r = m - 1;
+		else if (cpt > cmap->ranges[m].high)
+			l = m + 1;
+		else
+		{
+			k = cpt - cmap->ranges[m].low + cmap->ranges[m].offset;
+			if (cmap->ranges[m].flag == PDF_CMAP_TABLE)
+			{
+				out[0] = cmap->table[k];
+				return 1;
+			}
+			else if (cmap->ranges[m].flag == PDF_CMAP_MULTI)
+			{
+				n = cmap->ranges[m].offset;
+				for (i = 0; i < cmap->table[n]; i++)
+					out[i] = cmap->table[n + i + 1];
+				return cmap->table[n];
+			}
+			else
+			{
+				out[0] = k;
+				return 1;
+			}
+		}
+	}
+
+	if (cmap->usecmap)
+		return pdf_lookupcmapfull(cmap->usecmap, cpt, out);
+
+	return 0;
 }
 
 /*
@@ -416,4 +466,3 @@ pdf_decodecmap(pdf_cmap *cmap, unsigned char *buf, int *cpt)
 	*cpt = 0;
 	return buf + 1;
 }
-
