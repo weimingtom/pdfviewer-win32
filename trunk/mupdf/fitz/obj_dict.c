@@ -1,5 +1,4 @@
-#include "fitz_base.h"
-#include "fitz_stream.h"
+#include "fitz.h"
 
 /* dicts may only have names as keys! */
 
@@ -31,7 +30,7 @@ fz_newdict(int initialcap)
 
 	obj->u.d.sorted = 1;
 	obj->u.d.len = 0;
-	obj->u.d.cap = initialcap > 0 ? initialcap : 10;
+	obj->u.d.cap = initialcap > 1 ? initialcap : 10;
 
 	obj->u.d.items = fz_malloc(sizeof(fz_keyval) * obj->u.d.cap);
 	for (i = 0; i < obj->u.d.cap; i++)
@@ -290,4 +289,3 @@ fz_sortdict(fz_obj *obj)
 		obj->u.d.sorted = 1;
 	}
 }
-

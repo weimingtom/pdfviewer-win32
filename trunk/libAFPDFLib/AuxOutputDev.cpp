@@ -8,6 +8,7 @@ AuxOutputDev::AuxOutputDev(SplashOutputDev *splash)
 , _width(0)
 , _height(0)
 , _antialias(gTrue)
+, _isBitmap(false)
 #ifdef _MUPDF
 , _pixmap(NULL)
 #endif
@@ -29,6 +30,9 @@ AuxOutputDev::~AuxOutputDev()
 }
 
 void *AuxOutputDev::GetDataPtr(){	return _data_ptr;}
+void AuxOutputDev::SetBitmap(HBITMAP hbmp) { _data_ptr = (void *)hbmp; _isBitmap = true; }
+HBITMAP AuxOutputDev::GetBitmap() { if(_isBitmap) return (HBITMAP)_data_ptr; return NULL; }
+bool AuxOutputDev::IsBitmap() { return _isBitmap; }
 void AuxOutputDev::SetDataPtr(void *data){	_data_ptr = data;}
 double *AuxOutputDev::getDefCTM() {	return _ctm;}
 double *AuxOutputDev::getDefICTM() { return _ictm;}

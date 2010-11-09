@@ -98,6 +98,15 @@ pdf_toucs2(fz_obj *src)
 	return dst;
 }
 
+fz_obj *
+pdf_toutf8name(fz_obj *src)
+{
+	char *buf = pdf_toutf8(src);
+	fz_obj *dst = fz_newname(buf);
+	fz_free(buf);
+	return dst;
+}
+
 fz_error
 pdf_parsearray(fz_obj **op, pdf_xref *xref, fz_stream *file, char *buf, int cap)
 {
@@ -226,7 +235,7 @@ pdf_parsearray(fz_obj **op, pdf_xref *xref, fz_stream *file, char *buf, int cap)
 
 		default:
 			fz_dropobj(ary);
-			return fz_rethrow(error, "cannot parse token in array");
+			return fz_throw("cannot parse token in array");
 		}
 	}
 }
@@ -312,7 +321,8 @@ skip:
 		case PDF_TNULL: val = fz_newnull(); break;
 
 		case PDF_TINT:
-			a = atoi(buf);
+			/* 64-bit to allow for numbers > INT_MAX and overflow */
+			a = (int) strtoll(buf, 0, 10);
 			error = pdf_lex(&tok, file, buf, cap, &len);
 			if (error)
 			{
@@ -495,19 +505,15 @@ skip:
 	if (tok == PDF_TSTREAM)
 	{
 		int c = fz_readbyte(file);
+		while (c == ' ')
+			c = fz_readbyte(file);
 		if (c == '\r')
 		{
 			c = fz_peekbyte(file);
 			if (c != '\n')
 				fz_warn("line feed missing after stream begin marker (%d %d R)", num, gen);
 			else
-				c = fz_readbyte(file);
-		}
-		error = fz_readerror(file);
-		if (error)
-		{
-			fz_dropobj(obj);
-			return fz_rethrow(error, "cannot parse indirect object (%d %d R)", num, gen);
+				fz_readbyte(file);
 		}
 		stmofs = fz_tell(file);
 	}
@@ -527,4 +533,3 @@ skip:
 	*op = obj;
 	return fz_okay;
 }
-

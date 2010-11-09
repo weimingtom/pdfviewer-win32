@@ -16,6 +16,23 @@ PageMemory::~PageMemory(void)
 	Dispose();
 }
 
+int PageMemory::Create(HBITMAP hbmp, int width, int height, double renderDPI, double *defcmt, double *deficmt)
+{
+//Delete object
+	Dispose();
+	Width=width;
+	Height=height;
+	for(int i=0; i<6; ++i){
+		defCTM[i] = defcmt[i];
+		defICTM[i] =deficmt[i];
+	}
+	_renderDPI = renderDPI;
+	BITMAPINFO bmi=GetBitmapInfo();
+	bmi.bmiHeader.biHeight=-bmi.bmiHeader.biHeight;
+	_bitmap = hbmp;
+	return TRUE;
+}
+
 int PageMemory::Create(HDC clientDC, int width, int height, double renderDPI, double *defcmt, double *deficmt)
 {
 	//Delete object

@@ -78,18 +78,23 @@ namespace PDFLibNet
 			_thumbG=nullptr;
 		}
 	}
+
+	
+
 	System::Drawing::Bitmap ^PDFPage::LoadThumbnail(int width,int height){
 //		msclr::lock l(_errorRender);
-		if( (_thumbNail == nullptr || _thumbNail->Width!=width || _thumbNail->Height!=height))
+		
+		if( (_thumbNail == nullptr || _thumbNail->Width!=width || _thumbNail->Height!=height)
+			|| (!this->_isSuccesed && !_pdfDoc->ThumbInQueue(_pageNumber)))
 		{
+			if(_thumbNail == nullptr || (_thumbNail->Width!=width || _thumbNail->Height!=height))
+				_thumbNail = gcnew System::Drawing::Bitmap(width,height);
 
 			if(_internalRenderNotifyFinished==nullptr){		
 				_internalRenderNotifyFinished=gcnew RenderNotifyFinishedHandler(this,&PDFPage::_RenderNotifyFinished);
 				_gchRenderNotifyFinished = GCHandle::Alloc(_internalRenderNotifyFinished);
 			}
 			void *ptrCallBack = Marshal::GetFunctionPointerForDelegate(_internalRenderNotifyFinished).ToPointer();
-
-			_thumbNail = gcnew System::Drawing::Bitmap(width,height);
 			
 			loadPage();
 			_thumbG = System::Drawing::Graphics::FromImage(_thumbNail);

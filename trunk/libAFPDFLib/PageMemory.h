@@ -24,7 +24,9 @@ public:
 	void cvtUserToDev(double ux, double uy, int *dx, int *dy);
 	void cvtDevTouser(double dx, double dy, double *ux, double *uy);
 	int Create(HDC clientDC, int width, int height, double renderDPI, double *defcmt, double *deficmt);
+	int Create(HBITMAP hbmp, int width, int height, double renderDPI, double *defcmt, double *deficmt);
 	int SetDIBits(HDC clientDC,const void *lpBits);
+	void SetBitmap(HBITMAP hbmp) { _bitmap = hbmp; }
 	void SetDimensions(int width, int height, double renderDPI);
 
 	void Resize(int width, int height, double renderDPI);

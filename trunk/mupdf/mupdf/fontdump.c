@@ -45,11 +45,18 @@ main(int argc, char **argv)
 		return 1;
 	}
 
+	fprintf(fo, "#ifndef __STRICT_ANSI__\n");
+	fprintf(fo, "#if defined(__linux__) || defined(__FreeBSD__)\n");
+	fprintf(fo, "#define HAVE_INCBIN\n");
+	fprintf(fo, "#endif\n");
+	fprintf(fo, "#endif\n\n");
+
 	for (i = 2; i < argc; i++)
 	{
 		fi = fopen(argv[i], "rb");
 		if (!fi)
 		{
+			fclose(fo);
 			fprintf(stderr, "fontdump: could not open input file '%s'\n", argv[i]);
 			return 1;
 		}
@@ -70,16 +77,31 @@ main(int argc, char **argv)
 			p ++;
 		}
 
-		fprintf(fo, "const unsigned char pdf_font_%s_buf[] = {\n", name);
+		fseek(fi, 0, SEEK_END);
+		len = ftell(fi);
+		fseek(fi, 0, SEEK_SET);
 
-		len = hexdump(fo, fi);
-
-		fprintf(fo, "};\n");
 		fprintf(fo, "const unsigned int pdf_font_%s_len = %d;\n", name, len);
+
+		fprintf(fo, "#ifdef HAVE_INCBIN\n");
+		fprintf(fo, "asm(\".globl pdf_font_%s_buf\");\n", name);
+		fprintf(fo, "asm(\".balign 8\");\n");
+		fprintf(fo, "asm(\"pdf_font_%s_buf:\");\n", name);
+		fprintf(fo, "asm(\".incbin \\\"%s\\\"\");\n", argv[i]);
+		fprintf(fo, "#else\n");
+		fprintf(fo, "const unsigned char pdf_font_%s_buf[%d] = {\n", name, len);
+		hexdump(fo, fi);
+		fprintf(fo, "};\n");
+		fprintf(fo, "#endif\n");
 
 		fclose(fi);
 	}
 
+	if (fclose(fo))
+	{
+		fprintf(stderr, "fontdump: could not close output file '%s'\n", argv[1]);
+		return 1;
+	}
+
 	return 0;
 }
-

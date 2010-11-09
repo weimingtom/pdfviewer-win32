@@ -1,24 +1,11 @@
 #include "fitz.h"
 #include "mupdf.h"
 
-pdf_link *
-pdf_newlink(pdf_linkkind kind, fz_rect bbox, fz_obj *dest)
-{
-	pdf_link *link = fz_malloc(sizeof(pdf_link));
-	link->kind = kind;
-	link->rect = bbox;
-	link->dest = fz_keepobj(dest);
-	link->next = nil;
-	return link;
-}
-
 void
-pdf_droplink(pdf_link *link)
+pdf_freelink(pdf_link *link)
 {
-	if (!link)
-		return;
 	if (link->next)
-		pdf_droplink(link->next);
+		pdf_freelink(link->next);
 	if (link->dest)
 		fz_dropobj(link->dest);
 	fz_free(link);
@@ -35,7 +22,7 @@ resolvedest(pdf_xref *xref, fz_obj *dest)
 
 	else if (fz_isarray(dest))
 	{
-		return fz_arrayget(dest, 0);
+		return dest; /* cf. http://code.google.com/p/sumatrapdf/issues/detail?id=275 */
 	}
 
 	else if (fz_isdict(dest))
@@ -103,7 +90,21 @@ pdf_loadlink(pdf_xref *xref, fz_obj *dict)
 		{
 			kind = PDF_LLAUNCH;
 			dest = fz_dictgets(action, "F");
-			pdf_logpage("action launch (%d %d R)\n", fz_tonum(dest), fz_togen(dest));
+			pdf_logpage("action %s (%d %d R)\n", fz_toname(obj), fz_tonum(dest), fz_togen(dest));
+		}
+		/* SumatraPDF: add support for named actions */
+		else if (fz_isname(obj) && !strcmp(fz_toname(obj), "Named"))
+		{
+			kind = PDF_LNAMED;
+			dest = fz_dictgets(action, "N");
+			pdf_logpage("action %s (%d %d R)\n", fz_toname(obj), fz_tonum(dest), fz_togen(dest));
+		}
+		/* SumatraPDF: add support for more complex actions */
+		else if (fz_isname(obj) && (!strcmp(fz_toname(obj), "GoToR")))
+		{
+			kind = PDF_LACTION;
+			dest = action;
+			pdf_logpage("action %s (%d %d R)\n", fz_toname(obj), fz_tonum(dest), fz_togen(dest));
 		}
 		else
 		{
@@ -116,32 +117,36 @@ pdf_loadlink(pdf_xref *xref, fz_obj *dict)
 
 	if (dest)
 	{
-		return pdf_newlink(kind, bbox, dest);
+		pdf_link *link = fz_malloc(sizeof(pdf_link));
+		link->kind = kind;
+		link->rect = bbox;
+		link->dest = fz_keepobj(dest);
+		link->next = nil;
+		return link;
 	}
 
 	return nil;
 }
 
 void
-pdf_loadannots(pdf_comment **cp, pdf_link **lp, pdf_xref *xref, fz_obj *annots)
+pdf_loadlinks(pdf_link **linkp, pdf_xref *xref, fz_obj *annots)
 {
-	pdf_comment *comment;
 	pdf_link *link;
 	fz_obj *subtype;
 	fz_obj *obj;
 	int i;
 
-	comment = nil;
 	link = nil;
 
-	pdf_logpage("load annotations {\n");
+	pdf_logpage("load link annotations {\n");
 
 	for (i = 0; i < fz_arraylen(annots); i++)
 	{
 		obj = fz_arrayget(annots, i);
 
 		subtype = fz_dictgets(obj, "Subtype");
-		if (fz_isname(subtype) && !strcmp(fz_toname(subtype), "Link"))
+		// SumatraPDF: all annotations can act as links
+		// if (fz_isname(subtype) && !strcmp(fz_toname(subtype), "Link"))
 		{
 			pdf_link *temp = pdf_loadlink(xref, obj);
 			if (temp)
@@ -154,7 +159,91 @@ pdf_loadannots(pdf_comment **cp, pdf_link **lp, pdf_xref *xref, fz_obj *annots)
 
 	pdf_logpage("}\n");
 
-	*cp = comment;
-	*lp = link;
+	*linkp = link;
 }
 
+void
+pdf_freeannot(pdf_annot *annot)
+{
+	if (annot->next)
+		pdf_freeannot(annot->next);
+	if (annot->ap)
+		pdf_dropxobject(annot->ap);
+	if (annot->obj)
+		fz_dropobj(annot->obj);
+	fz_free(annot);
+}
+
+void
+pdf_transformannot(pdf_annot *annot)
+{
+	fz_matrix matrix = annot->ap->matrix;
+	fz_rect bbox = annot->ap->bbox;
+	fz_rect rect = annot->rect;
+	float w, h, x, y;
+	fz_matrix a, aa;
+
+	bbox = fz_transformrect(matrix, bbox);
+	w = (rect.x1 - rect.x0) / (bbox.x1 - bbox.x0);
+	h = (rect.y1 - rect.y0) / (bbox.y1 - bbox.y0);
+	x = rect.x0 - bbox.x0;
+	y = rect.y0 - bbox.y0;
+	a = fz_concat(fz_scale(w, h), fz_translate(x, y));
+	aa = fz_concat(a, matrix);
+
+	annot->ap->matrix = aa;
+}
+
+void
+pdf_loadannots(pdf_annot **headp, pdf_xref *xref, fz_obj *annots)
+{
+	pdf_annot *head, *annot;
+	fz_obj *obj, *ap, *as, *n, *rect;
+	pdf_xobject *form;
+	fz_error error;
+	int i;
+
+	head = nil;
+
+	pdf_logpage("load appearance annotations {\n");
+
+	for (i = 0; i < fz_arraylen(annots); i++)
+	{
+		obj = fz_arrayget(annots, i);
+
+		rect = fz_dictgets(obj, "Rect");
+		ap = fz_dictgets(obj, "AP");
+		as = fz_dictgets(obj, "AS");
+		if (fz_isdict(ap))
+		{
+			n = fz_dictgets(ap, "N"); /* normal state */
+			/* cf. http://code.google.com/p/sumatrapdf/issues/detail?id=1059 */
+			if (!fz_isindirect(n) || !pdf_isstream(xref, fz_tonum(n), fz_togen(n)))
+				n = fz_dictget(n, as);
+
+			if (fz_isindirect(n) && pdf_isstream(xref, fz_tonum(n), fz_togen(n)))
+			{
+				error = pdf_loadxobject(&form, xref, n);
+				if (error)
+				{
+					fz_catch(error, "ignoring broken annotation");
+					continue;
+				}
+
+				annot = fz_malloc(sizeof (pdf_annot));
+				annot->obj = fz_keepobj(obj);
+				annot->rect = pdf_torect(rect);
+				annot->ap = form;
+				annot->next = head;
+
+				pdf_transformannot(annot);
+
+				head = annot;
+			}
+		}
+	}
+
+	pdf_logpage("}\n");
+
+	*headp = head;
+}

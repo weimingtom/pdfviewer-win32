@@ -1,6 +1,4 @@
-#include "fitz_base.h"
-#include "fitz_tree.h"
-#include "fitz_draw.h"
+#include "fitz.h"
 
 /*
  * polygon clipping
@@ -149,12 +147,12 @@ drawscan(fz_pixmap *pix, int y, int x1, int x2, int *v1, int *v2, int n)
 
 	while (w--)
 	{
-		*p++ = 255;
 		for (k = 0; k < n; k++)
 		{
 			*p++ = v[k] >> 16;
 			v[k] += dv[k];
 		}
+		*p++ = 255;
 	}
 }
 
@@ -193,7 +191,7 @@ loadedge(int gel[MAXV][MAXN], int s, int e, int *ael, int *del, int n)
 {
 	int swp, k, dy;
 
-	if (gel[s][1] > gel[s][1])
+	if (gel[s][1] > gel[e][1])
 	{
 		swp = s; s = e; e = swp;
 	}
@@ -219,14 +217,14 @@ stepedge(int *ael, int *del, int n)
 }
 
 static void
-fz_drawtriangle(fz_pixmap *pix, float *av, float *bv, float *cv, int n)
+fz_drawtriangle(fz_pixmap *pix, float *av, float *bv, float *cv, int n, fz_bbox bbox)
 {
 	float poly[MAXV][MAXN];
 	float temp[MAXV][MAXN];
-	float cx0 = pix->x;
-	float cy0 = pix->y;
-	float cx1 = pix->x + pix->w;
-	float cy1 = pix->y + pix->h;
+	float cx0 = bbox.x0;
+	float cy0 = bbox.y0;
+	float cx1 = bbox.x1;
+	float cy1 = bbox.y1;
 
 	int gel[MAXV][MAXN];
 	int ael[2][MAXN];
@@ -240,7 +238,7 @@ fz_drawtriangle(fz_pixmap *pix, float *av, float *bv, float *cv, int n)
 	copyvert(poly[1], bv, n);
 	copyvert(poly[2], cv, n);
 
-	len = clippoly(poly, temp,   3, n, cx0, 0, 0);
+	len = clippoly(poly, temp, 3, n, cx0, 0, 0);
 	len = clippoly(temp, poly, len, n, cx1, 0, 1);
 	len = clippoly(poly, temp, len, n, cy0, 1, 0);
 	len = clippoly(temp, poly, len, n, cy1, 1, 1);
@@ -250,8 +248,8 @@ fz_drawtriangle(fz_pixmap *pix, float *av, float *bv, float *cv, int n)
 
 	for (i = 0; i < len; i++)
 	{
-		gel[i][0] = fz_floor(poly[i][0] + 0.5) * 65536; /* trunc and fix */
-		gel[i][1] = fz_floor(poly[i][1] + 0.5);	/* y is not fixpoint */
+		gel[i][0] = floorf(poly[i][0] + 0.5f) * 65536; /* trunc and fix */
+		gel[i][1] = floorf(poly[i][1] + 0.5f);	/* y is not fixpoint */
 		for (k = 2; k < n; k++)
 			gel[i][k] = poly[i][k] * 65536;	/* fix with precision */
 	}
@@ -270,7 +268,7 @@ fz_drawtriangle(fz_pixmap *pix, float *av, float *bv, float *cv, int n)
 
 	y = gel[top][1];
 
-	if (findnext(gel, len, top, &s0, &e0,  1))
+	if (findnext(gel, len, top, &s0, &e0, 1))
 		return;
 	if (findnext(gel, len, top, &s1, &e1, -1))
 		return;
@@ -312,97 +310,77 @@ fz_drawtriangle(fz_pixmap *pix, float *av, float *bv, float *cv, int n)
  * mesh drawing
  */
 
-fz_error
-fz_rendershade(fz_shade *shade, fz_matrix ctm, fz_colorspace *destcs, fz_pixmap *dest)
+void
+fz_rendershade(fz_shade *shade, fz_matrix ctm, fz_pixmap *dest, fz_bbox bbox)
 {
-	unsigned char clut[256][3];
-	unsigned char *s, *d;
-	fz_error error;
-	fz_pixmap *temp;
-	float rgb[3];
+	unsigned char clut[256][FZ_MAXCOLORS];
+	fz_pixmap *temp, *conv;
+	float color[FZ_MAXCOLORS];
 	float tri[3][MAXN];
 	fz_point p;
-	int i, j, k, n;
-
-	assert(dest->n == 4);
+	float *mesh;
+	int ntris;
+	int i, j, k;
 
 	ctm = fz_concat(shade->matrix, ctm);
-
-	if (shade->usefunction)
-	{
-		n = 3;
-		error = fz_newpixmap(&temp, dest->x, dest->y, dest->w, dest->h, 2);
-		if (error)
-			return error;
-	}
-	else if (shade->cs != destcs)
-	{
-		n = 2 + shade->cs->n;
-		error = fz_newpixmap(&temp, dest->x, dest->y, dest->w, dest->h,
-			shade->cs->n + 1);
-		if (error)
-			return error;
-	}
-	else
-	{
-		n = 2 + shade->cs->n;
-		temp = dest;
-	}
-
-	fz_clearpixmap(temp);
-
-	for (i = 0; i < shade->meshlen; i++)
-	{
-		for (k = 0; k < 3; k++)
-		{
-			p.x = shade->mesh[(i * 3 + k) * n + 0];
-			p.y = shade->mesh[(i * 3 + k) * n + 1];
-			p = fz_transformpoint(ctm, p);
-			if (isnan(p.y) || isnan(p.x)) // How is this happening?
-			goto baddata;
-			tri[k][0] = p.x;
-			tri[k][1] = p.y;
-			for (j = 2; j < n; j++)
-				tri[k][j] = shade->mesh[( i * 3 + k) * n + j] * 255;
-		}
-		fz_drawtriangle(temp, tri[0], tri[1], tri[2], n);
-baddata:
-		;
-	}
+	mesh = shade->mesh;
 
 	if (shade->usefunction)
 	{
 		for (i = 0; i < 256; i++)
 		{
-			fz_convertcolor(shade->cs, shade->function[i], destcs, rgb);
-			clut[i][0] = rgb[0] * 255;
-			clut[i][1] = rgb[1] * 255;
-			clut[i][2] = rgb[2] * 255;
+			fz_convertcolor(shade->cs, shade->function[i], dest->colorspace, color);
+			for (k = 0; k < dest->colorspace->n; k++)
+				clut[i][k] = color[k] * 255;
 		}
-
-		n = temp->w * temp->h;
-		s = temp->samples;
-		d = dest->samples;
-
-		while (n--)
-		{
-			d[0] = s[0];
-			d[1] = fz_mul255(s[0], clut[s[1]][0]);
-			d[2] = fz_mul255(s[0], clut[s[1]][1]);
-			d[3] = fz_mul255(s[0], clut[s[1]][2]);
-			s += 2;
-			d += 4;
-		}
-
-		fz_droppixmap(temp);
+		conv = fz_newpixmapwithrect(dest->colorspace, bbox);
+		temp = fz_newpixmapwithrect(fz_devicegray, bbox);
+		fz_clearpixmap(temp, 0);
+		ntris = shade->meshlen / 9;
 	}
-
-	else if (shade->cs != destcs)
+	else
 	{
-		fz_convertpixmap(shade->cs, temp, destcs, dest);
-		fz_droppixmap(temp);
+		temp = dest;
+		ntris = shade->meshlen / ((2 + shade->cs->n) * 3);
 	}
 
-	return fz_okay;
-}
+	while (ntris--)
+	{
+		for (k = 0; k < 3; k++)
+		{
+			p.x = *mesh++;
+			p.y = *mesh++;
+			p = fz_transformpoint(ctm, p);
+			tri[k][0] = p.x;
+			tri[k][1] = p.y;
+			if (shade->usefunction)
+				tri[k][2] = *mesh++ * 255;
+			else
+			{
+				fz_convertcolor(shade->cs, mesh, temp->colorspace, tri[k] + 2);
+				for (j = 0; j < temp->colorspace->n; j++)
+					tri[k][j + 2] *= 255;
+				mesh += shade->cs->n;
+			}
+		}
+		fz_drawtriangle(temp, tri[0], tri[1], tri[2], 2 + temp->colorspace->n, bbox);
+	}
 
+	if (shade->usefunction)
+	{
+		unsigned char *s = temp->samples;
+		unsigned char *d = conv->samples;
+		int len = temp->w * temp->h;
+		while (len--)
+		{
+			int v = *s++;
+			int a = *s++;
+			for (k = 0; k < conv->n - 1; k++)
+				*d++ = fz_mul255(clut[v][k], a);
+			*d++ = a;
+		}
+		fz_paintpixmap(dest, conv, 255);
+		fz_droppixmap(conv);
+		fz_droppixmap(temp);
+	}
+}
