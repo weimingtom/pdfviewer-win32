@@ -1410,17 +1410,12 @@
 				if(param->pdfDoc->SupportsMuPDF() && param->pdfDoc->GetUseMuPDF()){
 					if(param->pdfDoc->LoadFromMuPDF())
 					{
-#ifdef _MUPDF_GDIPLUS
-					int w =0; int h=0;
-					HBITMAP im = param->pdfDoc->_mupdf->renderBitmap(page,renderDPI/72,param->pdfDoc->m_Rotation,NULL,callbackAbortDisplay,param->pdfDoc, &w, &h);
-					param->out->SetBitmap(im);
-					param->out->setSize(w,h);
-#else
+
 						fz_pixmap *im = param->pdfDoc->_mupdf->display(param->out,page,param->pdfDoc->m_Rotation,renderDPI/72,callbackAbortDisplay,param->pdfDoc);
 						param->out->SetDataPtr((void *)im->samples);
 						param->out->setSize(im->w,im->h);
 						param->out->setPixmap(im);
-#endif
+
 						Page *p = doc->getCatalog()->getPage(page);
 						double ctm[6];
 						double ictm[6];
