@@ -307,7 +307,7 @@ HBITMAP mupdfEngine::renderBitmap(
 		pageRect = &page->mediabox;
     if (!page)
         return NULL;
-    zoomReal = zoomReal / 100.0;
+    
     fz_matrix ctm = viewctm(page, zoomReal, rotation);
     if (!pageRect)
         pageRect = &page->mediabox;
