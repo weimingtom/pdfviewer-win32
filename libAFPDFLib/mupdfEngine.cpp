@@ -325,11 +325,11 @@ HBITMAP mupdfEngine::renderBitmap(
     DeleteObject(SelectObject(hDCMem, hbmp));
 
 	HBRUSH bgBrush = CreateSolidBrush(RGB(0xFF,0xFF,0xFF));
-    FillRect(hDC, &rc, bgBrush); // initialize white background
+    FillRect(hDCMem, &rc, bgBrush); // initialize white background
     DeleteObject(bgBrush);
 
     fz_bbox clipBox = { rc.left, rc.top, rc.right, rc.bottom };
-    fz_device *dev = fz_newgdiplusdevice(hDC, clipBox);
+    fz_device *dev = fz_newgdiplusdevice(hDCMem, clipBox);
     //EnterCriticalSection(&_xrefAccess);
     fz_error error = pdf_runpagefortarget(_xref, page, dev, ctm);
     //LeaveCriticalSection(&_xrefAccess);
