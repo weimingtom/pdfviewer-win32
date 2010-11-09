@@ -1412,9 +1412,9 @@
 					{
 #ifdef _MUPDF_GDIPLUS
 					int w =0; int h=0;
-					HBITMAP im = _mupdf->renderBitmap(page,renderDPI/72,m_Rotation,NULL,callbackAbortDisplay,this, &w, &h);
-					tp->out->SetBitmap(im);
-					tp->out->setSize(w,h);
+					HBITMAP im = param->pdfDoc->_mupdf->renderBitmap(page,renderDPI/72,param->pdfDoc->m_Rotation,NULL,callbackAbortDisplay,param->pdfDoc, &w, &h);
+					param->out->SetBitmap(im);
+					param->out->setSize(w,h);
 #else
 						fz_pixmap *im = param->pdfDoc->_mupdf->display(param->out,page,param->pdfDoc->m_Rotation,renderDPI/72,callbackAbortDisplay,param->pdfDoc);
 						param->out->SetDataPtr((void *)im->samples);
@@ -1504,9 +1504,9 @@
 				{
 #ifdef _MUPDF_GDIPLUS
 					int w =0; int h=0;
-					HBITMAP im = _mupdf->renderBitmap(page,renderDPI/72,m_Rotation,NULL,callbackAbortDisplay,this, &w, &h);
-					tp->out->SetBitmap(im);
-					tp->out->setSize(w,h);
+					HBITMAP im = pdfDoc->_mupdf->renderBitmap(page,renderDPI/72,pdfDoc->m_Rotation,NULL,callbackAbortDisplay,pdfDoc, &w, &h);
+					param->out->SetBitmap(im);
+					param->out->setSize(w,h);
 #else
 					fz_pixmap *im = pdfDoc->_mupdf->display(param->out,page,pdfDoc->m_Rotation,renderDPI/72,callbackAbortDisplay,pdfDoc);
 					if(im!=NULL){
