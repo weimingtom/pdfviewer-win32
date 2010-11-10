@@ -374,6 +374,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\PDFTextWord.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\PDFTextWordList.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\PDFWrapper.cpp"
 				>
 			</File>
@@ -421,6 +429,14 @@
 			</File>
 			<File
 				RelativePath=".\PDFSearchResult.h"
+				>
+			</File>
+			<File
+				RelativePath=".\PDFTextWord.h"
+				>
+			</File>
+			<File
+				RelativePath=".\PDFTextWordList.h"
 				>
 			</File>
 			<File

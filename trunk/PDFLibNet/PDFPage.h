@@ -1,6 +1,7 @@
 #pragma once
 #include "AFPDFDocInterop.h"
 #include "PDFPageInterop.h"
+#include "PDFTextWordList.h"
 
 using namespace System;
 using namespace System::Drawing;
@@ -85,6 +86,15 @@ namespace PDFLibNet
 		//String ^ExtractWord(System::Drawing::Point p);
 		//String ^ExtractWord(System::Drawing::Point p, int iWord, int iCount);
 
+		property PDFTextWordList<PDFTextWord^> ^WordList
+		{
+			PDFTextWordList<PDFTextWord^> ^get()
+			{
+				PDFTextWordInterop *wordList =	_page->getRawWordList();
+				PDFTextWordList<PDFTextWord^> ^wordObjList = gcnew PDFTextWordList<PDFTextWord^>(wordList);
+				return wordObjList;
+			}
+		}
 		property String ^ISOAName
 		{
 			String ^get(){

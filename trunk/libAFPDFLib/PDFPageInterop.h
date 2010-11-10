@@ -53,4 +53,5 @@ public:
 	void RenderSelection(double dpi, long hdc,unsigned long color,unsigned long linecolor,int linewidth);
 
 	PDFTextBlockInterop *getBlocks();
+	PDFTextWordInterop *getRawWordList();
 };
