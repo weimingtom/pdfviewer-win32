@@ -60,7 +60,8 @@ namespace PDFLibNet{
 		_pdfDoc->FitScreenHeight(hwnd);
 	}
 
-	bool PDFWrapper::LoadPDF(System::IO::Stream ^stream){
+	bool PDFWrapper::LoadPDF(System::IO::Stream ^stream)
+	{
 		PDFLoadBegin();
 		try{
 			if (_binaryReader != nullptr)

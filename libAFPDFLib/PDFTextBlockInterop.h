@@ -11,16 +11,19 @@ private:
 	PDFTextLineInterop *_textLine;		//Current PDFTextLineInterop
 	PDFTextWordInterop *next;
 	void *_textWord;		//Top TextWord
+	void *_textPage;
+	void *_wordList;
 	int _currentWord;
 public:	
 	PDFTextWordInterop(PDFTextBlockInterop *block, PDFTextLineInterop *textLine,void *textWord, int currentWord);
+	PDFTextWordInterop(void *textPage, int pageNumber);
 	~PDFTextWordInterop() { delete next;  }
 	PDFTextWordInterop *getNext();
 	void getBBBox(double *xMinA, double *yMinA, double *xMaxA, double *yMaxA);
 	int getCharCount();
 	wchar_t *getText();
 
-	wchar_t *getFontName();
+	char *getFontName();
 	double getFontSize();
 	void getFontColor(double *r, double *g, double *b);
 };	

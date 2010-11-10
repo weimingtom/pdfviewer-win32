@@ -490,7 +490,7 @@ namespace PDFViewer
                             for (int i = 0; i < _pdfDoc.PageCount; ++i)
                                 listView2.Items.Add((i + 1).ToString());
                             listView2.EndUpdate();
-                            
+                            var list = pg.WordList;
                             //pg.LoadThumbnail(128, (int)(128 * pg.Height / pg.Width));
                         }
                     }

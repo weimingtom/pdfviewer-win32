@@ -278,6 +278,10 @@ void PDFPageInterop::CvtUserToDev(int xu, int yu,int *xd,int *yd){
     *yd = (int)(ctm[1] * xu + ctm[3] * yu + ctm[5] + 0.5);
 }
 
+static void WriteToNull(void *stream,char *str, int len)
+{
+}
+
 static void WriteToGString(void *stream,char *str, int len)
 {
 	GString *gstr =(GString *)stream;
@@ -440,4 +444,24 @@ void PDFPageInterop::RenderSelection(double dpi, long hdc,unsigned long color,un
 	}
 	SelectObject(dc,old_pen);
 	SelectObject(dc,old_brush);
+}
+
+PDFTextWordInterop *PDFPageInterop::getRawWordList()
+{
+	AFPDFDoc *doc = (AFPDFDoc *)_pdfDoc;
+	GString *s1 = new GString();
+	CString *s2 = new CString();
+
+	globalParams->setTextEncoding("UTF-8");
+	UnicodeMap *map=globalParams->getTextEncoding();
+	
+	
+	TextOutputDev *txt= new TextOutputDev((TextOutputFunc)&WriteToNull,(void *)s1,gTrue,gFalse);
+	if(doc->IsBusy())
+		while(doc->IsBusy()) 
+			Sleep(50);
+	doc->getDoc()->displayPage(txt,_page,72,72,0,gFalse,gTrue,gFalse);	
+	
+	PDFTextWordInterop *list = new	PDFTextWordInterop((void *)txt, 0);
+	return list;
 }

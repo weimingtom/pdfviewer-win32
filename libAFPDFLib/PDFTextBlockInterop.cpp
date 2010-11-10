@@ -4,27 +4,60 @@
 #include "TextOutputDev.h"
 #include "CRect.h"
 
-static wchar_t		EmptyChar[1]						={'\0'};
+	static wchar_t		EmptyChar[1]						={'\0'};
 
-//Try to decode UTF-8
-wchar_t* UTF8translate(char artist[])
-{
-	int nNeeded = MultiByteToWideChar( CP_UTF8, NULL, artist, -1, 0, 0 );
-	if( !nNeeded )
-	{
-		return NULL;
-	}
- 
-	wchar_t* pWideChar = new wchar_t[nNeeded + 1];
-	if( !MultiByteToWideChar( CP_UTF8, NULL, artist, -1, pWideChar, nNeeded ))
-	{
-		delete[] pWideChar;
-		return NULL;
-	}
 	
-	return pWideChar;
-}
+	extern wchar_t* UTF8translate(char artist[]);
 
+	//Try to decode UTF-8
+	wchar_t* GetUTF8String(GString *s1)
+	{
+		int size = s1->getLength();
+		if(size>0){
+			wchar_t *ret = NULL;
+				
+			GBool isUnicode=gFalse;
+			Unicode u;
+			int i;
+			if ((s1->getChar(0) & 0xff) == 0xfe && (s1->getChar(1) & 0xff) == 0xff) {
+				isUnicode = gTrue;
+				i = 2;
+			} else {
+				isUnicode = gFalse;
+				i = 0;
+			}
+			//Unicode Support
+			//if(!isUnicode)
+			ret = UTF8translate(s1->getCString());
+			if(ret==NULL)
+			{
+				ret =new wchar_t[size+1];
+				int j=0;
+
+				while (i < s1->getLength()) {
+					  if (isUnicode) {
+							u = ((s1->getChar(i) & 0xff) << 8) | (s1->getChar(i+1) & 0xff);
+							i += 2;
+					  } else {
+							u = s1->getChar(i) & 0xff;
+							++i;
+					  }
+					  ret[j] = u;
+					  j++;
+				}
+
+				ret[j]='\0';
+				
+				delete s1;
+			}
+
+			return ret;	
+		}
+		delete s1;
+		return EmptyChar;
+	}
+
+	
 	PDFTextBlockInterop::PDFTextBlockInterop(void *pdfPage, void *textBlock, int blockNumber, int pageNumber)
 		: _pdfPage(pdfPage)
 		, _page(pageNumber)
@@ -34,6 +67,7 @@ wchar_t* UTF8translate(char artist[])
 		, next(NULL)
 	{ 
 	}
+
 
 	PDFTextLineInterop *PDFTextBlockInterop::getLines()
 	{
@@ -123,7 +157,149 @@ wchar_t* UTF8translate(char artist[])
 		, _textWord(textWord)
 		, _currentWord(currentWord)
 		, next(NULL)
+		
 	{
 	}
 
 	
+	PDFTextWordInterop::PDFTextWordInterop(void *textPage, int currentWord)
+		: _textBlock(NULL)
+		, _textLine(NULL)
+		, _textWord(NULL)
+		, _currentWord(currentWord)
+		, next(NULL)
+		, _textPage(textPage)
+		, _wordList(NULL)
+	{
+		TextPage *tx =(TextPage *)textPage;
+		_wordList = tx->makeWordList(gFalse);
+	}
+
+	PDFTextWordInterop *PDFTextWordInterop::getNext()
+	{
+		if(next == NULL)
+		{
+			if(_textWord != NULL)
+			{
+				TextWord *word = (TextWord *)_textWord;
+				TextWord *nextWord = word->getNext();
+				if(nextWord == NULL)
+					return NULL;
+				next = new PDFTextWordInterop(_textBlock, _textLine,(void *)nextWord, _currentWord +1);
+			}else if(_wordList != NULL)
+			{
+				TextWordList *wordList =(TextWordList *)_wordList;
+				TextWord *nextWord = wordList->get(++_currentWord);
+				if(nextWord == NULL)
+					return NULL;
+				next = new PDFTextWordInterop(wordList,  _currentWord);
+			}
+		}
+		return next;
+	}
+	int PDFTextWordInterop::getCharCount()
+	{
+		if(_textWord != NULL)
+		{
+			TextWord *word = (TextWord *)_textWord;
+			return word->getCharLen();
+		}
+		else if(_wordList != NULL)
+		{
+			TextWordList *wordList =(TextWordList *)_wordList;
+			TextWord *word = wordList->get(_currentWord);
+			return word->getLength();
+		}
+
+		return 0;
+	}
+	char *PDFTextWordInterop::getFontName()
+	{
+		if(_textWord != NULL)
+		{
+			TextWord *word = (TextWord *)_textWord;
+			GString *fontName = word->getFontName();
+			return fontName->getCString();
+		}
+		else if(_wordList != NULL)
+		{
+			TextWordList *wordList =(TextWordList *)_wordList;
+			TextWord *word = wordList->get(_currentWord);
+			GString *fontName = word->getFontName();
+			return fontName->getCString();
+		}
+
+	}
+
+	wchar_t *PDFTextWordInterop::getText()
+	{
+		if(_textWord != NULL)
+		{
+			globalParams->setTextEncoding("UTF-8");
+			TextWord *word = (TextWord *)_textWord;
+			GString *text = word->getText();
+			wchar_t *utfText = GetUTF8String(text);
+			delete text;
+			return utfText;
+		}
+		else if(_wordList != NULL)
+		{
+			TextWordList *wordList =(TextWordList *)_wordList;
+			TextWord *word = wordList->get(_currentWord);
+			GString *text = word->getText();
+			wchar_t *utfText = GetUTF8String(text);
+			delete text;
+			return utfText;
+		}
+		return NULL;
+	}
+
+    void PDFTextWordInterop::getBBBox(double *xMinA, double *yMinA, double *xMaxA, double *yMaxA)
+	{
+		if(_textWord != NULL)
+		{
+			TextWord *word = (TextWord *)_textWord;
+			word->getBBox(xMinA, yMinA, xMaxA, yMaxA);
+		}
+		else if(_wordList != NULL)
+		{
+			TextWordList *wordList =(TextWordList *)_wordList;
+			TextWord *word = wordList->get(_currentWord);
+			word->getBBox(xMinA, yMinA, xMaxA, yMaxA);
+		}else
+		{
+			xMinA = yMinA = xMaxA = yMaxA = 0;
+		}
+	}
+
+	void PDFTextWordInterop::getFontColor(double *r, double *g, double *b)
+	{
+		
+		if(_textWord != NULL)
+		{
+			TextWord *word = (TextWord *)_textWord;
+			word->getColor(r,g,b);
+		}
+		else if(_wordList != NULL)
+		{
+			TextWordList *wordList =(TextWordList *)_wordList;
+			TextWord *word = wordList->get(_currentWord);
+			word->getColor(r,g,b);
+		}
+	}
+
+	double PDFTextWordInterop::getFontSize()
+	{
+		if(_textWord != NULL)
+		{
+			TextWord *word = (TextWord *)_textWord;
+			return word->getFontSize();
+		}
+		else if(_wordList != NULL)
+		{
+			TextWordList *wordList =(TextWordList *)_wordList;
+			TextWord *word = wordList->get(_currentWord);
+			return word->getFontSize();
+		}
+		return 0;
+	}
