@@ -302,7 +302,7 @@ public:
 
   // Get the next TextBlock on the linked list.
   TextBlock *getNext() { return next; }
-
+  int getLineCount() { return nLines; }
 private:
 
   TextPage *page;		// the parent page

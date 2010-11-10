@@ -42,7 +42,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="&quot;xpdf&quot;;&quot;splash&quot;;&quot;goo&quot;;&quot;fofi&quot;;&quot;..\freetype-2.3.1\include&quot;"
-				PreprocessorDefinitions="WIN32"
+				PreprocessorDefinitions="WIN32; TEXTOUT_WORD_LIST"
 				MinimalRebuild="false"
 				BasicRuntimeChecks="0"
 				RuntimeLibrary="3"

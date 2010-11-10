@@ -1,5 +1,6 @@
 #pragma once
 #include "PageLinksInterop.h"
+#include "PDFTextBlockInterop.h"
 
 class PDFPageInterop 
 {
@@ -51,4 +52,5 @@ public:
 	//void *getFonts();
 	void RenderSelection(double dpi, long hdc,unsigned long color,unsigned long linecolor,int linewidth);
 
+	PDFTextBlockInterop *getBlocks();
 };

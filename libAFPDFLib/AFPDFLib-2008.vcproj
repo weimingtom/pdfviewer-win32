@@ -577,6 +577,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\PDFTextBlockInterop.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\SearchResultInterop.cpp"
 				>
 			</File>
@@ -660,6 +664,10 @@
 			</File>
 			<File
 				RelativePath=".\PDFPageInterop.h"
+				>
+			</File>
+			<File
+				RelativePath=".\PDFTextBlockInterop.h"
 				>
 			</File>
 			<File
