@@ -10,10 +10,11 @@ namespace PDFLibNet
 	public ref struct PDFTextWordList 
 		: public Generic::IEnumerable<T>
 	{   
+	private:
 		PDFTextWordInterop *data;
 	    PDFTextWordInterop *firstWord;
 		Generic::List<PDFTextWord^>^ _wordsList;
-
+	internal:
 		PDFTextWordList(PDFTextWordInterop *word )
 		{
 			firstWord = word;
@@ -22,6 +23,10 @@ namespace PDFLibNet
 			
 			_wordsList = gcnew Generic::List<PDFTextWord^>();
 			_wordsList->Add(wordObj);
+		}
+		~PDFTextWordList()
+		{
+			delete firstWord;
 		}
 	public:    		
 		virtual Generic::IEnumerator<T>^ GetEnumerator()
@@ -47,17 +52,28 @@ namespace PDFLibNet
 
 			virtual bool MoveNext()
 			{
-				if(myArr->data != nullptr)
+				if(currentIndex == -1)
 				{
-					PDFTextWordInterop *nextWord = myArr->data->getNext();
-					if(nextWord == 0)
-						return false;
-					myArr->data = nextWord;
-					PDFTextWord^ word = gcnew PDFTextWord(nextWord);
-					myArr->_wordsList->Add(word);
-					currentIndex++;
-					return true;
-				}	
+					if(myArr->data != nullptr)
+					{
+						currentIndex++;
+						return true;
+					}
+				}
+				else
+				{
+					if(myArr->data != nullptr)
+					{
+						PDFTextWordInterop *nextWord = myArr->data->getNext();
+						if(nextWord == 0)
+							return false;
+						myArr->data = nextWord;
+						PDFTextWord^ word = gcnew PDFTextWord(nextWord);
+						myArr->_wordsList->Add(word);
+						currentIndex++;
+						return true;
+					}	
+				}
 				return false;
 			}
 	    

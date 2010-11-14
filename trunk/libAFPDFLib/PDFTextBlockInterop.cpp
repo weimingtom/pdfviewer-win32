@@ -162,17 +162,15 @@
 	}
 
 	
-	PDFTextWordInterop::PDFTextWordInterop(void *textPage, int currentWord)
+	PDFTextWordInterop::PDFTextWordInterop(void *wordList, int currentWord)
 		: _textBlock(NULL)
 		, _textLine(NULL)
 		, _textWord(NULL)
 		, _currentWord(currentWord)
 		, next(NULL)
-		, _textPage(textPage)
-		, _wordList(NULL)
+		, _textPage(NULL)
+		, _wordList(wordList)
 	{
-		TextPage *tx =(TextPage *)textPage;
-		_wordList = tx->makeWordList(gFalse);
 	}
 
 	PDFTextWordInterop *PDFTextWordInterop::getNext()
@@ -208,7 +206,8 @@
 		{
 			TextWordList *wordList =(TextWordList *)_wordList;
 			TextWord *word = wordList->get(_currentWord);
-			return word->getLength();
+			if(word != NULL)
+				return word->getLength();
 		}
 
 		return 0;
@@ -225,10 +224,13 @@
 		{
 			TextWordList *wordList =(TextWordList *)_wordList;
 			TextWord *word = wordList->get(_currentWord);
-			GString *fontName = word->getFontName();
-			return fontName->getCString();
+			if(word != NULL)
+			{
+				GString *fontName = word->getFontName();
+				return fontName->getCString();
+			}
 		}
-
+		return NULL;
 	}
 
 	wchar_t *PDFTextWordInterop::getText()
@@ -246,10 +248,13 @@
 		{
 			TextWordList *wordList =(TextWordList *)_wordList;
 			TextWord *word = wordList->get(_currentWord);
-			GString *text = word->getText();
-			wchar_t *utfText = GetUTF8String(text);
-			delete text;
-			return utfText;
+			if(word != NULL)
+			{
+				GString *text = word->getText();
+				wchar_t *utfText = GetUTF8String(text);
+//				delete text;
+				return utfText;
+			}
 		}
 		return NULL;
 	}
@@ -265,8 +270,10 @@
 		{
 			TextWordList *wordList =(TextWordList *)_wordList;
 			TextWord *word = wordList->get(_currentWord);
-			word->getBBox(xMinA, yMinA, xMaxA, yMaxA);
-		}else
+			if(word != NULL)
+				word->getBBox(xMinA, yMinA, xMaxA, yMaxA);
+		}
+		else
 		{
 			xMinA = yMinA = xMaxA = yMaxA = 0;
 		}
@@ -284,7 +291,8 @@
 		{
 			TextWordList *wordList =(TextWordList *)_wordList;
 			TextWord *word = wordList->get(_currentWord);
-			word->getColor(r,g,b);
+			if(word != NULL)
+				word->getColor(r,g,b);
 		}
 	}
 
@@ -299,7 +307,8 @@
 		{
 			TextWordList *wordList =(TextWordList *)_wordList;
 			TextWord *word = wordList->get(_currentWord);
-			return word->getFontSize();
+			if(word != NULL)
+				return word->getFontSize();
 		}
 		return 0;
 	}

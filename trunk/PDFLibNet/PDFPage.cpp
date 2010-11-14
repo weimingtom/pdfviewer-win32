@@ -12,6 +12,8 @@ namespace PDFLibNet
 		, _errorRender(gcnew Object())
 		, _thumbHdc(IntPtr::Zero)
 		, _isSuccesed(false)
+		, _wordObjList(nullptr)
+		, _wordList(0)
 	{
 	}
 	PDFPage::PDFPage(AFPDFDocInterop *pdfDoc, int page)
@@ -23,6 +25,8 @@ namespace PDFLibNet
 		, _errorRender(gcnew Object())
 		, _thumbHdc(IntPtr::Zero)
 		, _isSuccesed(false)
+		, _wordObjList(nullptr)
+		, _wordList(0)
 	{
 	}
 
@@ -42,6 +46,9 @@ namespace PDFLibNet
 	PDFPage::~PDFPage(void){
 		if(_page && _loaded)
 			delete _page;
+		delete _text;
+		delete _thumbNail;
+		
 	}
 
 	void PDFPage::extractImages(){

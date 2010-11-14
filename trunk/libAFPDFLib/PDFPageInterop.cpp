@@ -54,10 +54,14 @@ PDFPageInterop::PDFPageInterop(int page, void *lptr,void *pdfDoc)
 }
 PDFPageInterop::~PDFPageInterop(void)
 {
+	if(_selectionArray)
+		delete _selectionArray;
 	if(_text)
 		delete _text;
 	if(_images)
 		delete _images;
+
+	_selectionArray = NULL;
 }
 
 int PDFPageInterop::getImagesCount(){
@@ -353,14 +357,15 @@ wchar_t *PDFPageInterop::getText(){
 			}
 
 			ret[j]='\0';
-			
-			delete s1;
-			delete txt;	
 		}
 
+		delete s1;
+		delete s2;
+		delete txt;
 		return ret;	
 	}
 	delete s1;
+	delete s2;
 	delete txt;
 	return EmptyChar;
 }
@@ -450,18 +455,18 @@ PDFTextWordInterop *PDFPageInterop::getRawWordList()
 {
 	AFPDFDoc *doc = (AFPDFDoc *)_pdfDoc;
 	GString *s1 = new GString();
-	CString *s2 = new CString();
 
 	globalParams->setTextEncoding("UTF-8");
 	UnicodeMap *map=globalParams->getTextEncoding();
 	
+	TextOutputDev *txt= new TextOutputDev((TextOutputFunc)&WriteToNull,(void *)s1,gFalse,gFalse);
 	
-	TextOutputDev *txt= new TextOutputDev((TextOutputFunc)&WriteToNull,(void *)s1,gTrue,gFalse);
-	if(doc->IsBusy())
-		while(doc->IsBusy()) 
-			Sleep(50);
-	doc->getDoc()->displayPage(txt,_page,72,72,0,gFalse,gTrue,gFalse);	
+	while(doc->IsBusy()) 
+		Sleep(50);
+	doc->getDoc()->displayPage(txt,_page,72,72,0,gFalse,gFalse,gFalse);	
 	
-	PDFTextWordInterop *list = new	PDFTextWordInterop((void *)txt, 0);
+
+	PDFTextWordInterop *list = new	PDFTextWordInterop((void *)txt->makeWordList(), 0);
+	delete s1;
 	return list;
 }

@@ -10,7 +10,7 @@ private:
 	void *_pdfDoc;			//AFPDFDoc
 	void *_pdfPage;			//Page
 	void *_selectionArray;  //DynArray
-	void *_text;				// TextPage: extracted text
+	void *_text;			// TextPage: extracted text
 	double dpi;
 	int _page;
 	double ctm[6];

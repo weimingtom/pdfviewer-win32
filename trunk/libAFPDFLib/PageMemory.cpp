@@ -1,11 +1,13 @@
 #include "PageMemory.h"
+#include "AuxOutputDev.h"
 
-PageMemory::PageMemory(void)
+PageMemory::PageMemory(AuxOutputDev *aux)
 : _bitmap(0)
 , _bits(0)
 , _factorW(1)
 , _factorH(1)
 , _renderDPI(0)
+, _aux(aux)
 {
 	Width=0;
 	Height=0;
@@ -14,6 +16,7 @@ PageMemory::PageMemory(void)
 PageMemory::~PageMemory(void)
 {
 	Dispose();
+	delete _aux;
 }
 
 int PageMemory::Create(HBITMAP hbmp, int width, int height, double renderDPI, double *defcmt, double *deficmt)
@@ -201,6 +204,7 @@ void PageMemory::Dispose()
 	}
 	_bitmap=NULL;
 	_bits=NULL;
+
 }
 
 void PageMemory::cvtUserToDev(double ux, double uy, int *dx, int *dy){

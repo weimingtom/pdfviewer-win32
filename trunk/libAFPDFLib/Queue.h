@@ -44,8 +44,17 @@ public:
 		::CloseHandle(handles[StopperIndex]);
 		::CloseHandle(handles[CancelIndex]);
 		::DeleteCriticalSection(&lock);
+
+		Dispose();
+
 	} // ~Queue
 
+	void Dispose()
+	{
+		queue.Dispose();
+		delQueue.Dispose();
+		outQueue.Dispose();
+	}
 	//----------------
 	// AddTail
 	//----------------

@@ -26,7 +26,14 @@ public:
 	void* getptr(); // get void* pointer to array data
 	T *ToArray();
     enum exception { MEMFAIL }; // exception enum 
- 
+	void Dispose() 
+	{ 
+		if (array)
+		{
+    		free(array); // Freeing memory 
+    		array = NULL;
+		}
+	}
 private:
     T *array; // pointer for array's memory 
     unsigned int size; // size of array (elemets)
@@ -58,11 +65,7 @@ DynArray<T>::DynArray()
 template <class T>
 DynArray<T>::~DynArray()
 {
-    if (array)
-    {
-    	free(array); // Freeing memory 
-    	array = NULL;
-    }
+    Dispose();
 }
  
  

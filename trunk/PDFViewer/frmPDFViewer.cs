@@ -156,24 +156,27 @@ namespace PDFViewer
 
         private PDFLibNet.PageLink SearchLink(Point location)
         {
-            Point p = pageViewControl1.PointToClient(location);
-            List<PageLink> links = _pdfDoc.GetLinks(_pdfDoc.CurrentPage);
-            if (links != null)
+            if (_pdfDoc != null)
             {
-                //Search for a link
-                foreach (PDFLibNet.PageLink pl in links)
+                Point p = pageViewControl1.PointToClient(location);
+                List<PageLink> links = _pdfDoc.GetLinks(_pdfDoc.CurrentPage);
+                if (links != null)
                 {
-                    //Convert coordinates
-                    Point p1 = Point.Ceiling(_pdfDoc.PointUserToDev(new PointF(pl.Bounds.Left, pl.Bounds.Top)));
-                    Point p2 = Point.Ceiling(_pdfDoc.PointUserToDev(new PointF(pl.Bounds.Right, pl.Bounds.Bottom)));
-                    Rectangle linkLoc = new Rectangle(p1.X, p1.Y, p2.X - p1.X, p1.Y - p2.Y);
-                    //Translate
-                    linkLoc.Offset(-pageViewControl1.CurrentView.X, -pageViewControl1.CurrentView.Y);
-                    linkLoc.Offset(pageViewControl1.PageBounds.X, pageViewControl1.PageBounds.Y);
-                    linkLoc.Offset(0, p2.Y - p1.Y);
-                    if(linkLoc.Contains(p))
-                        //Link found!
-                        return pl;
+                    //Search for a link
+                    foreach (PDFLibNet.PageLink pl in links)
+                    {
+                        //Convert coordinates
+                        Point p1 = Point.Ceiling(_pdfDoc.PointUserToDev(new PointF(pl.Bounds.Left, pl.Bounds.Top)));
+                        Point p2 = Point.Ceiling(_pdfDoc.PointUserToDev(new PointF(pl.Bounds.Right, pl.Bounds.Bottom)));
+                        Rectangle linkLoc = new Rectangle(p1.X, p1.Y, p2.X - p1.X, p1.Y - p2.Y);
+                        //Translate
+                        linkLoc.Offset(-pageViewControl1.CurrentView.X, -pageViewControl1.CurrentView.Y);
+                        linkLoc.Offset(pageViewControl1.PageBounds.X, pageViewControl1.PageBounds.Y);
+                        linkLoc.Offset(0, p2.Y - p1.Y);
+                        if (linkLoc.Contains(p))
+                            //Link found!
+                            return pl;
+                    }
                 }
             }
             return null;
@@ -182,7 +185,7 @@ namespace PDFViewer
         void HookManager_MouseUp(object sender, MouseEventArgs e)
         {
             Point pos = pageViewControl1.PointToClient(e.Location);
-            if (MouseInPage(pos) && _bMouseCaptured)
+            if (_pdfDoc != null && MouseInPage(pos) && _bMouseCaptured)
             {
                 switch (getCursorStatus(e))
                 {
@@ -213,7 +216,7 @@ namespace PDFViewer
         void HookManager_MouseDown(object sender, MouseEventArgs e)
         {
             Point pos = pageViewControl1.PointToClient(e.Location);
-            if (MouseInPage(pos) && e.Button == MouseButtons.Left)
+            if (_pdfDoc != null && MouseInPage(pos) && e.Button == MouseButtons.Left)
             {
                 PDFLibNet.PageLink link = SearchLink(e.Location);
                 if (link != null)
@@ -490,7 +493,7 @@ namespace PDFViewer
                             for (int i = 0; i < _pdfDoc.PageCount; ++i)
                                 listView2.Items.Add((i + 1).ToString());
                             listView2.EndUpdate();
-                            var list = pg.WordList;
+                            
                             //pg.LoadThumbnail(128, (int)(128 * pg.Height / pg.Width));
                         }
                     }
@@ -1100,6 +1103,33 @@ namespace PDFViewer
                         pageViewControl1.Invalidate();
                     }
                 }
+            }
+        }
+
+        private void toolStripButton4_Click(object sender, EventArgs e)
+        {
+            PDFPage page = _pdfDoc.Pages[_pdfDoc.CurrentPage];
+            var list = page.WordList;
+            listView1.Items.Clear();
+            listView1.SuspendLayout();
+            listView1.View = View.Details;
+            
+            int i=0;
+            foreach (var w in list)
+            {
+                i++;
+                listView1.Items.Add(new ListViewItem(new string[]{ i.ToString(), w.Word, w.FontName, w.FontSize.ToString(), w.ForeColor.ToString(), w.Bounds.ToString()}));
+            }
+            listView1.ResumeLayout();
+        }
+
+        private void toolStripButton5_Click(object sender, EventArgs e)
+        {
+            listView2.Items.Clear();
+            if (_pdfDoc != null)
+            {
+                _pdfDoc.Dispose();
+                _pdfDoc = null;
             }
         }
     }

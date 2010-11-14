@@ -1,6 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #define			DIB_COPY_BATCH_SIZE 2048
+class AuxOutputDev;
 
 class PageMemory
 {
@@ -17,8 +18,9 @@ private:
 	int _newHeight;
 	double defCTM[6];
 	double defICTM[6];
+	AuxOutputDev *_aux;
 public:
-	PageMemory(void);
+	PageMemory(AuxOutputDev *aux);
 	~PageMemory(void);
 
 	void cvtUserToDev(double ux, double uy, int *dx, int *dy);

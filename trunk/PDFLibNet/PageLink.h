@@ -111,7 +111,8 @@ namespace PDFLibNet
 		PageLink(LinkInterop *linkInterop,PDFWrapper ^pdfDoc);
 	protected:
 		!PageLink(void){
-			
+			delete _ptr;
+			_ptr = 0;
 		}
 	public:
 		
