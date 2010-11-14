@@ -67,6 +67,7 @@ namespace PDFLibNet{
 			if (_binaryReader != nullptr)
             {
 				_binaryReader->Close();
+				delete _binaryReader;
 				_binaryReader =nullptr;
             }
 			_binaryReader =gcnew PDFLibNet::xPDFBinaryReader(stream);
@@ -75,15 +76,25 @@ namespace PDFLibNet{
 			_childrens=nullptr;
 			_title=nullptr;
 			_author=nullptr;
-			_linksCache.Clear();
-			if(_searchResults!=nullptr)
-				_searchResults->Clear();
 
 			if(_pdfDoc->LoadFromStream(ptr,_binaryReader->BaseStream->Length)==4) //errorEncrypted
 				throw gcnew System::Security::SecurityException();
 			_pdfDoc->SetCurrentPage(1);	
 			_bLoading=false;
+
+
+			_linksCache.Clear();
+			if(_searchResults!=nullptr)
+			{
+				//_searchResults->Clear();
+				delete _searchResults;
+				_searchResults=nullptr;
+			}
+			for(int i=1;i<=_pages.Count;i++)
+				delete _pages[i];
 			_pages.Clear();
+
+
 			//Add Pages
 			for(int i=1; i<=this->PageCount; ++i)
 				_pages.Add(i,gcnew PDFPage(_pdfDoc,i));
@@ -108,15 +119,24 @@ namespace PDFLibNet{
 			_childrens=nullptr;
 			_title=nullptr;
 			_author=nullptr;
-			_linksCache.Clear();
-			if(_searchResults!=nullptr)
-				_searchResults->Clear();
 
 			if(_pdfDoc->LoadFromFile(singleByte)==4) //errorEncrypted
 				throw gcnew System::Security::SecurityException();
 			_pdfDoc->SetCurrentPage(1);	
 			_bLoading=false;
+
+			_linksCache.Clear();
+			if(_searchResults!=nullptr)
+			{
+				//_searchResults->Clear();
+				delete _searchResults;
+				_searchResults=nullptr;
+			}
+			for(int i=1;i<=_pages.Count;i++)
+				delete _pages[i];
 			_pages.Clear();
+
+
 			//Add Pages
 			for(int i=1; i<=this->PageCount; ++i)
 				_pages.Add(i,gcnew PDFPage(_pdfDoc,i));
@@ -162,6 +182,7 @@ namespace PDFLibNet{
 		try{
 			if(_searchResults!=nullptr){
 				_searchResults->Clear();
+				delete _searchResults;
 				_searchResults=nullptr;
 			}
 			
@@ -178,6 +199,7 @@ namespace PDFLibNet{
 		try{
 			if(_searchResults!=nullptr){
 				_searchResults->Clear();
+				delete _searchResults;
 				_searchResults=nullptr;
 			}
 			
@@ -193,6 +215,7 @@ namespace PDFLibNet{
 		try{
 			if(_searchResults!=nullptr){
 				_searchResults->Clear();
+				delete _searchResults;
 				_searchResults=nullptr;
 			}
 			
@@ -211,6 +234,7 @@ namespace PDFLibNet{
 		try{
 			if(_searchResults!=nullptr){
 				_searchResults->Clear();
+				delete _searchResults;
 				_searchResults=nullptr;
 			}
 			
@@ -236,6 +260,7 @@ namespace PDFLibNet{
 					col->Add(gcnew PageLink(pl->getLink(i),this));
 				}
 				_linksCache.Add(iPage,col);
+				delete pl;
 			}
 		}
 		return col;

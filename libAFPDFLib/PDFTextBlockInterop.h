@@ -16,7 +16,7 @@ private:
 	int _currentWord;
 public:	
 	PDFTextWordInterop(PDFTextBlockInterop *block, PDFTextLineInterop *textLine,void *textWord, int currentWord);
-	PDFTextWordInterop(void *textPage, int pageNumber);
+	PDFTextWordInterop(void *textPage, int currentWord);
 	~PDFTextWordInterop() { delete next;  }
 	PDFTextWordInterop *getNext();
 	void getBBBox(double *xMinA, double *yMinA, double *xMaxA, double *yMaxA);

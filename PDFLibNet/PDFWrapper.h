@@ -38,6 +38,15 @@ namespace PDFLibNet {
 	{
 	internal:
 		AFPDFDocInterop *_pdfDoc;
+	//Unmanaged code
+	private:
+		wchar_t *title;
+		wchar_t *author;
+		wchar_t *subject;
+		wchar_t *producer;
+		wchar_t *creator;
+		wchar_t *keywords;
+
 	private:
 		OutlineItemCollection<OutlineItem^> ^_childrens;
 		System::Collections::Generic::List<PDFSearchResult^> ^_searchResults;
@@ -86,6 +95,12 @@ namespace PDFLibNet {
 			, _creationdate(DateTime::MinValue)
 			, _lastmodifieddate(DateTime::MinValue)
 			, _binaryReader(nullptr)
+			, title(0)
+			, author(0)
+			, producer(0)
+			, creator(0)
+			, subject(0)
+			, keywords(0)
 		{
 			IntPtr ptr = Marshal::StringToCoTaskMemAnsi(System::Convert::ToString(System::Configuration::ConfigurationSettings::GetConfig("xpdfrc")));
 			char *singleByte= (char*)ptr.ToPointer();
@@ -110,6 +125,12 @@ namespace PDFLibNet {
 			, _creationdate(DateTime::MinValue)
 			, _lastmodifieddate(DateTime::MinValue)
 			, _binaryReader(nullptr)
+			, title(0)
+			, author(0)
+			, producer(0)
+			, creator(0)
+			, subject(0)
+			, keywords(0)
 		{
 			IntPtr ptr = Marshal::StringToCoTaskMemAnsi(fileConfig);
 			char *singleByte= (char*)ptr.ToPointer();
@@ -231,9 +252,9 @@ namespace PDFLibNet {
 		property String ^Author{
 			String ^get(){
 				if(_author==nullptr){
-					wchar_t *title=_pdfDoc->GetAuthor();
+					author=_pdfDoc->GetAuthor();
 					if(title!=0)
-						_author = gcnew String(title);
+						_author = gcnew String(author);
 					else 
 						return String::Empty;
 				}
@@ -244,7 +265,7 @@ namespace PDFLibNet {
 			String ^get(){
 				
 				if(_title==nullptr){
-					wchar_t *title=_pdfDoc->GetTitle();
+					title=_pdfDoc->GetTitle();
 					if(title!=0)
 						_title = gcnew String(title);
 					else 
@@ -257,7 +278,7 @@ namespace PDFLibNet {
 			String ^get(){
 				
 				if(_title==nullptr){
-					wchar_t *subject=_pdfDoc->GetSubject();
+					subject=_pdfDoc->GetSubject();
 					if(subject!=0)
 						_subject = gcnew String(subject);
 					else 
@@ -270,7 +291,7 @@ namespace PDFLibNet {
 			String ^get(){
 				
 				if(_keywords==nullptr){
-					wchar_t *keywords=_pdfDoc->GetKeywords();
+					keywords=_pdfDoc->GetKeywords();
 					if(keywords!=0)
 						_keywords = gcnew String(keywords);
 					else 
@@ -283,7 +304,7 @@ namespace PDFLibNet {
 			String ^get(){
 				
 				if(_creator==nullptr){
-					wchar_t *creator=_pdfDoc->GetCreator();
+					creator=_pdfDoc->GetCreator();
 					if(creator!=0)
 						_creator = gcnew String(creator);
 					else 
@@ -296,9 +317,9 @@ namespace PDFLibNet {
 			String ^get(){
 				
 				if(_producer==nullptr){
-					wchar_t *title=_pdfDoc->GetProducer();
+					producer=_pdfDoc->GetProducer();
 					if(title!=0)
-						_producer = gcnew String(title);
+						_producer = gcnew String(producer);
 					else 
 						return String::Empty;
 				}
@@ -309,11 +330,12 @@ namespace PDFLibNet {
 			DateTime get(){
 				
 				if(_creationdate.Equals(DateTime::MinValue)){
-					char *title=_pdfDoc->GetCreationDate();
+					char *creationDate=_pdfDoc->GetCreationDate();
 					if(title!=0 && title[0]!='\0')
-						_creationdate = DateTime::Parse(%String(title), System::Globalization::CultureInfo::GetCultureInfo("en-US"));
+						_creationdate = DateTime::Parse(%String(creationDate), System::Globalization::CultureInfo::GetCultureInfo("en-US"));
 					else 
 						return DateTime::MinValue;
+					delete creationDate;
 				}
 				return _creationdate;
 			}
@@ -322,11 +344,12 @@ namespace PDFLibNet {
 			DateTime get(){
 				
 				if(_lastmodifieddate.Equals(DateTime::MinValue)){
-					char *title=_pdfDoc->GetLastModifiedDate();
+					char *lastmodifieddate=_pdfDoc->GetLastModifiedDate();
 					if(title!=0 && title[0]!='\0')
-						_lastmodifieddate = DateTime::Parse(%String(title), System::Globalization::CultureInfo::GetCultureInfo("en-US"));
+						_lastmodifieddate = DateTime::Parse(%String(lastmodifieddate), System::Globalization::CultureInfo::GetCultureInfo("en-US"));
 					else 
 						return DateTime::MinValue;
+					delete lastmodifieddate;
 				}
 				return _lastmodifieddate;
 			}
@@ -530,6 +553,9 @@ namespace PDFLibNet {
 
 		!PDFWrapper()
 		{	
+			if(_searchResults != nullptr)
+				delete _searchResults;
+			
 			//Release managed resources
 			GC::Collect();
 			if(_gchProgress.IsAllocated)
@@ -541,6 +567,25 @@ namespace PDFLibNet {
 				_binaryReader->Close();
 				_binaryReader=nullptr;
 			}
+
+			_linksCache.Clear();
+
+			for(int i=1; i <= _pages.Count; i++)
+				delete _pages[i];
+
+			delete _title;
+			delete _author;
+			delete _subject;
+			delete _keywords;
+			delete _creator;
+			delete _producer;
+
+			delete title;
+			delete author;
+			delete subject;
+			delete keywords;
+			delete creator;
+			delete producer;
 		}
 
 		~PDFWrapper()

@@ -1,5 +1,5 @@
 #pragma once
-#define			MAX_BITMAP_CACHE	16
+#define			MAX_BITMAP_CACHE	4
 
 
 #include "stdafx.h"
@@ -73,7 +73,7 @@ public:
 	NOTIFYHANDLE m_RenderFinishHandle;
 	PAGERENDERNOTIFY m_RenderNotifyFinishHandle;
 private:
-	GString m_LastOpenedFile;
+	GString *m_LastOpenedFile;
 	BaseStream *m_LastOpenedStream;
 	HANDLE m_renderingThread;
 	HANDLE m_exportJpgThread;
@@ -222,7 +222,7 @@ public:
 #ifndef _MUPDF_H_
 		return false;
 #else
-		if(m_LastOpenedFile.getLength()==0 && this->m_LastOpenedStream!=0)
+		if(m_LastOpenedFile->getLength()==0 && this->m_LastOpenedStream!=0)
 			return false;
 		else
 			return true;
