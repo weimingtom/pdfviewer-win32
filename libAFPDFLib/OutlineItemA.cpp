@@ -45,7 +45,8 @@ wchar_t * OutlineItemA::GetTitle(void)
 
 long OutlineItemA::GetKind(void)
 {
-	
+	if(!m_Item->isOpen())
+			m_Item->open();
 	if (m_Item && m_Item->getAction()){
 		return m_Item->getAction()->getKind();
 	}
@@ -55,8 +56,9 @@ long OutlineItemA::GetKind(void)
 long OutlineItemA::GetKidsCount(void)
 {
 	if(m_Item!=0 ){
-		m_Item->open();
-		if(m_Item->hasKids()){
+		//if(!m_Item->isOpen())
+			m_Item->open();
+		if(m_Item->getKids() != NULL && m_Item->hasKids()){
 			return m_Item->getKids()->getLength();
 		}
 	}

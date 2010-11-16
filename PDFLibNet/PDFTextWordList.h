@@ -47,7 +47,7 @@ namespace PDFLibNet
 			TagEnumerator( PDFTextWordList^ arr )
 			{
 				myArr = arr;
-				currentIndex = -1;
+				Reset();
 			}
 
 			virtual bool MoveNext()
@@ -96,7 +96,7 @@ namespace PDFLibNet
 	        
 			virtual void Reset() 
 			{ 
-				currentIndex = 0;
+				currentIndex = -1;
 				myArr->data = myArr->firstWord;
 
 			}

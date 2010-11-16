@@ -1451,7 +1451,7 @@
 				int bmWidth = param->out->GetWidth();
 				int bmHeight = param->out->GetHeight();					
 
-				PageMemory *bmpMem = new PageMemory(param->out);
+				PageMemory *bmpMem = new PageMemory(NULL);
 				bmpMem->Create(param->hDC,bmWidth,bmHeight,renderDPI, param->out->getDefCTM(),param->out->getDefICTM());	
 
 				//********START DIB
@@ -1461,6 +1461,7 @@
 				bmpMem->Draw(param->hDC,0,0,bmWidth,bmHeight,0,0);
 				
 				bmpMem->Dispose();
+				
 				delete bmpMem;
 				bmpMem=0;
 				bSuccess=true;
@@ -1470,6 +1471,8 @@
 				if(param->finishNotify)
 					param->finishNotify(page,bSuccess);
 				param->que->delQueue.Delete(0);
+				delete param->out;
+				param->out=0;
 				delete param;
 				param=0;
 			}

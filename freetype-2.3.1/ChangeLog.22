@@ -143,7 +143,7 @@
 2006-05-02  David Turner  <david@freetype.org>
 
 	Update the memory management functions and macros to safely deal
-	with array size buffer overflows.  This corresponds to attemps to
+	with array size buffer overflows.  This corresponds to attempts to
 	allocate arrays that are too large.  For an example, consider the
 	following code:
 
@@ -199,7 +199,7 @@
 	* src/base/ftmac.c (read_lwfn): Catch integer overflow.
 	* src/base/ftrfork.c (raccess_guess_darwin_hfsplus): Ditto.
 	* src/base/ftutil.c: Remove special code for FT_STRICT_ALIASING.
-	(ft_mem_alloc. ft_mem_realloc, ft_mem_qrealloc): Rewrite.
+	(ft_mem_alloc, ft_mem_realloc, ft_mem_qrealloc): Rewrite.
 
 
 	* include/freetype/ftstream.h (FT_FRAME_ENTER, FT_FRAME_EXIT,
@@ -1531,7 +1531,7 @@
 	* src/base/ftobjs.c (FT_Load_Glyph): Resolve flag dependencies and
 	decide whether to use the auto-hinter according to documentation.
 	There should to be no real difference.
-	Some checks (e.g., is text height positve?) after the glyph is
+	Some checks (e.g., is text height positive?) after the glyph is
 	loaded.
 	(FT_Select_Size, FT_Request_Size): Scales are set to wrong values.
 	Be careful that scales won't be negative.
@@ -1823,7 +1823,7 @@
 	FT_SERVICE_BDF_H.
 	(sfnt_get_charset_it) [TT_CONFIG_OPTION_BDF]: New function.
 	(sfnt_service_bdf) [TT_CONFIG_OPTION_BDF]: New service.
-	(sfnt_servives) [TT_CONFIG_OPTION_BDF]: Add sfnt_service_bdf.
+	(sfnt_services) [TT_CONFIG_OPTION_BDF]: Add sfnt_service_bdf.
 
 	* src/sfnt/sfnt.c [TT_CONFIG_OPTION_BDF]: Include ttbdf.c.
 
@@ -2301,13 +2301,13 @@
 
 2005-09-19  David Somers  <dsomers@omz13.com>
 
-	* freetype2/src/sfnt/ttload.c (sfnt_dir_check): Modified to allow a
+	* src/sfnt/ttload.c (sfnt_dir_check): Modified to allow a
 	font to have no `head' table if tables `SING' and `META' are
 	present; this is to support `SING Glyphlet'.
 
 	`SING Glyphlet' is an extension to OpenType developed by Adobe
 	primarily to facilitate adding supplemental glyphs to an OpenType
-	font (with emphasis on, but not necessariy limited to, gaiji to a
+	font (with emphasis on, but not necessarily limited to, gaiji to a
 	CJK font).  A SING Glyphlet Font is an OpenType font that contains
 	the outline(s), either in a `glyf' or `CFF' table, for a glyph;
 	`cmap', `BASE', and `GSUB' tables are present with the same format
@@ -2320,9 +2320,9 @@
 
 	  http://www.adobe.com/products/indesign/sing_gaiji.html
 
-	* freetype2/include/freetype/ttags.h (TTAG_SING, TTAG_META): New
-	macros for the OpenType tables `SING' and `META'.  These two tables
-	are used in SING Glyphlet Format fonts.
+	* include/freetype/ttags.h (TTAG_SING, TTAG_META): New macros for
+	the OpenType tables `SING' and `META'.  These two tables are used in
+	SING Glyphlet Format fonts.
 
 2005-09-09  Werner Lemberg  <wl@gnu.org>
 
@@ -2637,7 +2637,7 @@
 	* src/truetype/ttgload.c: Heavy cleanup and refactoring.
 	(org_to_cur): Removed.
 	(TT_Load_Simple_Glyph): Call FT_GlyphLoader_CheckPoints.
-	(TT_Hint_Glyph): New funcion to hint a zone, prepared by caller.
+	(TT_Hint_Glyph): New function to hint a zone, prepared by caller.
 	(TT_Process_Simple_Glyph): s/load/loader/.
 	Use loader->pp values instead of recalculation.
 	Use TT_Hint_Glyph.
@@ -2808,7 +2808,7 @@
 	  . loader->pp3.y and loader->pp4.y are in 26.6 format, not in font
 	    units.
 	  . As we use the glyph's cbox to calculate the top bearing now
-	    there iss no need to adjust `top'.
+	    there is no need to adjust `top'.
 
 2005-06-15  Werner Lemberg  <wl@gnu.org>
 
@@ -2821,7 +2821,7 @@
 
 ----------------------------------------------------------------------------
 
-Copyright 2005, 2006 by
+Copyright 2005, 2006, 2007, 2008 by
 David Turner, Robert Wilhelm, and Werner Lemberg.
 
 This file is part of the FreeType project, and may only be used, modified,
