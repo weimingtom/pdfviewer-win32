@@ -57,7 +57,7 @@ $ optfile =  name + ".opt"
 $ s_case  = false
 $ liblist = ""
 $!
-$ whoami = f$parse(f$enviornment("Procedure"),,,,"NO_CONCEAL")
+$ whoami = f$parse(f$environment("Procedure"),,,,"NO_CONCEAL")
 $ mydef  = F$parse(whoami,,,"DEVICE")
 $ mydir  = f$parse(whoami,,,"DIRECTORY") - "]["
 $ myproc = f$parse(whoami,,,"Name") + f$parse(whoami,,,"type")
@@ -1101,7 +1101,7 @@ $   write sys$output "and afterwards re-execute ''myproc'"
 $   goto err_exit
 $ endif
 $!
-$! Init symbols used to hold CPP definitons and include path
+$! Init symbols used to hold CPP definitions and include path
 $!
 $ libdefs = ""
 $ libincs = ""

@@ -1112,8 +1112,7 @@ namespace PDFViewer
             var list = page.WordList;
             listView1.Items.Clear();
             listView1.SuspendLayout();
-            listView1.View = View.Details;
-            
+
             int i=0;
             foreach (var w in list)
             {
@@ -1131,6 +1130,11 @@ namespace PDFViewer
                 _pdfDoc.Dispose();
                 _pdfDoc = null;
             }
+        }
+
+        private void listView1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
         }
     }
 
