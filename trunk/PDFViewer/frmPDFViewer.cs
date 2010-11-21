@@ -1082,9 +1082,10 @@ namespace PDFViewer
 
         private void toolStripButton3_Click(object sender, EventArgs e)
         {
-            PDFPage pg = _pdfDoc.Pages[_pdfDoc.CurrentPage];
+            /*PDFPage pg = _pdfDoc.Pages[_pdfDoc.CurrentPage];
             Bitmap bmp = pg.GetBitmap(96,false);
-            bmp.Save("C:\\bmp.png", System.Drawing.Imaging.ImageFormat.Png); 
+            bmp.Save("C:\\bmp.png", System.Drawing.Imaging.ImageFormat.Png); */
+            _pdfDoc.ExportSWF(@"C:\niño out.swf");
         }
 
         private void tsbUseMuPDF_Click(object sender, EventArgs e)

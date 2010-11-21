@@ -3,6 +3,7 @@
 #include "SearchResultInterop.h"
 #include "PageLinksInterop.h"
 #include "PDFPageInterop.h"
+#include "SaveSWFParams.h"
 
 typedef int (__stdcall *NOTIFYHANDLE)();
 typedef int (__stdcall *PROGRESSHANDLE)(int, int);
@@ -27,6 +28,8 @@ public:
 	void SetUserPassword(char *pass);
 	void SetOwnerPassword(char *pass);
 	void SetSliceBox(int x, int y, int w, int h);
+	long SaveSWF(char *fileName, SaveSWFParams *params);
+
 	//long SavePDF(char *fileName);
 	long SaveJpg(char *fileName,int firstPage, int lastPage,float renderDPI, int quality, int waitProc);
 	long SaveTxt(char *fileName,int firstPage, int lastPage,bool physLayout, bool rawOrder,bool htmlMeta);

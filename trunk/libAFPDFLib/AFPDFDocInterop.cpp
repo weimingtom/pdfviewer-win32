@@ -15,6 +15,7 @@ AFPDFDocInterop::~AFPDFDocInterop(){
 	if(_resultsPtr!=0)
 		free(_resultsPtr);
 }
+
 long AFPDFDocInterop::LoadFromFile(char * sFileName){
 	return ((AFPDFDoc *)_ptr)->LoadFromFile(sFileName);
 }
@@ -188,7 +189,11 @@ void AFPDFDocInterop::SetSearchCaseSensitive(bool newVal){
 	}
 
 	long AFPDFDocInterop::SaveJpg(char *fileName,int firstPage, int lastPage,float renderDPI, int quality, int waitProc){
-			return ((AFPDFDoc *)_ptr)->SaveJpg(fileName,renderDPI,firstPage,lastPage,quality,waitProc);
+		return ((AFPDFDoc *)_ptr)->SaveJpg(fileName,renderDPI,firstPage,lastPage,quality,waitProc);
+	}
+	long AFPDFDocInterop::SaveSWF(char *fileName, SaveSWFParams *params)
+	{
+		return ((AFPDFDoc  *)_ptr)->SaveSWF(fileName, params);
 	}
 	
 	long AFPDFDocInterop::SaveTxt(char *fileName,int firstPage, int lastPage,bool physLayout, bool rawOrder,bool htmlMeta){

@@ -60,7 +60,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="&quot;..\xpdfWin\xpdf&quot;;&quot;..\xpdfWin\goo&quot;;&quot;..\xpdfWin\fofi&quot;;&quot;..\xpdfWin\splash&quot;;&quot;..\freetype-2.3.1\include\freetype&quot;;&quot;..\xpdfWin\pdf2html&quot;;"
-				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;TEXTOUT_WORD_LIST; MULTITHREADED"
+				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;TEXTOUT_WORD_LIST; MULTITHREADED; _PDF2SWF"
 				MinimalRebuild="false"
 				ExceptionHandling="1"
 				BasicRuntimeChecks="0"
@@ -156,7 +156,7 @@
 				EnableFiberSafeOptimizations="false"
 				WholeProgramOptimization="true"
 				AdditionalIncludeDirectories="&quot;..\xpdfWin\xpdf&quot;;&quot;..\xpdfWin\goo&quot;;&quot;..\xpdfWin\fofi&quot;;&quot;..\xpdfWin\splash&quot;;&quot;..\freetype-2.3.1\include\freetype&quot;;&quot;..\jpg&quot;;&quot;..\xpdfWin\pdf2html&quot;"
-				PreprocessorDefinitions="WIN32;_WINDOWS;TEXTOUT_WORD_LIST; MULTITHREADED"
+				PreprocessorDefinitions="WIN32;_WINDOWS;TEXTOUT_WORD_LIST; MULTITHREADED; _PDF2SWF"
 				RuntimeLibrary="2"
 				TreatWChar_tAsBuiltInType="true"
 				UsePrecompiledHeader="0"
@@ -245,7 +245,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="&quot;..\xpdfWin\xpdf&quot;;&quot;..\xpdfWin\goo&quot;;&quot;..\xpdfWin\fofi&quot;;&quot;..\xpdfWin\splash&quot;;&quot;..\freetype-2.3.1\include\freetype&quot;;&quot;..\xpdfWin\pdf2html&quot;;&quot;..\mupdf\mupdf&quot;;&quot;..\mupdf&quot;;&quot;..\mupdf\fitz&quot;;&quot;..\mupdf\fitzdraw&quot;"
-				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;_MUPDF;_CRT_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_DEPRECATE; _MUPDF_GDIPLUS;TEXTOUT_WORD_LIST; MULTITHREADED"
+				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;_MUPDF;_CRT_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_DEPRECATE; _MUPDF_GDIPLUS;TEXTOUT_WORD_LIST; MULTITHREADED; _PDF2SWF"
 				MinimalRebuild="false"
 				ExceptionHandling="1"
 				BasicRuntimeChecks="0"
@@ -341,7 +341,7 @@
 				EnableFiberSafeOptimizations="false"
 				WholeProgramOptimization="true"
 				AdditionalIncludeDirectories="&quot;..\xpdfWin\xpdf&quot;;&quot;..\xpdfWin\goo&quot;;&quot;..\xpdfWin\fofi&quot;;&quot;..\xpdfWin\splash&quot;;&quot;..\freetype-2.3.1\include\freetype&quot;;&quot;..\jpg&quot;;&quot;..\xpdfWin\pdf2html&quot;;&quot;..\mupdf\mupdf&quot;;&quot;..\mupdf&quot;;&quot;..\mupdf\fitz&quot;;&quot;..\mupdf\fitzdraw&quot;"
-				PreprocessorDefinitions="WIN32; _WINDOWS; _MUPDF; _CRT_SECURE_NO_WARNINGS; _MUPDF_GDIPLUS;TEXTOUT_WORD_LIST; MULTITHREADED"
+				PreprocessorDefinitions="WIN32; _WINDOWS; _MUPDF; _CRT_SECURE_NO_WARNINGS; _MUPDF_GDIPLUS;TEXTOUT_WORD_LIST; MULTITHREADED; _PDF2SWF"
 				RuntimeLibrary="2"
 				TreatWChar_tAsBuiltInType="true"
 				UsePrecompiledHeader="0"
@@ -581,6 +581,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\SaveSWFParams.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\SearchResultInterop.cpp"
 				>
 			</File>
@@ -672,6 +676,10 @@
 			</File>
 			<File
 				RelativePath=".\Queue.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SaveSWFParams.h"
 				>
 			</File>
 			<File

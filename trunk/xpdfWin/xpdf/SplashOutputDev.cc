@@ -2847,4 +2847,73 @@ GBool SplashOutputDev::getVectorAntialias() {
 void SplashOutputDev::setVectorAntialias(GBool vaa) {
   splash->setVectorAntialias(vaa);
 }
+
+void SplashOutputDev::startPage(int pageNum, GfxState *state, double x1,double y1,double x2,double y2) {
+  int w, h;
+  double *ctm;
+  SplashCoord mat[6];
+  SplashColor color;
+
+  if (state) {
+    setupScreenParams(state->getHDPI(), state->getVDPI());
+    w = (int)(state->getPageWidth() + 0.5);
+    if (w <= 0) {
+      w = 1;
+    }
+    h = (int)(state->getPageHeight() + 0.5);
+    if (h <= 0) {
+      h = 1;
+    }
+  } else {
+    w = h = 1;
+  }
+  if (splash) {
+    delete splash;
+  }
+  if (!bitmap || w != bitmap->getWidth() || h != bitmap->getHeight()) {
+    if (bitmap) {
+      delete bitmap;
+    }
+    bitmap = new SplashBitmap(w, h, bitmapRowPad, colorMode,
+			      colorMode != splashModeMono1, bitmapTopDown);
+  }
+  splash = new Splash(bitmap, vectorAntialias, &screenParams);
+  if (state) {
+    ctm = state->getCTM();
+    mat[0] = (SplashCoord)ctm[0];
+    mat[1] = (SplashCoord)ctm[1];
+    mat[2] = (SplashCoord)ctm[2];
+    mat[3] = (SplashCoord)ctm[3];
+    mat[4] = (SplashCoord)ctm[4];
+    mat[5] = (SplashCoord)ctm[5];
+    splash->setMatrix(mat);
+  }
+  switch (colorMode) {
+  case splashModeMono1:
+  case splashModeMono8:
+    color[0] = 0;
+    break;
+  case splashModeRGB8:
+  case splashModeBGR8:
+    color[0] = color[1] = color[2] = 0;
+    break;
+#if SPLASH_CMYK
+  case splashModeCMYK8:
+    color[0] = color[1] = color[2] = color[3] = 0;
+    break;
+#endif
+  }
+  splash->setStrokePattern(new SplashSolidColor(color));
+  splash->setFillPattern(new SplashSolidColor(color));
+  splash->setLineCap(splashLineCapButt);
+  splash->setLineJoin(splashLineJoinMiter);
+  splash->setLineDash(NULL, 0, 0);
+  splash->setMiterLimit(10);
+  splash->setFlatness(1);
+  // the SA parameter supposedly defaults to false, but Acrobat
+  // apparently hardwires it to true
+  splash->setStrokeAdjust(globalParams->getStrokeAdjust());
+  splash->clear(paperColor, 0);
+}
+
 #endif

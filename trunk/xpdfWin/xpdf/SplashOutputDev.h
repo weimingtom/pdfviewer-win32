@@ -69,6 +69,7 @@ public:
 
   //----- initialization and control
 
+  virtual void startPage(int pageNum, GfxState *state, double x1,double y1,double x2,double y2);
   // Start a page.
   virtual void startPage(int pageNum, GfxState *state);
 

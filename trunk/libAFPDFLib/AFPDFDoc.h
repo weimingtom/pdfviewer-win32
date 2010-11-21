@@ -9,7 +9,10 @@
 #include "queue.h"
 #include "CRect.h"
 #include "AuxOutputDev.h"
-
+#include "SaveSWFParams.h"
+#ifdef _PDF2SWF
+	#include "../swftools-0.9.1/pdf2swf.h"
+#endif
 #ifdef _MUPDF
 	#include "mupdfEngine.h"
 #endif
@@ -20,6 +23,7 @@ typedef int (__stdcall *PAGERENDERNOTIFY)(int,bool);
 typedef int (__stdcall *PROGRESSHANDLE)(int, int);
 typedef void (__stdcall *OUTPUTFUNCTIONB)(unsigned char *,int);
 typedef void (__stdcall *OUTPUTFUNCTION)(wchar_t *,int);
+
 
 void OutputToDelegate(void *stream, char *str, int len);
 
@@ -58,6 +62,7 @@ protected:
 	static UINT RenderingThreadThumb( LPVOID param );
 	static GBool callbackAbortDisplay(void *data);
 	static UINT ExportingJpgThread( LPVOID param );
+	static UINT ExportingSWFThread( LPVOID param );
 	bool m_PageRenderedByThread;
 	bool getNeedNonText();
 	void setNeedNonText(bool needs);
@@ -158,7 +163,8 @@ public:
 	int SaveJpg(char *fileName,float renderDPI,int fromPage, int toPage, int quality, int waitProc);
 	int SaveTxt(char *fileName,int firstPage, int lastPage, bool htmlMeta,bool physLayout, bool rawOrder);
 	//int SaveHtml(char *outFileName, int firstPage, int lastPage, bool noFrames, bool nomerge, bool complexmode);
-	bool ExportToSWF(char *fileName,char *swfViewer,int fromPage, int toPage,int zoomtowidth,int jpegQuality);
+	int SaveSWF(char *fileName, SaveSWFParams *params);
+
 	void CancelJpgSave();
 	//Returns true if exists a background thread of jpg export is running
 	bool JpgIsBusy();
