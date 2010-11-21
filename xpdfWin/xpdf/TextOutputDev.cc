@@ -4135,7 +4135,7 @@ TextOutputDev::~TextOutputDev() {
   }
 }
 
-void TextOutputDev::startPage(int pageNum, GfxState *state) {
+void TextOutputDev::startPage(int pageNum, GfxState *state, double x1,double y1,double x2,double y2) {
   text->startPage(state);
 }
 

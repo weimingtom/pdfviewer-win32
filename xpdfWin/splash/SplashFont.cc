@@ -48,6 +48,10 @@ SplashFont::SplashFont(SplashFontFile *fontFileA, SplashCoord *matA,
   cacheTags = NULL;
 
   xMin = yMin = xMax = yMax = 0;
+
+  last_advance = -1;
+  ascender = -1;
+  descender = -1;
 }
 
 void SplashFont::initCache() {

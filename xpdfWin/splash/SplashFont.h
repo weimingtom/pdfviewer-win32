@@ -83,6 +83,9 @@ public:
   void getBBox(int *xMinA, int *yMinA, int *xMaxA, int *yMaxA)
     { *xMinA = xMin; *yMinA = yMin; *xMaxA = xMax; *yMaxA = yMax; }
 
+  double ascender;
+  double descender;
+  double last_advance; //set after getGlyphPath()
 protected:
 
   SplashFontFile *fontFile;

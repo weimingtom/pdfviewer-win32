@@ -134,7 +134,7 @@ public:
   GBool isUnderlined() { return underlined; }
   Link *getLink() { return link; }
 
-private:
+public:
 
   int rot;			// rotation, multiple of 90 degrees
 				//   (0, 1, 2, or 3)
@@ -586,7 +586,7 @@ public:
   //----- initialization and control
 
   // Start a page.
-  virtual void startPage(int pageNum, GfxState *state);
+  virtual void startPage(int pageNum, GfxState *state, double x1,double y1,double x2,double y2);
 
   // End a page.
   virtual void endPage();

@@ -198,7 +198,7 @@ public:
   // file.
   GlobalParams(char *cfgFileName);
 
-  ~GlobalParams();
+  virtual ~GlobalParams();
 
   void setBaseDir(char *dir);
   void setupBaseFonts(char *dir);
@@ -215,8 +215,8 @@ public:
   FILE *getUnicodeMapFile(GString *encodingName);
   FILE *findCMapFile(GString *collection, GString *cMapName);
   FILE *findToUnicodeFile(GString *name);
-  DisplayFontParam *getDisplayFont(GString *fontName);
-  DisplayFontParam *getDisplayCIDFont(GString *fontName, GString *collection);
+  virtual DisplayFontParam *getDisplayFont(GString *fontName);
+  virtual DisplayFontParam *getDisplayCIDFont(GString *fontName, GString *collection);
   GString *getPSFile();
   int getPSPaperWidth();
   int getPSPaperHeight();

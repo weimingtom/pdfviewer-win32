@@ -183,7 +183,7 @@ namespace PDFLibNet {
 				return _pdfDoc->IsBusy();
 			}
 		}
-
+		long ExportSWF(System::String ^fileName);
 		long ExportText(System::String ^fileName, System::Int32 firstPage, System::Int32 lastPage,System::Boolean physLayout,System::Boolean rawOrder);
 		long ExportHtml(System::String ^fileName, System::Int32 firstPage, System::Int32 lastPage,System::Boolean noFrames,System::Boolean noMerge, System::Boolean complexMode);
 		long PerfomLinkAction(System::Int32 linkPtr);

@@ -415,4 +415,21 @@ namespace PDFLibNet{
 		}
 	}
 
+	long PDFWrapper::ExportSWF(System::String ^fileName)
+	{
+		IntPtr ptr = Marshal::StringToCoTaskMemAnsi(fileName);
+		char *singleByte= (char*)ptr.ToPointer();
+		SaveSWFParams *s = new SaveSWFParams();
+		long ret=0;
+		try{
+			ret = _pdfDoc->SaveSWF(singleByte, s);
+		}finally{
+			delete s;
+			Marshal::FreeCoTaskMem(ptr);
+		}
+		return ret;		
+
+	}
+
+
 }

@@ -3130,90 +3130,140 @@
 	bool AFPDFDoc::getNeedNonText(){ return _needNonText; }
 	void AFPDFDoc::setNeedNonText(bool needs) { _needNonText = needs; }
 
-
-	bool AFPDFDoc::ExportToSWF(char *fileName,char *swfViewer,int fromPage, int toPage,int zoomtowidth,int jpegQuality)
+	char *resizeString(const char *str,int currentSize, int newSize)
 	{
-		/*double zoom=1;
-		double multiply=1.0;
-		char pagerange[255];
-		sprintf(pagerange,"%d-%d",fromPage,toPage);
-		gfxsource_t *driver = gfxsource_pdf_create();
-		driver->set_parameter(driver, "pages", pagerange);
-		driver->set_parameter(driver,"viewer",swfViewer);
-		gfxdocument_t* pdf = driver->open(driver, fileName);
-		
-		int pagenum = 0;
-		int frame = 1;
-		int pagenr;
-	    
-		for(pagenr = 1; pagenr <= pdf->num_pages; pagenr++) 
+		char *newStr =new char[newSize];
+		strcpy_s(newStr, newSize, str);
+		delete str;
+		return newStr;
+	}
+
+	char **splitString(const char *buf, const char *sep, int *argc)
+	{
+		char *srcBuf = new char[strlen(buf)];
+		strcpy(srcBuf, buf);
+
+		int cCount = 0;
+		char *nexttk = 0;
+		char *tk1 = strtok_s(srcBuf, sep,&nexttk);
+		while(tk1)
 		{
-			if(is_in_range(pagenr, pagerange)) {
-				char mapping[80];
-				sprintf(mapping, "%d:%d", pagenr, frame);
-				pdf->set_parameter(pdf, "pagemap", mapping);
-				pagenum++;
-			}
-			if(pagenr == pdf->num_pages && pagenum>1) {
-				pagenum = 0;
-				frame++;
-			}
+			++cCount;
+			tk1 = strtok_s(NULL, sep, &nexttk);
 		}
+		*argc = cCount;
 
-		pagenum = 0;
-		gfxdevice_t *out;
-		gfxdevice_t swf;
-		gfxdevice_t wrap;
-		gfxdevice_t rescale;
-		
-		gfxdevice_swf_init(&swf);
-		out=&swf;
-		/* set up filter chain */
-		/*if(flatten) {
-			gfxdevice_removeclippings_init(&wrap, &swf);
-			out = &wrap;
-		}
-		if(maxwidth || maxheight) {
-			gfxdevice_rescale_init(&rescale, out, 1024, 800, 0);
-			out = &rescale;
-		}*/
-		/*
+		char **argv =new char* [cCount];
 
-		InfoOutputDev *infoOut = new InfoOutputDev(m_PDFDoc->getXRef());
-		GFXOutputDev *gfxOut = new GFXOutputDev(infoOut,m_PDFDoc);
+		cCount = 0;
+		srcBuf = new char[strlen(buf)];
+		strcpy(srcBuf, buf);
 
-		if(zoomtowidth && m_PDFDoc->getNumPages()) {
-			Page*page = m_PDFDoc->getCatalog()->getPage(1);
-			PDFRectangle *r = page->getCropBox();
-			double width_before = r->x2 - r->x1;
-			zoom = 72.0 * zoomtowidth / width_before;
-			//msg("<notice> Rendering at %f DPI. (Page width at 72 DPI: %f, target width: %d)", zoom, width_before, zoomtowidth);
-		}
-
-		gfxdevice_t* middev=0;
-		middev = (gfxdevice_t*)malloc(sizeof(gfxdevice_t));
-		gfxdevice_rescale_init(middev, 0x00000000, 0, 0, 1.0 / multiply);
-		middev->setparameter(middev, "protect", "1");
-		gfxOut->setDevice(middev);
-
-		for(int i=fromPage;i<=toPage;i++)
+		argv[0] = tk1 = strtok_s(srcBuf, sep,&nexttk);
+		while(tk1)
 		{
-			//Load Page Info
-			m_PDFDoc->displayPage((OutputDev *)infoOut,i,1/zoom,1/zoom,0,true,false,false);
-			m_PDFDoc->processLinks((OutputDev *)infoOut,i);
-			infoOut->endPage();
-			//Render page
-			m_PDFDoc->displayPage((OutputDev *)gfxOut,i,zoom,zoom,0,true,false,false);
-			m_PDFDoc->processLinks((OutputDev *)gfxOut,i);
-			gfxOut->endPage();	
+			++cCount;
+			tk1 = strtok_s(NULL, sep, &nexttk);
+			if(tk1)
+				argv[cCount] = tk1;
 		}
 
-		gfxOut->setDevice(0);
+		return argv;
+	}
 
-//		free(middev);
+	int AFPDFDoc::SaveSWF(char *fileName, SaveSWFParams *params)
+	{
+#define strcat(b, s)  if(strlen(b) > bufSize) { b = resizeString(b, bufSize, bufSize*2); bufSize*=2; } if(b=="\0") sprintf_s(b,bufSize,s); else strcat_s(b, bufSize, s); 
+		const size_t tmpBufSize = 2048;
+		size_t bufSize = 128;
+		char *buf = new char[bufSize]; 
+		char *bufTmp = new char[tmpBufSize];
+		
+		sprintf_s(buf, bufSize, "pdf2swf|-k|");
+		if(params->useDefaultLoadAndViewer && !params->loaderSWF 
+		&& !params->viewerSWF)		{	strcat(buf, "-b|-l|");	}
+		if(params->zip)				{	strcat(buf, "-z|");		}
+		if(params->linkSameWindow)	{	strcat(buf, "-w|");		}
+		if(params->addPageStop)		{	strcat(buf, "-t|");		}
+		if(params->fontsToShapes)	{	strcat(buf, "-S|");		}
+		if(params->swfFlatten)		{	strcat(buf, "-G|");		}
+		if(params->storeFonts)		{	strcat(buf, "-f|");		}
+		if(params->ignoreDrawOrder)	{	strcat(buf, "-i|");		}
 
-		delete infoOut;
-		delete gfxOut;
-		*/
-		return true;
+		if(params->jpegQuality > 0 && params->jpegQuality <= 100)
+		{
+			sprintf_s(bufTmp, tmpBufSize, "-j|%d|", params->jpegQuality);
+			strcat(buf, bufTmp);
+		}
+		if(params->swfVersion >0)
+		{
+			sprintf_s(bufTmp, tmpBufSize, "-T|%d|", params->swfVersion);
+			strcat(buf, bufTmp);
+		}
+		if(params->loaderSWF != NULL && params->viewerSWF != NULL)
+		{
+			sprintf_s(bufTmp, tmpBufSize, "-B|%s|-L|%s|",params->loaderSWF, params->viewerSWF);
+			strcat(buf, bufTmp);
+		}
+
+		if(params->pageRange != NULL)
+		{
+			sprintf_s(bufTmp, tmpBufSize, "-p|%s|", params->pageRange);
+			strcat(buf, bufTmp);
+		}
+		
+		if(params->linkColor != NULL || params->dpi != 72.0 || !params->enableLinks)
+		{
+			strcat(buf, "-s ");
+		}
+		if(params->linkColor != NULL)
+		{
+			sprintf_s(bufTmp, tmpBufSize, "linkcolor=%s|", params->linkColor);
+			strcat(buf, bufTmp);
+		}
+		if(params->dpi != 72.0)
+		{
+			sprintf_s(bufTmp, tmpBufSize, "zoom=%f|", params->dpi);
+			strcat(buf, bufTmp);
+		}
+		if(!params->enableLinks)
+		{
+			strcat(buf, "disablelinks|");
+		}
+		
+		if(this->m_LastOpenedStream)
+		{
+			strcat(buf, "BaseStream");
+		}
+		else if(this->m_LastOpenedFile != NULL)
+		{
+			strcat(buf, this->m_LastOpenedFile->getCString());
+		}else
+		{
+			return -2; //no file
+		}
+
+		sprintf_s(bufTmp, tmpBufSize, "|-o|%s", fileName);
+		strcat(buf, bufTmp);
+
+	
+		PDFDoc *pdfDoc =this->createDoc(NULL);
+		
+#ifdef _PDF2SWF
+			int cCount=0;
+			char **argv = ::splitString(buf, "|", &cCount);
+			int ret = mainPDF2SWF(cCount, argv, NULL,  pdfDoc);
+			delete buf;
+			delete bufTmp;
+			delete [] argv;
+			return ret;
+#else
+			return -1;
+#endif
+		
+	}
+
+	UINT AFPDFDoc::ExportingSWFThread( LPVOID param )
+	{
+		return 0;
 	}
