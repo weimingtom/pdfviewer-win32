@@ -342,6 +342,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ExportSWFParams.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\LinkDest.cpp"
 				>
 			</File>
@@ -397,6 +401,10 @@
 			>
 			<File
 				RelativePath=".\AutoPtr.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ExportSWFParams.h"
 				>
 			</File>
 			<File

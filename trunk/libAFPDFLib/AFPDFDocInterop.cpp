@@ -200,9 +200,11 @@ void AFPDFDocInterop::SetSearchCaseSensitive(bool newVal){
 		return ((AFPDFDoc *)_ptr)->SaveTxt(fileName,firstPage,lastPage,htmlMeta,physLayout,rawOrder);
 	}
 
-	/*long AFPDFDocInterop::SaveHtml(char *fileName, int firstPage, int lastPage, bool noFrames, bool nomerge, bool complexmode){
-		return ((AFPDFDoc *)_ptr)->SaveHtml(fileName,firstPage,lastPage,noFrames,nomerge,complexmode);
-	}*/
+	long AFPDFDocInterop::SaveHtml(char *outFileName, int firstPage, int lastPage, 
+		double zoom, bool noFrames, bool complexMode, bool htmlLinks,bool ignoreImages, bool outputHiddenText, char *encName, char *imgExt, int jpegQuality)
+	{
+		return ((AFPDFDoc *)_ptr)->SaveHtml(outFileName,firstPage,lastPage,zoom,noFrames,complexMode, htmlLinks,ignoreImages, outputHiddenText, encName, imgExt, jpegQuality);
+	}
 
 	wchar_t *AFPDFDocInterop::GetSubject(){ return ((AFPDFDoc *)_ptr)->getSubject(); }
 	wchar_t *AFPDFDocInterop::GetKeywords(){ return ((AFPDFDoc *)_ptr)->getKeywords(); }

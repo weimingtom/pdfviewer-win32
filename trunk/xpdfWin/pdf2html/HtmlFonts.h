@@ -32,9 +32,11 @@ class HtmlFontColor{
 class HtmlFont{
  private:
    unsigned int size;
+   double charspace;
    int lineSize;
    GBool italic;
    GBool bold;
+   GBool oblique;
    int pos; // position of the font name in the fonts array
    static GString *DefaultFont;
    GString *FontName;
@@ -43,7 +45,7 @@ class HtmlFont{
 public:  
 
    HtmlFont(){FontName=NULL;};
-   HtmlFont(GString* fontname,int _size, GfxRGB rgb);
+   HtmlFont(GString* fontname,int _size,double _charspace, GfxRGB rgb);
    HtmlFont(const HtmlFont& x);
    HtmlFont& operator=(const HtmlFont& x);
    HtmlFontColor getColor() const {return color;}
@@ -52,10 +54,13 @@ public:
    GString* getFullName();
    GBool isItalic() const {return italic;}
    GBool isBold() const {return bold;}
+   GBool isOblique() const {return oblique;}
    unsigned int getSize() const {return size;}
    int getLineSize() const {return lineSize;}
    void setLineSize(int _lineSize) { lineSize = _lineSize; }
    GString* getFontName();
+   double getCharSpace() const {return charspace;}
+   void setCharSpace(double _charspace){charspace = _charspace;}
    static GString* getDefaultFont();
    static void setDefaultFont(GString* defaultFont);
    GBool isEqual(const HtmlFont& x) const;

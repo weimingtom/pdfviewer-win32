@@ -8,6 +8,7 @@
 #include "PageLinkCollection.h"
 #include "LinkDest.h"
 #include "PDFPage.h"
+#include "ExportSWFParams.h"
 
 using namespace System;
 using namespace System::Drawing;
@@ -183,9 +184,9 @@ namespace PDFLibNet {
 				return _pdfDoc->IsBusy();
 			}
 		}
-		long ExportSWF(System::String ^fileName);
+		long ExportSWF(System::String ^fileName, ExportSWFParams ^exportParams);
 		long ExportText(System::String ^fileName, System::Int32 firstPage, System::Int32 lastPage,System::Boolean physLayout,System::Boolean rawOrder);
-		long ExportHtml(System::String ^fileName, System::Int32 firstPage, System::Int32 lastPage,System::Boolean noFrames,System::Boolean noMerge, System::Boolean complexMode);
+		long ExportHtml(System::String ^fileName, System::Int32 firstPage, System::Int32 lastPage, ExportHtmlParams ^params);
 		long PerfomLinkAction(System::Int32 linkPtr);
 		bool LoadPDF(System::String ^fileName);
 		bool LoadPDF(System::IO::Stream ^stream);

@@ -1,82 +1,63 @@
 #pragma once
-
-#ifndef _VECTOR_H
-#define _VECTOR_H
 #include <cstdlib>
 #include "gtypes.h"
 
-class T;
 template<class T>
 class GVector{
 private:
-   
-   int _size;
-   T*  last;
-   T*  storage; 
- 
+	int _size;
+	T*  last;
+	T*  storage; 
+
+	T* copy(T* src1,T* scr_2,T* dest)
+	{
+		T* tmp=src1;
+		T* d=dest;
+		while(tmp!=scr_2){
+			*d=*tmp;
+			d++;tmp++;
+		}
+		return d;
+	}
 	void resize()
 	{
-		if (_size==0) 
-			_size=2;
-		else 
-			_size=2*_size;
+		if (_size==0) _size=2;else _size=2*_size;
 		T *tmp=new T[_size];
 		if (storage){
-			 T* tmpc=storage;
-			 T* d=tmp;
-			  while(tmp!=last){
-				*d=*tmpc;
-				 d++;tmpc++;
-			   }
-			last=d; //copy(storage,last,tmp);
+			last=copy(storage,last,tmp);
 			delete [] storage;
 		}
-		else 
-			last=tmp; 
+		else last=tmp; 
 		storage=tmp;
 	}
-   /*
-	T *copy(T& src1, T *scr2, T *dest)
-	{
-     T* tmp=src1;
-     T* d=dest;
-      while(tmp!=scr2){
-        *d=*tmp;
-         d++;tmp++;
-       }
-      return d;
-   }*/
-   
-public:
- typedef T* iterator;
 
- GVector(){
-  _size=0;
-  last=0;
-  storage=0;
-}
+public:
+	typedef T* iterator;
+
+	GVector(){
+		_size=0;
+		last=0;
+		storage=0;
+	}
 
 
 
 	virtual ~GVector(){
-	  delete[] storage ;
+		delete[] storage ;
 	}  
 
 	void reset(){
-	  last=storage;
+		last=storage;
 	}
 
 	int size(){
-	  return (last-storage);
+		return (last-storage);
 	}   
 	void push_back(const T& elem){
-	  if (!storage||(size() >=_size)) resize();
-			*last=elem;
-			 last++;
-	  
-	     
+		if (!storage||(size() >=_size)) resize();
+		*last=elem;
+		last++;
 	} 
-
 
 	T pop_back() {
 		if (last!=storage) last--;
@@ -84,25 +65,19 @@ public:
 		return *last;
 	} 
 
-
 	T operator[](unsigned int i){
-	 return *(storage+i);
+		return *(storage+i);
 	}
-	  
 
 	GBool isEmpty() const{
-	 return !_size || (last==storage) ;
+		return !_size || (last==storage) ;
 	}
 
-
-
 	iterator begin() const{
-	 return storage;
+		return storage;
 	}
 
 	iterator end() const {
-	  return last;
+		return last;
 	}
 };
-
-#endif

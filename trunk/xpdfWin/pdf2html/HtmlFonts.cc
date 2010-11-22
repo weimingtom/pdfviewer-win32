@@ -3,6 +3,10 @@
 #include "UnicodeMap.h"
 #include <stdio.h>
 
+#ifndef _WIN32
+#include <unistd.h>
+#endif
+
  struct Fonts{
     char *Fontname;
     char *name;
@@ -33,10 +37,16 @@ extern GBool xml;
 GString* HtmlFont::DefaultFont=new GString("Times"); // Arial,Helvetica,sans-serif
 
 HtmlFontColor::HtmlFontColor(GfxRGB rgb){
+ /*
   r=static_cast<int>(255*rgb.r);
   g=static_cast<int>(255*rgb.g);
   b=static_cast<int>(255*rgb.b);
+*/
+  r=colToByte(rgb.r);
+  g=colToByte(rgb.g);
+  b=colToByte(rgb.b);
   if (!(Ok(r)&&Ok(b)&&Ok(g))) {printf("Error : Bad color \n");r=0;g=0;b=0;}
+
 }
 
 GString *HtmlFontColor::convtoX(unsigned int xcol) const{
@@ -66,12 +76,13 @@ GString *HtmlFontColor::toString() const{
   return tmp;
 } 
 
-HtmlFont::HtmlFont(GString* ftname,int _size, GfxRGB rgb){
+HtmlFont::HtmlFont(GString* ftname,int _size, double _charspace, GfxRGB rgb){
   //if (col) color=HtmlFontColor(col); 
   //else color=HtmlFontColor();
   color=HtmlFontColor(rgb);
 
   GString *fontname = NULL;
+  charspace = _charspace;
 
   if( ftname ){
     fontname = new GString(ftname);
@@ -87,12 +98,13 @@ HtmlFont::HtmlFont(GString* ftname,int _size, GfxRGB rgb){
   size=(_size-1);
   italic = gFalse;
   bold = gFalse;
+  oblique = gFalse;
 
   if (fontname){
-    if (strstr(fontname->lowerCase()->getCString(),"bold"))  bold=gTrue;
-    
-    if (strstr(fontname->lowerCase()->getCString(),"italic")||
-	strstr(fontname->lowerCase()->getCString(),"oblique"))  italic=gTrue;
+    if (strstr(fontname->lowerCase()->getCString(),"bold"))  bold=gTrue;    
+    if (strstr(fontname->lowerCase()->getCString(),"italic")) italic=gTrue;
+    if (strstr(fontname->lowerCase()->getCString(),"oblique")) oblique=gTrue;
+    /*||strstr(fontname->lowerCase()->getCString(),"oblique"))  italic=gTrue;*/ 
     
     int i=0;
     while (strcmp(ftname->getCString(),fonts[i].Fontname)&&(i<font_num)) 
@@ -110,8 +122,10 @@ HtmlFont::HtmlFont(const HtmlFont& x){
    size=x.size;
    lineSize=x.lineSize;
    italic=x.italic;
+   oblique=x.oblique;
    bold=x.bold;
    pos=x.pos;
+   charspace=x.charspace;
    color=x.color;
    if (x.FontName) FontName=new GString(x.FontName);
  }
@@ -126,9 +140,11 @@ HtmlFont& HtmlFont::operator=(const HtmlFont& x){
    size=x.size;
    lineSize=x.lineSize;
    italic=x.italic;
+   oblique=x.oblique;
    bold=x.bold;
    pos=x.pos;
    color=x.color;
+   charspace=x.charspace;
    if (FontName) delete FontName;
    if (x.FontName) FontName=new GString(x.FontName);
    return *this;
@@ -146,9 +162,8 @@ void HtmlFont::clear(){
   the list of all encountered fonts
 */
 GBool HtmlFont::isEqual(const HtmlFont& x) const{
-  return ((size==x.size) &&
-	  (lineSize==x.lineSize) &&
-	  (pos==x.pos) && (bold==x.bold) && (italic==x.italic) &&
+  return ((size==x.size) && (lineSize==x.lineSize) && (charspace==x.charspace) &&
+	  (pos==x.pos) && (bold==x.bold) && (oblique==x.oblique) && (italic==x.italic) &&
 	  (color.isEqual(x.getColor())));
 }
 
@@ -158,7 +173,6 @@ GBool HtmlFont::isEqual(const HtmlFont& x) const{
 */
 GBool HtmlFont::isEqualIgnoreBold(const HtmlFont& x) const{
   return ((size==x.size) &&
-	  (!strcmp(fonts[pos].name, fonts[x.pos].name)) &&
 	  (color.isEqual(x.getColor())));
 }
 
@@ -225,7 +239,7 @@ GString* HtmlFont::simple(HtmlFont* font, Unicode* content, int uLen){
   }
   if (font.isItalic()) {
     cont->insert(0,"<i>",3);
-    cont->append("</i>",4);
+    cont->append("</i>",4);x.oblique
     } */
 
   return cont;
@@ -285,24 +299,44 @@ GString* HtmlFontAccu::CSStyle(int i){
    GString *colorStr=font.getColor().toString();
    GString *fontName=font.getFontName();
    GString *lSize;
-   
+   double _charspace = font.getCharSpace();
+   char *cspace = new char [20];
+   sprintf(cspace,"%0.05f",_charspace);
    if(!xml){
      tmp->append(".ft");
      tmp->append(iStr);
-     tmp->append("{font-size:");
+     tmp->append("{virtical-align:top;font-size:");
      tmp->append(Size);
      if( font.getLineSize() != -1 )
-     {
+     {  // char *cspace = galloc(
 	 lSize = GString::fromInt(font.getLineSize());
+//	 tmp->append("px;line-height:");
 	 tmp->append("px;line-height:");
 	 tmp->append(lSize);
 	 delete lSize;
-     }
+     }     
+//     tmp->append("px;font-family:");
      tmp->append("px;font-family:");
      tmp->append(fontName); //font.getFontName());
      tmp->append(";color:");
      tmp->append(colorStr);
-     tmp->append(";}");
+     if (font.isBold() == gTrue)
+     {
+        tmp->append(";font-weight:bold");
+     }
+     if (font.isItalic() == gTrue)
+     {
+	tmp->append(";font-style:italic");
+     }
+     if (font.isOblique() == gTrue)
+     {
+	tmp->append(";font-style:oblique");
+     }
+     tmp->append(";letter-spacing:");
+     tmp->append(cspace);  
+     tmp->append("px;}");   
+//     tmp->append("px;}");
+     
    }
    if (xml) {
      tmp->append("<fontspec id=\"");
@@ -320,6 +354,7 @@ GString* HtmlFontAccu::CSStyle(int i){
    delete colorStr;
    delete iStr;
    delete Size;
+   delete cspace;
    return tmp;
 }
  

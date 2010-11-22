@@ -70,6 +70,47 @@
 		int pageToRender;
 	};
 
+		char *resizeString(const char *str,int currentSize, int newSize)
+	{
+		char *newStr =new char[newSize];
+		strcpy_s(newStr, newSize, str);
+		delete str;
+		return newStr;
+	}
+
+	char **splitString(const char *buf, const char *sep, int *argc)
+	{
+		char *srcBuf = new char[strlen(buf)];
+		strcpy(srcBuf, buf);
+
+		int cCount = 0;
+		char *nexttk = 0;
+		char *tk1 = strtok_s(srcBuf, sep,&nexttk);
+		while(tk1)
+		{
+			++cCount;
+			tk1 = strtok_s(NULL, sep, &nexttk);
+		}
+		*argc = cCount;
+
+		char **argv =new char* [cCount];
+
+		cCount = 0;
+		srcBuf = new char[strlen(buf)];
+		strcpy(srcBuf, buf);
+
+		argv[0] = tk1 = strtok_s(srcBuf, sep,&nexttk);
+		while(tk1)
+		{
+			++cCount;
+			tk1 = strtok_s(NULL, sep, &nexttk);
+			if(tk1)
+				argv[cCount] = tk1;
+		}
+
+		return argv;
+	}
+
 
 	void OutputToDelegate(void *stream, char *str, int len){
 
@@ -2817,162 +2858,67 @@
 		return eError;
 	}
 
-	/*int AFPDFDoc::SaveHtml(char *outFileName, int firstPage, int lastPage, bool noFrames, bool nomerge, bool complexmode)
+	int AFPDFDoc::SaveHtml(char *outFileName, int firstPage, int lastPage, double zoom,
+		bool noFrames, bool complexMode, bool htmlLinks, bool ignoreImages, bool outputHiddenText, char *encName, char *imgExt, int jpegQuality)
 	{
-		GString *docTitle = NULL;
-		GString *author = NULL, *keywords = NULL, *subject = NULL, *date = NULL;
-		GString *htmlFileName = NULL;
-		GString *psFileName = NULL;
-		HtmlOutputDev *htmlOut = NULL;
-		PSOutputDev *psOut = NULL;
-		GBool ok;
-		char *p;
-		char extension[16] = "png";
-		Object info;
-		char * extsList[] = {"png", "jpeg", "bmp", "pcx", "tiff", "pbm", NULL};
-		char gsDevice[33] = "png16m";
+		PDFDoc *pdfDoc = createDoc(NULL);
 
-		GBool stout;
-		GBool xml=gFalse;
-		GBool noframes = noFrames?gTrue:gFalse;
-		GBool complexMode = complexmode?gTrue:gFalse;
-		GBool noMerge=nomerge?gTrue:gFalse;
-		GBool rawOrder;
-		int scale=this->m_renderDPI/72;
-		scale=1.5;
+		#define strcat(b, s)  if((strlen(b) + strlen(s)) >= bufSize) { b = resizeString(b, bufSize, bufSize*2); bufSize*=2; } if(b=="\0") sprintf_s(b,bufSize,s); else strcat_s(b, bufSize, s); 
+		const size_t tmpBufSize = 2048;
+		size_t bufSize = 128;
+		char *buf = new char[bufSize]; 
+		char *bufTmp = new char[tmpBufSize];
 		
-		// check for copy permission
-		if (!m_PDFDoc->okToCopy()) {
-			error(-1, "Copying of text from this document is not allowed.");
-			goto error;
-		}
-
-		// construct text file name
-		
-		GString* tmp = new GString(outFileName);
-		p=tmp->getCString()+tmp->getLength()-5;
-		if (!xml)
-			if (!strcmp(p, ".html") || !strcmp(p, ".HTML"))
-				htmlFileName = new GString(tmp->getCString(),tmp->getLength() - 5);
-			else 
-				htmlFileName =new GString(tmp);
-		else   
-			if (!strcmp(p, ".xml") || !strcmp(p, ".XML"))
-				htmlFileName = new GString(tmp->getCString(), tmp->getLength() - 5);
-			else 
-				htmlFileName =new GString(tmp);
-
-		delete tmp;
-
-		if (scale>3.0) scale=3.0;
-		if (scale<0.5) scale=0.5;
-
-
-		if (complexMode) {
-			//noframes=gFalse;
-			stout=gFalse;
-		} 
-
-		if (stout) {
-			noframes=gTrue;
-			complexMode=gFalse;
-		}
-
-		if (xml)
-		{ 
-			complexMode = gTrue;
-			noframes = gTrue;
-			noMerge = gTrue;
-		}
-
-		// get page range
-		if (firstPage < 1)
-			firstPage = 1;
-		if (lastPage < 1 || lastPage > m_PDFDoc->getNumPages())
-			lastPage = m_PDFDoc->getNumPages();
-
-		m_PDFDoc->getDocInfo(&info);
-		if (info.isDict()) {
-			docTitle = getInfoString(info.getDict(), "Title");
-			author = getInfoString(info.getDict(), "Author");
-			keywords = getInfoString(info.getDict(), "Keywords");
-			subject = getInfoString(info.getDict(), "Subject");
-			date = getInfoDate(info.getDict(), "ModDate");
-			if( !date )
-				date = getInfoDate(info.getDict(), "CreationDate");
-		}
-		info.free();
-		if( !docTitle || docTitle->getLength()==0 ) 
-			docTitle = new GString(htmlFileName);
-		
-		// determine extensions of output background images 
-		{int i;
-		for(i = 0; extsList[i]; i++)
+		sprintf_s(buf, bufSize, "pdf2html|");
+		sprintf(bufTmp,"-f|%d|-l|%d|", firstPage, lastPage);
+		strcat(buf, bufTmp);
+		if(zoom != 1.5)
 		{
-			if( strstr(gsDevice, extsList[i]) != (char *) NULL )
-			{
-				strncpy(extension, extsList[i], sizeof(extension));
-				break;
-			}
-		}}
-
-		rawOrder = complexMode; // todo: figure out what exactly rawOrder do :)
-		
-		// write text file
-		htmlOut = new HtmlOutputDev(htmlFileName->getCString(), 
-			docTitle->getCString(), 
-			author ? author->getCString() : NULL,
-			keywords ? keywords->getCString() : NULL, 
-			subject ? subject->getCString() : NULL, 
-			date ? date->getCString() : NULL,
-			extension,
-			rawOrder, 
-			firstPage,
-			m_PDFDoc->getCatalog()->getOutline()->isDict());
-		
-		
-		if( author )
-		{   
-			delete author;
+			sprintf(bufTmp,"-zoom|%f|", zoom);
+			strcat(buf, bufTmp);
 		}
-		if( keywords )
+		if(noFrames)
 		{
-			delete keywords;
+			strcat(buf, "-noframes|");
 		}
-		if( subject )
+		if(complexMode)
 		{
-			delete subject;
+			strcat(buf, "-c|");
 		}
-		if( date )
+		if(htmlLinks)
 		{
-			delete date;
+			strcat(buf, "-p|");
 		}
-		if (htmlOut->isOk())
+		if(ignoreImages)
 		{
-			m_PDFDoc->displayPages(htmlOut, firstPage, lastPage, static_cast<int>(72*scale), static_cast<int>(72*scale), 0, gFalse, gTrue,gFalse);
-			return 0;
-			if (!xml)
-			{
-				htmlOut->dumpDocOutline(m_PDFDoc->getCatalog());
-			}
+			strcat(buf, "-i|");
 		}
+		if(outputHiddenText)
+		{
+			strcat(buf, "-hidden|");
+		}
+		if(encName)
+		{
+			sprintf(bufTmp, "-enc|%s|", encName);
+			strcat(buf, bufTmp);
+		}
+		if(!imgExt){ imgExt = new char[6]; sprintf(imgExt, "png"); }
+		sprintf(bufTmp, "-dev|%s|", imgExt);
+		strcat(buf,bufTmp);
+		sprintf(bufTmp, "-jpegq|%d|", jpegQuality);
+		strcat(buf,bufTmp);
+		sprintf(bufTmp,"stream.in|%s|", outFileName);
+		strcat(buf,bufTmp);
 
-	  
-		delete htmlOut;
+		int cCount=0;
+		char **argv = ::splitString(buf, "|", &cCount);
+		int ret = mainHtmlExport(cCount, argv, NULL,  pdfDoc);
+		delete buf;
+		delete bufTmp;
+		delete [] argv;
+		return ret;
+	}
 
-		// clean up
-		error:
-		
-		if(htmlFileName) 
-			delete htmlFileName;
-		HtmlFont::clear();
-
-		// check for memory leaks
-		Object::memCheck(stderr);
-		gMemReport(stderr);
-
-		return 0;
-	}*/
 	int AFPDFDoc::SaveTxt(char *fileName,int firstPage, int lastPage, bool htmlMeta, bool physLayout, bool rawOrder){
 		  TextOutputDev *textOut;
 		  FILE *f;
@@ -3088,6 +3034,7 @@
 		  return 0;
 	}
 
+
 	LinkDest *AFPDFDoc::findDest(char *destName){
 		GString s(destName);
 		return this->m_PDFDoc->getCatalog()->findDest(&s);
@@ -3130,50 +3077,9 @@
 	bool AFPDFDoc::getNeedNonText(){ return _needNonText; }
 	void AFPDFDoc::setNeedNonText(bool needs) { _needNonText = needs; }
 
-	char *resizeString(const char *str,int currentSize, int newSize)
-	{
-		char *newStr =new char[newSize];
-		strcpy_s(newStr, newSize, str);
-		delete str;
-		return newStr;
-	}
-
-	char **splitString(const char *buf, const char *sep, int *argc)
-	{
-		char *srcBuf = new char[strlen(buf)];
-		strcpy(srcBuf, buf);
-
-		int cCount = 0;
-		char *nexttk = 0;
-		char *tk1 = strtok_s(srcBuf, sep,&nexttk);
-		while(tk1)
-		{
-			++cCount;
-			tk1 = strtok_s(NULL, sep, &nexttk);
-		}
-		*argc = cCount;
-
-		char **argv =new char* [cCount];
-
-		cCount = 0;
-		srcBuf = new char[strlen(buf)];
-		strcpy(srcBuf, buf);
-
-		argv[0] = tk1 = strtok_s(srcBuf, sep,&nexttk);
-		while(tk1)
-		{
-			++cCount;
-			tk1 = strtok_s(NULL, sep, &nexttk);
-			if(tk1)
-				argv[cCount] = tk1;
-		}
-
-		return argv;
-	}
-
 	int AFPDFDoc::SaveSWF(char *fileName, SaveSWFParams *params)
 	{
-#define strcat(b, s)  if(strlen(b) > bufSize) { b = resizeString(b, bufSize, bufSize*2); bufSize*=2; } if(b=="\0") sprintf_s(b,bufSize,s); else strcat_s(b, bufSize, s); 
+#define strcat(b, s)  if((strlen(b) + strlen(s)) >= bufSize) { b = resizeString(b, bufSize, bufSize*2); bufSize*=2; } if(b=="\0") sprintf_s(b,bufSize,s); else strcat_s(b, bufSize, s); 
 		const size_t tmpBufSize = 2048;
 		size_t bufSize = 128;
 		char *buf = new char[bufSize]; 
@@ -3202,7 +3108,7 @@
 		}
 		if(params->loaderSWF != NULL && params->viewerSWF != NULL)
 		{
-			sprintf_s(bufTmp, tmpBufSize, "-B|%s|-L|%s|",params->loaderSWF, params->viewerSWF);
+			sprintf_s(bufTmp, tmpBufSize, "-L|%s|-B|%s|",params->loaderSWF, params->viewerSWF);
 			strcat(buf, bufTmp);
 		}
 

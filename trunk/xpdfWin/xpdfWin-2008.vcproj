@@ -42,7 +42,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="&quot;xpdf&quot;;&quot;splash&quot;;&quot;goo&quot;;&quot;fofi&quot;;&quot;..\freetype-2.3.1\include&quot;"
-				PreprocessorDefinitions="WIN32; TEXTOUT_WORD_LIST"
+				PreprocessorDefinitions="WIN32; TEXTOUT_WORD_LIST; HAVE_JPEGLIB"
 				MinimalRebuild="false"
 				BasicRuntimeChecks="0"
 				RuntimeLibrary="3"
@@ -62,8 +62,9 @@
 			<Tool
 				Name="VCLibrarianTool"
 				LinkLibraryDependencies="true"
-				AdditionalDependencies="..\bin\freetype231_D.lib"
+				AdditionalDependencies="..\bin\freetype231_D.lib ..\bin\zlib_D.lib ..\bin\libjpeg_D.lib"
 				OutputFile="..\bin\$(ProjectName)_D.lib"
+				AdditionalLibraryDirectories=""
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -110,8 +111,8 @@
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
 				WholeProgramOptimization="true"
-				AdditionalIncludeDirectories="&quot;xpdf&quot;;&quot;splash&quot;;&quot;goo&quot;;&quot;fofi&quot;;&quot;..\freetype-2.3.1\include&quot;"
-				PreprocessorDefinitions="_WIN32;WIN32;TEXTOUT_WORD_LIST"
+				AdditionalIncludeDirectories="&quot;xpdf&quot;;&quot;splash&quot;;&quot;goo&quot;;&quot;fofi&quot;;&quot;..\freetype-2.3.1\include&quot;; ..\zlib"
+				PreprocessorDefinitions="_WIN32;WIN32;TEXTOUT_WORD_LIST;HAVE_JPEGLIB"
 				RuntimeLibrary="2"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
@@ -130,7 +131,7 @@
 			<Tool
 				Name="VCLibrarianTool"
 				LinkLibraryDependencies="true"
-				AdditionalDependencies="..\bin\freetype231.lib"
+				AdditionalDependencies="..\bin\freetype231.lib ..\bin\zlib.lib ..\libjpeg.lib"
 				OutputFile="..\bin\$(ProjectName).lib"
 			/>
 			<Tool
@@ -179,7 +180,7 @@
 				FavorSizeOrSpeed="1"
 				WholeProgramOptimization="true"
 				AdditionalIncludeDirectories="&quot;xpdf&quot;;&quot;splash&quot;;&quot;goo&quot;;&quot;fofi&quot;;&quot;..\freetype-2.3.1\include&quot;"
-				PreprocessorDefinitions="_WIN32;WIN32"
+				PreprocessorDefinitions="_WIN32;WIN32;HAVE_JPEGLIB"
 				RuntimeLibrary="2"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
@@ -198,7 +199,7 @@
 			<Tool
 				Name="VCLibrarianTool"
 				LinkLibraryDependencies="true"
-				AdditionalDependencies="..\bin\freetype231.lib"
+				AdditionalDependencies="..\bin\freetype231.lib ..\bin\zlib.lib ..\libjpeg.lib"
 				OutputFile="..\bin\$(ProjectName).lib"
 			/>
 			<Tool
@@ -682,6 +683,54 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="pdftohtml"
+				>
+				<File
+					RelativePath=".\pdf2html\GVector.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\pdf2html\HtmlFonts.cc"
+					>
+				</File>
+				<File
+					RelativePath=".\pdf2html\HtmlLinks.cc"
+					>
+				</File>
+				<File
+					RelativePath=".\pdf2html\HtmlOutputDev.cc"
+					>
+				</File>
+				<File
+					RelativePath=".\pdf2html\jpeg.c"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							CompileAs="2"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\pdf2html\pdftohtml.cc"
+					>
+				</File>
+				<File
+					RelativePath=".\pdf2html\png.c"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							CompileAs="2"
+						/>
+					</FileConfiguration>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -896,6 +945,38 @@
 				RelativePath=".\xpdf\XRef.h"
 				>
 			</File>
+			<Filter
+				Name="pdftohtml"
+				>
+				<File
+					RelativePath=".\pdf2html\GVector.h"
+					>
+				</File>
+				<File
+					RelativePath=".\pdf2html\HtmlFonts.h"
+					>
+				</File>
+				<File
+					RelativePath=".\pdf2html\HtmlLinks.h"
+					>
+				</File>
+				<File
+					RelativePath=".\pdf2html\HtmlOutputDev.h"
+					>
+				</File>
+				<File
+					RelativePath=".\pdf2html\jpeg.h"
+					>
+				</File>
+				<File
+					RelativePath=".\pdf2html\pdftohtml.h"
+					>
+				</File>
+				<File
+					RelativePath=".\pdf2html\png.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<File
 			RelativePath=".\aconf-linux.h"

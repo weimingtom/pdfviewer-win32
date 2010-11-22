@@ -24,7 +24,7 @@
 #include "Link.h"
 #include "Catalog.h"
 #include "UnicodeMap.h"
-
+#include "SplashOutputDev.h"
 
 #ifdef WIN32
 #  define SLASH '\\'
@@ -33,6 +33,7 @@
 #endif
 
 #define xoutRound(x) ((int)(x + 0.5))
+#define xoutRoundLower(x) ((int)(x - 0.5))
 
 #define DOCTYPE "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">"
 #define DOCTYPE_FRAMES "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Frameset//EN\"\n\"http://www.w3.org/TR/html4/frameset.dtd\">"
@@ -43,19 +44,13 @@ class GString;
 // HtmlString
 //------------------------------------------------------------------------
 
-enum UnicodeTextDirection {
-  textDirUnknown,
-  textDirLeftRight,
-  textDirRightLeft,
-  textDirTopBottom
-};
 
 
 class HtmlString {
 public:
 
   // Constructor.
-  HtmlString(GfxState *state, double fontSize, HtmlFontAccu* fonts);
+  HtmlString(GfxState *state, double fontSize, double charspace, HtmlFontAccu* fonts);
 
   // Destructor.
   ~HtmlString();
@@ -79,6 +74,8 @@ private:
   HtmlString *xyNext;		// next string in x-major order
   int fontpos;
   GString* htext;
+  GString* htext2;
+  int strSize;
   int len;			// length of text and xRight
   int size;			// size of text and xRight arrays
   UnicodeTextDirection dir;	// direction (left to right/right to left)
@@ -113,6 +110,7 @@ public:
 		Unicode *u, int uLen); //Guchar c);
 
   void updateFont(GfxState *state);
+  void updateCharSpace(GfxState *state);
 
   // End the current string, sorting it into the list of strings.
   void endString();
@@ -143,7 +141,7 @@ private:
 
   double fontSize;		// current font size
   GBool rawOrder;		// keep strings in content stream order
-
+  double charspace;
   HtmlString *curStr;		// currently active string
 
   HtmlString *yxStrings;	// strings in y-major order
@@ -151,6 +149,8 @@ private:
   HtmlString *yxCur1, *yxCur2;	// cursors for yxStrings list
   
   void setDocName(char* fname);
+  GString *getDocName() {return DocName;}
+  GString *getImageExt() { return imgExt; }
   void dumpAsXML(FILE* f,int page);
   void dumpComplex(FILE* f, int page);
 
@@ -188,9 +188,14 @@ private:
 //------------------------------------------------------------------------
 // HtmlOutputDev
 //------------------------------------------------------------------------
-
+static SplashColor splash_white = {255,255,255};
 class HtmlOutputDev: public OutputDev {
+private:
+	int jpegQuality;
+	double scale;
+	SplashOutputDev *splash;
 public:
+	XRef *xref;
 
   // Open a text output file.  If <fileName> is NULL, no file is written
   // (this is useful, e.g., for searching text).  If <useASCII7> is true,
@@ -206,7 +211,9 @@ public:
 	  char *extension,
 	  GBool rawOrder,
 	  int firstPage = 1,
-	  GBool outline = 0);
+	  GBool outline = 0,
+	  double escala = 1.5,
+	  int jpegQuality = 85);
 
   // Destructor.
   virtual ~HtmlOutputDev();
@@ -228,10 +235,11 @@ public:
   virtual GBool interpretType3Chars() { return gFalse; }
 
   // Does this device need non-text content?
-  virtual GBool needNonText() { return gFalse; }
+  virtual GBool needNonText() { return gTrue; }
 
   //----- initialization and control
 
+  virtual void startPage(int pageNum, GfxState *state, double x1,double y1,double x2,double y2);
   // Start a page.
   virtual void startPage(int pageNum, GfxState *state);
 
@@ -240,6 +248,7 @@ public:
 
   //----- update text state
   virtual void updateFont(GfxState *state);
+  virtual void updateCharSpace(GfxState *state);
 
   //----- text drawing
   virtual void beginString(GfxState *state, GString *s);
@@ -247,7 +256,7 @@ public:
   virtual void drawChar(GfxState *state, double x, double y,
 			double dx, double dy,
 			double originX, double originY,
-			CharCode code, Unicode *u, int uLen);
+			CharCode code,int nBytes, Unicode *u, int uLen);
   
   virtual void drawImageMask(GfxState *state, Object *ref, 
 			     Stream *str,
@@ -257,6 +266,19 @@ public:
 			  int width, int height, GfxImageColorMap *colorMap,
 			 int *maskColors, GBool inlineImg);
 
+  virtual void drawMaskedImage(GfxState *state, Object *ref, Stream *str,
+			       int width, int height,
+			       GfxImageColorMap *colorMap,
+			       Stream *maskStr, int maskWidth, int maskHeight,
+			       GBool maskInvert);
+  virtual void drawSoftMaskedImage(GfxState *state, Object *ref, Stream *str,
+				   int width, int height,
+				   GfxImageColorMap *colorMap,
+				   Stream *maskStr,
+				   int maskWidth, int maskHeight,
+				   GfxImageColorMap *maskColorMap);
+
+
   //new feature    
   virtual int DevType() {return 1234;}
   virtual void drawLink(Link *link,Catalog *cat); 
@@ -265,6 +287,65 @@ public:
   int getPageHeight() { return maxPageHeight; }
 
   GBool dumpDocOutline(Catalog* catalog);
+
+	//Image process methods
+     virtual void saveState(GfxState *state);
+    virtual void restoreState(GfxState *state);
+	virtual void updateAll(GfxState *state);
+    virtual void updateCTM(GfxState *state, double m11, double m12, double m21, double m22, double m31, double m32);
+    virtual void updateLineDash(GfxState *state);
+    virtual void updateFlatness(GfxState *state);
+    virtual void updateLineJoin(GfxState *state);
+    virtual void updateLineCap(GfxState *state);
+    virtual void updateMiterLimit(GfxState *state);
+    virtual void updateLineWidth(GfxState *state);
+    virtual void updateStrokeAdjust(GfxState *state);
+    virtual void updateFillColorSpace(GfxState *state);
+    virtual void updateStrokeColorSpace(GfxState *state);
+    virtual void updateFillColor(GfxState *state);
+    virtual void updateStrokeColor(GfxState *state);
+    virtual void updateBlendMode(GfxState *state);
+    virtual void updateFillOpacity(GfxState *state);
+    virtual void updateStrokeOpacity(GfxState *state);
+    virtual void updateFillOverprint(GfxState *state);
+    virtual void updateStrokeOverprint(GfxState *state);
+    virtual void updateTransfer(GfxState *state);
+
+    virtual void updateTextMat(GfxState *state);
+
+    virtual void updateRender(GfxState *state);
+    virtual void updateRise(GfxState *state);
+    virtual void updateWordSpace(GfxState *state);
+    virtual void updateHorizScaling(GfxState *state);
+    virtual void updateTextPos(GfxState *state);
+    virtual void updateTextShift(GfxState *state, double shift);
+
+    virtual void stroke(GfxState *state);
+    virtual void fill(GfxState *state);
+    virtual void eoFill(GfxState *state);
+#if (xpdfMajorVersion < 3) || (xpdfMinorVersion < 2) || (xpdfUpdateVersion < 7)
+    virtual void tilingPatternFill(GfxState *state, Object *str,
+			       int paintType, Dict *resDict,
+			       double *mat, double *bbox,
+			       int x0, int y0, int x1, int y1,
+			       double xStep, double yStep);
+#else
+    virtual void tilingPatternFill(GfxState *state, Gfx *gfx, Object *str,
+			       int paintType, Dict *resDict,
+			       double *mat, double *bbox,
+			       int x0, int y0, int x1, int y1,
+			       double xStep, double yStep);
+#endif
+
+    virtual GBool functionShadedFill(GfxState *state,
+				     GfxFunctionShading *shading);
+    virtual GBool axialShadedFill(GfxState *state, GfxAxialShading *shading);
+    virtual GBool radialShadedFill(GfxState *state, GfxRadialShading *shading);
+
+    virtual void clip(GfxState *state);
+    virtual void eoClip(GfxState *state);
+    virtual void clipToStrokePath(GfxState *state);
+
 
 private:
   // convert encoding into a HTML standard, or encoding->getCString if not

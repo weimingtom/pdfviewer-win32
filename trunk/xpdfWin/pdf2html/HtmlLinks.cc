@@ -1,5 +1,4 @@
 #include "HtmlLinks.h"
-#include "string.h"
 
 HtmlLink::HtmlLink(const HtmlLink& x){
   Xmin=x.Xmin;
@@ -33,7 +32,7 @@ HtmlLink::~HtmlLink(){
 }
 
 GBool HtmlLink::isEqualDest(const HtmlLink& x) const{
-	return (!strcmp(dest->getCString(), x.dest->getCString()));
+  return (!strcmp(dest->getCString(), x.dest->getCString()));
 }
 
 GBool HtmlLink::inLink(double xmin,double ymin,double xmax,double ymax) const {

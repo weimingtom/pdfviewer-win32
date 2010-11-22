@@ -30,7 +30,10 @@
 #include "GlobalParams.h"
 #include "HtmlOutputDev.h"
 #include "HtmlFonts.h"
-
+#include "SplashOutputDev.h"
+#include "SplashBitmap.h"
+#include "png.h"
+#include "jpeg.h"
 
 int HtmlPage::pgNum=0;
 int HtmlOutputDev::imgNum=1;
@@ -70,7 +73,7 @@ static GString* Dirname(GString* str){
 // HtmlString
 //------------------------------------------------------------------------
 
-HtmlString::HtmlString(GfxState *state, double fontSize, HtmlFontAccu* fonts) {
+HtmlString::HtmlString(GfxState *state, double fontSize, double _charspace, HtmlFontAccu* fonts) {
   GfxFont *font;
   double x, y;
 
@@ -82,7 +85,8 @@ HtmlString::HtmlString(GfxState *state, double fontSize, HtmlFontAccu* fonts) {
     state->getFillRGB(&rgb);
     GString *name = state->getFont()->getName();
     if (!name) name = HtmlFont::getDefaultFont(); //new GString("default");
-    HtmlFont hfont=HtmlFont(name, static_cast<int>(fontSize-1), rgb);
+   // HtmlFont hfont=HtmlFont(name, static_cast<int>(fontSize-1),_charspace, rgb);
+    HtmlFont hfont=HtmlFont(name, static_cast<int>(fontSize-1),0.0, rgb);
     fontpos = fonts->AddFont(hfont);
   } else {
     // this means that the PDF file draws text without a current font,
@@ -104,7 +108,9 @@ HtmlString::HtmlString(GfxState *state, double fontSize, HtmlFontAccu* fonts) {
   len = size = 0;
   yxNext = NULL;
   xyNext = NULL;
+  strSize = 0;
   htext=new GString();
+  htext2=new GString();
   dir = textDirUnknown;
 }
 
@@ -112,21 +118,15 @@ HtmlString::HtmlString(GfxState *state, double fontSize, HtmlFontAccu* fonts) {
 HtmlString::~HtmlString() {
   delete text;
   delete htext;
+  delete htext2;
+//  delete strSize;
   gfree(xRight);
-}
-
-UnicodeTextDirection getDirection(Unicode u){
-	if( u >= 0x0590 && u <= 0x05ff ) { // hebrew
-	    return textDirRightLeft; 
-  }
-  return textDirLeftRight;
-
 }
 
 void HtmlString::addChar(GfxState *state, double x, double y,
 			 double dx, double dy, Unicode u) {
   if (dir == textDirUnknown) {
-    dir = getDirection(u);
+    dir = UnicodeMap::getDirection(u);
   } 
 
   if (len == size) {
@@ -139,6 +139,8 @@ void HtmlString::addChar(GfxState *state, double x, double y,
     xMin = x;
   }
   xMax = xRight[len] = x + dx;
+  //xMax = xRight[len] = x;
+  ++strSize;
 //printf("added char: %f %f xright = %f\n", x, dx, x+dx);
   ++len;
 }
@@ -222,7 +224,7 @@ void HtmlPage::updateFont(GfxState *state) {
 }
 
 void HtmlPage::beginString(GfxState *state, GString *s) {
-  curStr = new HtmlString(state, fontSize, fonts);
+  curStr = new HtmlString(state, fontSize,charspace, fonts);
 }
 
 
@@ -238,6 +240,7 @@ void HtmlPage::conv(){
 
      if (tmp->htext) delete tmp->htext; 
      tmp->htext=HtmlFont::simple(h,tmp->text,tmp->len);
+     tmp->htext2=HtmlFont::simple(h,tmp->text,tmp->len);
 
      if (links->inLink(tmp->xMin,tmp->yMin,tmp->xMax,tmp->yMax, linkIndex)){
        tmp->link = links->getLink(linkIndex);
@@ -254,18 +257,19 @@ void HtmlPage::addChar(GfxState *state, double x, double y,
 		       double dx, double dy, 
 			double ox, double oy, Unicode *u, int uLen) {
   double x1, y1, w1, h1, dx2, dy2;
-  int n, i;
+  int n, i, d;
   state->transform(x, y, &x1, &y1);
   n = curStr->len;
+  d = 0;
  
   // check that new character is in the same direction as current string
   // and is not too far away from it before adding 
-  if ((getDirection(u[0]) != curStr->dir) || 
+/*  if ((UnicodeMap::getDirection(u[0]) != curStr->dir) || 
      (n > 0 && 
       fabs(x1 - curStr->xRight[n-1]) > 0.1 * (curStr->yMax - curStr->yMin))) {
     endString();
     beginString(state, NULL);
-  }
+  }*/
   state->textTransformDelta(state->getCharSpace() * state->getHorizScaling(),
 			    0, &dx2, &dy2);
   dx -= dx2;
@@ -275,9 +279,30 @@ void HtmlPage::addChar(GfxState *state, double x, double y,
     w1 /= uLen;
     h1 /= uLen;
   }
+/* if (d != 3)
+ {
+ endString();
+ beginString(state, NULL);
+ }
+*/
+
+
+  for (i = 0; i < uLen; ++i) 
+  {
+	if (u[i] == ' ')
+        {
+	    endString();
+	    beginString(state, NULL);
+	} else {
+	    curStr->addChar(state, x1 + i*w1, y1 + i*h1, w1, h1, u[i]);
+        }
+   }
+
+/*
   for (i = 0; i < uLen; ++i) {
     curStr->addChar(state, x1 + i*w1, y1 + i*h1, w1, h1, u[i]);
   }
+*/
 }
 
 void HtmlPage::endString() {
@@ -339,7 +364,12 @@ void HtmlPage::coalesce() {
   double space, horSpace, vertSpace, vertOverlap;
   GBool addSpace, addLineBreak;
   int n, i;
-  double curX, curY;
+  double curX, curY, lastX, lastY;
+  int sSize = 0;      
+  double diff = 0.0;
+  double pxSize = 0.0;
+  double strSize = 0.0;
+  double cspace = 0.0;
 
 #if 0 //~ for debugging
   for (str1 = yxStrings; str1; str1 = str1->yxNext) {
@@ -359,7 +389,7 @@ void HtmlPage::coalesce() {
 
   //----- discard duplicated text (fake boldface, drop shadows)
   if( !complexMode )
-  {	/* if not in complex mode get rid of duplicate strings */
+  {
 	HtmlString *str3;
 	GBool found;
   	while (str1)
@@ -393,21 +423,20 @@ void HtmlPage::coalesce() {
 			str1 = str1->yxNext;
 		}
 	}		
-  }	/*- !complexMode */
+  }
   
   str1 = yxStrings;
   
   hfont1 = getFont(str1);
-  if( hfont1->isBold() )
-    str1->htext->insert(0,"<b>",3);
-  if( hfont1->isItalic() )
-    str1->htext->insert(0,"<i>",3);
+
+  str1->htext2->append(str1->htext);
   if( str1->getLink() != NULL ) {
     GString *ls = str1->getLink()->getLinkStart();
     str1->htext->insert(0, ls);
     delete ls;
   }
   curX = str1->xMin; curY = str1->yMin;
+  lastX = str1->xMin; lastY = str1->yMin;
 
   while (str1 && (str2 = str1->yxNext)) {
     hfont2 = getFont(str2);
@@ -442,15 +471,17 @@ void HtmlPage::coalesce() {
 	 ) ||
        	 (vertSpace >= 0 && vertSpace < 0.5 * space && addLineBreak)
 	) &&
-	(!complexMode || (hfont1->isEqualIgnoreBold(*hfont2))) && // in complex mode fonts must be the same, in other modes fonts do not metter
+ // in complex mode fonts must be the same, in other modes fonts do not metter
 	str1->dir == str2->dir // text direction the same
        ) 
     {
-//      printf("yes\n");
-      n = str1->len + str2->len;
-      if ((addSpace = horSpace > 0.1 * space)) {
+     diff = str2->xMax - str1->xMin;
+
+     n = str1->len + str2->len;
+     if ((addSpace = horSpace > 0.1 * space)) {
         ++n;
       }
+    
       if (addLineBreak) {
         ++n;
       }
@@ -461,14 +492,26 @@ void HtmlPage::coalesce() {
       str1->xRight = (double *)grealloc(str1->xRight,
 					str1->size * sizeof(double));
       if (addSpace) {
-		  str1->text[str1->len] = 0x20;
-		  str1->htext->append(" ");
-		  str1->xRight[str1->len] = str2->xMin;
-		  ++str1->len;
+		/*  if (addSpace > (xoutRoundLower(hfont1->getSize()/scale)))
+		  {
+		  	str1->text[str1->len] = 0x20;
+			str1->htext->append(" ");
+			str1->htext2->append(" ");
+			str1->xRight[str1->len] = str2->xMin;
+			++str1->len;
+			++str1->strSize;
+		 } */
+  	   	 str1->text[str1->len] = 0x20;
+                 str1->htext->append(" ");
+                 str1->htext2->append(" ");
+                 str1->xRight[str1->len] = str2->xMin;
+                 ++str1->len;
+                ++str1->strSize;
       }
       if (addLineBreak) {
 	  str1->text[str1->len] = '\n';
 	  str1->htext->append("<br>");
+	  str1->htext2->append(" ");
 	  str1->xRight[str1->len] = str2->xMin;
 	  ++str1->len;
 	  str1->yMin = str2->yMin;
@@ -476,6 +519,7 @@ void HtmlPage::coalesce() {
 	  str1->xMax = str2->xMax;
 	  int fontLineSize = hfont1->getLineSize();
 	  int curLineSize = (int)(vertSpace + space); 
+
 	  if( curLineSize != fontLineSize )
 	  {
 	      HtmlFont *newfnt = new HtmlFont(*hfont1);
@@ -484,9 +528,24 @@ void HtmlPage::coalesce() {
 	      delete newfnt;
 	      hfont1 = getFont(str1);
 	      // we have to reget hfont2 because it's location could have
-	      // changed on resize
+	      // changed on resize  GStri;ng *iStr=GString::fromInt(i);
 	      hfont2 = getFont(str2); 
 	  }
+
+      }
+      str1->htext2->append(str2->htext2);
+
+      HtmlLink *hlink1 = str1->getLink();
+      HtmlLink *hlink2 = str2->getLink();
+
+      GString *fntFix;
+      GString *iStr=GString::fromInt(str2->fontpos);     
+      fntFix = new GString("</span><span class=\"ft");
+      fntFix->append(iStr);
+      fntFix->append("\">");
+      if (((hlink1 == NULL) && (hlink2 == NULL)) && (hfont1->isEqualIgnoreBold(*hfont2) == gFalse))
+      {
+	str1->htext->append(fntFix);
       }
       for (i = 0; i < str2->len; ++i) {
 	str1->text[str1->len] = str2->text[i];
@@ -494,19 +553,6 @@ void HtmlPage::coalesce() {
 	++str1->len;
       }
 
-      /* fix <i> and <b> if str1 and str2 differ */
-      if( hfont1->isBold() && !hfont2->isBold() )
-	str1->htext->append("</b>", 4);
-      if( hfont1->isItalic() && !hfont2->isItalic() )
-	str1->htext->append("</i>", 4);
-      if( !hfont1->isBold() && hfont2->isBold() )
-	str1->htext->append("<b>", 3);
-      if( !hfont1->isItalic() && hfont2->isItalic() )
-	str1->htext->append("<i>", 3);
-
-      /* now handle switch of links */
-      HtmlLink *hlink1 = str1->getLink();
-      HtmlLink *hlink2 = str2->getLink();
       if( !hlink1 || !hlink2 || !hlink1->isEqualDest(*hlink2) ) {
 	if(hlink1 != NULL )
 	  str1->htext->append("</a>");
@@ -518,34 +564,54 @@ void HtmlPage::coalesce() {
       }
 
       str1->htext->append(str2->htext);
+      sSize = str1->htext2->getLength();      
+      pxSize = xoutRoundLower(hfont1->getSize()/scale);
+      strSize = (pxSize*(sSize-2));   
+      cspace = (diff / strSize);//(strSize-pxSize));
+     // we check if the fonts are the same and create a new font to ajust the text
+//      double diff = str2->xMin - str1->xMin;
+//      printf("%s\n",str1->htext2->getCString());
       // str1 now contains href for link of str2 (if it is defined)
       str1->link = str2->link; 
+
+      HtmlFont *newfnt = new HtmlFont(*hfont1);
+      newfnt->setCharSpace(cspace);
+      //newfnt->setLineSize(curLineSize);
+      str1->fontpos = fonts->AddFont(*newfnt);
+      delete newfnt;
+      hfont1 = getFont(str1);
+      // we have to reget hfont2 because it's location could have
+      // changed on resize  GStri;ng *iStr=GString::fromInt(i);
+      hfont2 = getFont(str2); 
+
       hfont1 = hfont2;
+
       if (str2->xMax > str1->xMax) {
 	str1->xMax = str2->xMax;
       }
+
       if (str2->yMax > str1->yMax) {
 	str1->yMax = str2->yMax;
       }
+
       str1->yxNext = str2->yxNext;
+
       delete str2;
-    } else { // keep strings separate
+    } else { 
+
+//     printf("startX = %f, endX = %f, diff = %f, fontsize = %d, pxSize = %f, stringSize = %d, cspace = %f, strSize = %f\n",str1->xMin,str1->xMax,diff,hfont1->getSize(),pxSize,sSize,cspace,strSize);
+
+// keep strings separate
 //      printf("no\n"); 
-      if( hfont1->isBold() )
-	str1->htext->append("</b>",4);
-      if( hfont1->isItalic() )
-	str1->htext->append("</i>",4);
+//      if( hfont1->isBold() )
       if(str1->getLink() != NULL )
-	str1->htext->append("</a>");
+	str1->htext->append("</a>");  
      
       str1->xMin = curX; str1->yMin = curY; 
       str1 = str2;
       curX = str1->xMin; curY = str1->yMin;
       hfont1 = hfont2;
-      if( hfont1->isBold() )
-	str1->htext->insert(0,"<b>",3);
-      if( hfont1->isItalic() )
-	str1->htext->insert(0,"<i>",3);
+
       if( str1->getLink() != NULL ) {
 	GString *ls = str1->getLink()->getLinkStart();
 	str1->htext->insert(0, ls);
@@ -554,10 +620,7 @@ void HtmlPage::coalesce() {
     }
   }
   str1->xMin = curX; str1->yMin = curY;
-  if( hfont1->isBold() )
-    str1->htext->append("</b>",4);
-  if( hfont1->isItalic() )
-    str1->htext->append("</i>",4);
+
   if(str1->getLink() != NULL )
     str1->htext->append("</a>");
 
@@ -572,6 +635,7 @@ void HtmlPage::coalesce() {
 #endif
 
 }
+
 
 void HtmlPage::dumpAsXML(FILE* f,int page){  
   fprintf(f, "<page number=\"%d\" position=\"absolute\"", page);
@@ -624,12 +688,12 @@ void HtmlPage::dumpComplex(FILE *file, int page){
       } 
       delete tmp;
 
-      fprintf(pageFile,"%s\n<HTML>\n<HEAD>\n<TITLE>Page %d</TITLE>\n\n",
+      fprintf(pageFile,"%s\n<html>\n<head>\n<title>Page %d</title>\n\n",
 	      DOCTYPE, page);
 
       htmlEncoding = HtmlOutputDev::mapEncodingToHtml
 	  (globalParams->getTextEncodingName());
-      fprintf(pageFile, "<META http-equiv=\"Content-Type\" content=\"text/html; charset=%s\">\n", htmlEncoding);
+      fprintf(pageFile, "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=%s\">\n", htmlEncoding);
   }
   else 
   {
@@ -638,31 +702,28 @@ void HtmlPage::dumpComplex(FILE *file, int page){
       fprintf(pageFile,"<a name=\"%d\"></a>\n", page);
   } 
   
-  fprintf(pageFile,"<DIV style=\"position:relative;width:%d;height:%d;\">\n",
-	pageWidth, pageHeight);
+  fprintf(pageFile,"<div style=\"position:relative;width:%d;height:%d;\">\n", pageWidth, pageHeight);
 
   tmp=basename(DocName);
    
-  fputs("<STYLE type=\"text/css\">\n<!--\n",pageFile);
-  for(int i=fontsPageMarker;i!=fonts->size();i++) {
+  fputs("<style type=\"text/css\">\n<!--\n",pageFile);
+  for(int i=fontsPageMarker;i!=fonts->size();i++) 
+  {
     GString *fontCSStyle = fonts->CSStyle(i);
     fprintf(pageFile,"\t%s\n",fontCSStyle->getCString());
     delete fontCSStyle;
   }
  
-  fputs("-->\n</STYLE>\n",pageFile);
+  fputs("-->\n</style>\n",pageFile);
   
   if( !noframes )
   {  
-      fputs("</HEAD>\n<BODY bgcolor=\"#A0A0A0\" vlink=\"blue\" link=\"blue\">\n",pageFile); 
+      fputs("</head>\n<body bgcolor=\"#FFFFFF\" vlink=\"blue\" link=\"blue\">\n",pageFile); 
   }
   
   if( !ignore ) 
   {
-    fprintf(pageFile,
-	    "<IMG width=\"%d\" height=\"%d\" src=\"%s%03d.%s\" alt=\"background image\">\n",
-	    pageWidth, pageHeight, tmp->getCString(), 
-		(page-firstPage+1), imgExt->getCString());
+    fprintf(pageFile,"<img width=\"%d\" height=\"%d\" src=\"%s%03d.%s\" alt=\"background image\">\n",  pageWidth, pageHeight, tmp->getCString(), (page-firstPage+1), imgExt->getCString());
   }
   
   delete tmp;
@@ -671,28 +732,25 @@ void HtmlPage::dumpComplex(FILE *file, int page){
   for(HtmlString *tmp1=yxStrings;tmp1;tmp1=tmp1->yxNext){
     if (tmp1->htext){
       str=new GString(tmp1->htext);
-      fprintf(pageFile,
-	      "<DIV style=\"position:absolute;top:%d;left:%d\">",
-	      xoutRound(tmp1->yMin),
-	      xoutRound(tmp1->xMin));
+      fprintf(pageFile,"<div style=\"position:absolute;top:%d;left:%d\">", xoutRound(tmp1->yMin), xoutRound(tmp1->xMin));
       fputs("<nobr>",pageFile); 
       if (tmp1->fontpos!=-1){
-	str1=fonts->getCSStyle(tmp1->fontpos, str);  
+		str1=fonts->getCSStyle(tmp1->fontpos, str);  
       }
       //printf("%s\n", str1->getCString());
       fputs(str1->getCString(),pageFile);
       
       delete str;      
       delete str1;
-      fputs("</nobr></DIV>\n",pageFile);
+      fputs("</nobr></div>\n",pageFile);
     }
   }
 
-  fputs("</DIV>\n", pageFile);
+  fputs("</div>\n", pageFile);
   
   if( !noframes )
   {
-      fputs("</BODY>\n</HTML>\n",pageFile);
+      fputs("</body>\n</html>\n",pageFile);
       fclose(pageFile);
   }
 }
@@ -707,10 +765,10 @@ void HtmlPage::dump(FILE *f, int pageNum)
   }
   else
   {
-    fprintf(f,"<A name=%d></a>",pageNum);
+    fprintf(f,"<a name=%d></a>",pageNum);
     GString* fName=basename(DocName); 
     for (int i=1;i<HtmlOutputDev::imgNum;i++)
-      fprintf(f,"<IMG src=\"%s-%d_%d.jpg\"><br>\n",fName->getCString(),pageNum,i);
+      fprintf(f,"<img src=\"%s-%d_%d.jpg\"><br>\n",fName->getCString(),pageNum,i);
     HtmlOutputDev::imgNum=1;
     delete fName;
 
@@ -765,6 +823,11 @@ void HtmlPage::setDocName(char *fname){
   DocName=new GString(fname);
 }
 
+void HtmlPage::updateCharSpace(GfxState *state)
+{
+	charspace = state->getCharSpace();
+}
+
 //------------------------------------------------------------------------
 // HtmlMetaVar
 //------------------------------------------------------------------------
@@ -783,7 +846,7 @@ HtmlMetaVar::~HtmlMetaVar()
     
 GString* HtmlMetaVar::toString()	
 {
-    GString *result = new GString("<META name=\"");
+    GString *result = new GString("<meta name=\"");
     result->append(name);
     result->append("\" content=\"");
     result->append(content);
@@ -829,22 +892,22 @@ void HtmlOutputDev::doFrame(int firstPage){
     
   fName=basename(Docname);
   fputs(DOCTYPE_FRAMES, fContentsFrame);
-  fputs("\n<HTML>",fContentsFrame);
-  fputs("\n<HEAD>",fContentsFrame);
-  fprintf(fContentsFrame,"\n<TITLE>%s</TITLE>",docTitle->getCString());
+  fputs("\n<html>",fContentsFrame);
+  fputs("\n<head>",fContentsFrame);
+  fprintf(fContentsFrame,"\n<title>%s</title>",docTitle->getCString());
   htmlEncoding = mapEncodingToHtml(globalParams->getTextEncodingName());
-  fprintf(fContentsFrame, "\n<META http-equiv=\"Content-Type\" content=\"text/html; charset=%s\">\n", htmlEncoding);
+  fprintf(fContentsFrame, "\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=%s\">\n", htmlEncoding);
   dumpMetaVars(fContentsFrame);
-  fprintf(fContentsFrame, "</HEAD>\n");
-  fputs("<FRAMESET cols=\"100,*\">\n",fContentsFrame);
+  fprintf(fContentsFrame, "</head>\n");
+  fputs("<frameset cols=\"100,*\">\n",fContentsFrame);
   fprintf(fContentsFrame,"<FRAME name=\"links\" src=\"%s_ind.html\">\n",fName->getCString());
-  fputs("<FRAME name=\"contents\" src=",fContentsFrame); 
+  fputs("<frame name=\"contents\" src=",fContentsFrame); 
   if (complexMode) 
       fprintf(fContentsFrame,"\"%s-%d.html\"",fName->getCString(), firstPage);
   else
       fprintf(fContentsFrame,"\"%ss.html\"",fName->getCString());
   
-  fputs(">\n</FRAMESET>\n</HTML>\n",fContentsFrame);
+  fputs(">\n</frameset>\n</html>\n",fContentsFrame);
  
   delete fName;
   fclose(fContentsFrame);  
@@ -853,10 +916,15 @@ void HtmlOutputDev::doFrame(int firstPage){
 HtmlOutputDev::HtmlOutputDev(char *fileName, char *title, 
 	char *author, char *keywords, char *subject, char *date,
 	char *extension,
-	GBool rawOrder, int firstPage, GBool outline) 
+	GBool rawOrder, int firstPage, GBool outline, double escala, int jpegQuality) 
 {
+  this->jpegQuality = jpegQuality;
+
   char *htmlEncoding;
-  
+  scale = escala;
+  splash = new SplashOutputDev(splashModeRGB8, 1, gFalse, splash_white, gTrue, gTrue);
+  splash->startDoc(this->xref);
+
   fContentsFrame = NULL;
   docTitle = new GString(title);
   pages = NULL;
@@ -873,7 +941,7 @@ HtmlOutputDev::HtmlOutputDev(char *fileName, char *title,
   pages = new HtmlPage(rawOrder, extension);
   
   glMetaVars = new GList();
-  glMetaVars->append(new HtmlMetaVar("generator", "pdftohtml 0.39"));  
+  glMetaVars->append(new HtmlMetaVar("generator", "pdftohtml 0.40"));  
   if( author ) glMetaVars->append(new HtmlMetaVar("author", author));  
   if( keywords ) glMetaVars->append(new HtmlMetaVar("keywords", keywords));  
   if( date ) glMetaVars->append(new HtmlMetaVar("date", date));  
@@ -901,12 +969,12 @@ HtmlOutputDev::HtmlOutputDev(char *fileName, char *title,
      }
      delete left;
      fputs(DOCTYPE, fContentsFrame);
-     fputs("<HTML>\n<HEAD>\n<TITLE></TITLE>\n</HEAD>\n<BODY>\n",fContentsFrame);
+     fputs("<html>\n<head>\n<title></title>\n</head>\n<body>\n",fContentsFrame);
      
   	if (doOutline)
 	{
 		GString *str = basename(Docname);
-		fprintf(fContentsFrame, "<A href=\"%s%s\" target=\"contents\">Outline</a><br>", str->getCString(), complexMode ? "-outline.html" : "s.html#outline");
+		fprintf(fContentsFrame, "<a href=\"%s%s\" target=\"contents\">Outline</a><br>", str->getCString(), complexMode ? "-outline.html" : "s.html#outline");
 		delete str;
 	}
   	
@@ -923,7 +991,7 @@ HtmlOutputDev::HtmlOutputDev(char *fileName, char *title,
        }
        delete right;
        fputs(DOCTYPE, page);
-       fputs("<HTML>\n<HEAD>\n<TITLE></TITLE>\n</HEAD>\n<BODY>\n",page);
+       fputs("<html>\n<head>\n<title></TITLE>\n</head>\n<body>\n",page);
      }
   }
 
@@ -950,14 +1018,14 @@ HtmlOutputDev::HtmlOutputDev(char *fileName, char *title,
     } 
     else 
     {
-      fprintf(page,"%s\n<HTML>\n<HEAD>\n<TITLE>%s</TITLE>\n",
+      fprintf(page,"%s\n<html>\n<head>\n<title>%s</title>\n",
 	      DOCTYPE, docTitle->getCString());
       
-      fprintf(page, "<META http-equiv=\"Content-Type\" content=\"text/html; charset=%s\">\n", htmlEncoding);
+      fprintf(page, "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=%s\">\n", htmlEncoding);
       
       dumpMetaVars(page);
-      fprintf(page,"</HEAD>\n");
-      fprintf(page,"<BODY bgcolor=\"#A0A0A0\" vlink=\"blue\" link=\"blue\">\n");
+      fprintf(page,"</head>\n");
+      fprintf(page,"<body bgcolor=\"#A0A0A0\" vlink=\"blue\" link=\"blue\">\n");
     }
   }
   ok = gTrue; 
@@ -973,14 +1041,14 @@ HtmlOutputDev::~HtmlOutputDev() {
     }*/
 
     HtmlFont::clear(); 
-    
+
     delete Docname;
     delete docTitle;
 
     deleteGList(glMetaVars, HtmlMetaVar);
 
     if (fContentsFrame){
-      fputs("</BODY>\n</HTML>\n",fContentsFrame);  
+      fputs("</body>\n</html>\n",fContentsFrame);  
       fclose(fContentsFrame);
     }
     if (xml) {
@@ -989,14 +1057,21 @@ HtmlOutputDev::~HtmlOutputDev() {
     } else
     if ( !complexMode || xml || noframes )
     { 
-      fputs("</BODY>\n</HTML>\n",page);  
+      fputs("</body>\n</html>\n",page);  
       fclose(page);
     }
     if (pages)
       delete pages;
+
+	delete splash;
 }
 
 
+
+void HtmlOutputDev::startPage(int pageNum, GfxState *state, double x1,double y1,double x2,double y2) {
+	splash->startPage(pageNum, state, x1, y1, x2, y2);
+	return startPage(pageNum, state);
+}
 
 void HtmlOutputDev::startPage(int pageNum, GfxState *state) {
   /*if (mode&&!xml){
@@ -1024,9 +1099,9 @@ void HtmlOutputDev::startPage(int pageNum, GfxState *state) {
     if (fContentsFrame)
 	{
       if (complexMode)
-		fprintf(fContentsFrame,"<A href=\"%s-%d.html\"",str->getCString(),pageNum);
+		fprintf(fContentsFrame,"<a href=\"%s-%d.html\"",str->getCString(),pageNum);
       else 
-		fprintf(fContentsFrame,"<A href=\"%ss.html#%d\"",str->getCString(),pageNum);
+		fprintf(fContentsFrame,"<a href=\"%ss.html#%d\"",str->getCString(),pageNum);
       fprintf(fContentsFrame," target=\"contents\" >Page %d</a><br>\n",pageNum);
     }
   }
@@ -1037,12 +1112,106 @@ void HtmlOutputDev::startPage(int pageNum, GfxState *state) {
   delete str;
 } 
 
+typedef struct _gfxcolor
+{
+    unsigned char a;
+    unsigned char r;
+    unsigned char g;
+    unsigned char b;
+} gfxcolor_t;
+
+
+void writeMonoBitmap(SplashBitmap*btm, char*filename, char *ext, int jpegQuality)
+{
+    int width8 = (btm->getWidth()+7)/8;
+    int width = btm->getWidth();
+    int height = btm->getHeight();
+    gfxcolor_t*b = (gfxcolor_t*)malloc(sizeof(gfxcolor_t)*width*height);
+    unsigned char*data = btm->getDataPtr();
+    int x,y;
+    for(y=0;y<height;y++) {
+        unsigned char*l = &data[width8*y];
+        gfxcolor_t*d = &b[width*y];
+        for(x=0;x<width;x++) {
+            if(l[x>>3]&(128>>(x&7))) {
+                d[x].r = d[x].b = d[x].a = 255;
+		d[x].g = 0;
+            } else {
+                d[x].r = d[x].g = d[x].b = d[x].a = 0;
+            }
+        }
+    }
+	if(ext == "png")
+		writePNG(filename, (unsigned char*)b, width, height);
+	else
+		jpeg_save((unsigned char*)b, width, height, jpegQuality, filename);
+    free(b);
+}
 
 void HtmlOutputDev::endPage() {
   pages->conv();
   pages->coalesce();
   pages->dump(page, pageNum);
   
+	char fileName[1024];
+	char *ext = pages->getImageExt()->getCString();
+	//ext = 
+	sprintf(fileName,"%s%03d.%s", pages->getDocName()->getCString(), pageNum, ext);
+
+	if(jpegQuality < 0 || jpegQuality > 100)
+		jpegQuality = 85;
+
+	int y,x;
+    SplashBitmap *bitmap = splash->getBitmap();
+    int width = splash->getBitmapWidth();
+    int height = splash->getBitmapHeight();
+
+    
+
+    if(bitmap->getMode()==splashModeMono1) {
+        writeMonoBitmap(bitmap, fileName, pages->getImageExt()->getCString(), jpegQuality);
+        return;
+    }
+
+	if(!strcmp(ext,"png"))
+	{
+		gfxcolor_t*data = (gfxcolor_t*)malloc(sizeof(gfxcolor_t)*width*height);
+		for(y=0;y<height;y++) {
+			gfxcolor_t*line = &data[y*width];
+			for(x=0;x<width;x++) 
+			{
+				Guchar c[4] = {0,0,0,0};
+				bitmap->getPixel(x,y,c);
+				line[x].r = c[0];
+				line[x].g = c[1];
+				line[x].b = c[2];
+				line[x].a = (unsigned char)  bitmap->getAlpha(x,y);
+			}
+		}
+		writePNG(fileName, (unsigned char*)data, width, height);
+		free(data);
+	}
+	else if(!strcmp(ext, "jpg") || !strcmp(ext, "jpeg"))
+	{
+		/*unsigned char * data = (unsigned char*)malloc(3*width*height);
+
+		for(y=0;y<height;y++) {
+			unsigned char*line = &data[y*width];
+			for(x=0;x<width;x++) 
+			{
+				Guchar c[4] = {0,0,0,0};
+				bitmap->getPixel(x,y,c);
+				line[0] = (unsigned char)c[0];
+				line[1] = (unsigned char)c[1];
+				line[2] = (unsigned char)c[2];
+				line+=3;
+			}
+		}*/
+		//JpegFromDib
+		jpeg_save((unsigned char*)bitmap->getDataPtr(), width, height, jpegQuality, fileName);
+//		free(data);
+	}
+
   // I don't yet know what to do in the case when there are pages of different
   // sizes and we want complex output: running ghostscript many times 
   // seems very inefficient. So for now I'll just use last page's size
@@ -1068,7 +1237,7 @@ void HtmlOutputDev::endString(GfxState *state) {
 void HtmlOutputDev::drawChar(GfxState *state, double x, double y,
 	      double dx, double dy,
 	      double originX, double originY,
-	      CharCode code, Unicode *u, int uLen) 
+	      CharCode code, int nBytes, Unicode *u, int uLen) 
 {
   if ( !showHidden && (state->getRender() & 3) == 3) {
     return;
@@ -1083,7 +1252,7 @@ void HtmlOutputDev::drawImageMask(GfxState *state, Object *ref, Stream *str,
   int i, j;
   
   if (ignore||complexMode) {
-    OutputDev::drawImageMask(state, ref, str, width, height, invert, inlineImg);
+	  splash->drawImageMask(state, ref, str, width, height, invert, inlineImg);
     return;
   }
   
@@ -1163,6 +1332,7 @@ void HtmlOutputDev::drawImageMask(GfxState *state, Object *ref, Stream *str,
   if (fName) delete fName;
   }
   else {
+
     OutputDev::drawImageMask(state, ref, str, width, height, invert, inlineImg);
   }
 }
@@ -1174,7 +1344,7 @@ void HtmlOutputDev::drawImage(GfxState *state, Object *ref, Stream *str,
   int i, j;
    
   if (ignore||complexMode) {
-    OutputDev::drawImage(state, ref, str, width, height, colorMap, 
+	  splash->drawImage(state, ref, str, width, height, colorMap, 
 			 maskColors, inlineImg);
     return;
   }
@@ -1273,7 +1443,8 @@ void HtmlOutputDev::drawImage(GfxState *state, Object *ref, Stream *str,
 void HtmlOutputDev::drawLink(Link* link,Catalog *cat){
   double _x1,_y1,_x2,_y2,w;
   int x1,y1,x2,y2;
-  
+  w = 1;
+
   link->getRect(&_x1,&_y1,&_x2,&_y2);
   cvtUserToDev(_x1,_y1,&x1,&y1);
   
@@ -1447,7 +1618,7 @@ GBool HtmlOutputDev::dumpDocOutline(Catalog* catalog)
 				return gFalse;
 			delete str;
 			bClose = gTrue;
-     		fputs("<HTML>\n<HEAD>\n<TITLE>Document Outline</TITLE>\n</HEAD>\n<BODY>\n", output);
+     		fputs("<html>\n<head>\n<title>Document Outline</title>\n</head>\n<body>\n", output);
 		}
 	}
  
@@ -1457,7 +1628,7 @@ GBool HtmlOutputDev::dumpDocOutline(Catalog* catalog)
 	
 	if (bClose)
 	{
-		fputs("</BODY>\n</HTML>\n", output);
+		fputs("</body>\n</html>\n", output);
 		fclose(output);
 	}
   	return done;
@@ -1533,10 +1704,10 @@ GBool HtmlOutputDev::newOutlineLevel(FILE *output, Object *node, Catalog* catalo
 
       fputs("<li>",output);
       if (linkName)
-		fprintf(output,"<A href=\"%s\">", linkName->getCString());
+		fprintf(output,"<a href=\"%s\">", linkName->getCString());
       fputs(titleStr->getCString(),output);
       if (linkName) {
-		fputs("</A>",output);
+		fputs("</a>",output);
 		delete linkName;
       }
       fputs("\n",output);
@@ -1554,3 +1725,90 @@ GBool HtmlOutputDev::newOutlineLevel(FILE *output, Object *node, Catalog* catalo
 
   return atLeastOne;
 }
+
+void HtmlOutputDev::updateCharSpace(GfxState *state)
+{
+	pages->updateCharSpace(state);
+}
+
+void HtmlOutputDev::drawMaskedImage(GfxState *state, Object *ref, Stream *str,
+			       int width, int height,
+			       GfxImageColorMap *colorMap,
+			       Stream *maskStr, int maskWidth, int maskHeight,
+			       GBool maskInvert)
+{
+	splash->drawMaskedImage(state, ref, str, width, height, colorMap, maskStr, maskWidth, maskHeight, maskInvert);
+}
+void HtmlOutputDev::drawSoftMaskedImage(GfxState *state, Object *ref, Stream *str,
+				   int width, int height,
+				   GfxImageColorMap *colorMap,
+				   Stream *maskStr,
+				   int maskWidth, int maskHeight,
+				   GfxImageColorMap *maskColorMap)
+{
+	splash->drawSoftMaskedImage(state, ref, str, width, height, colorMap, maskStr, maskWidth, maskHeight, maskColorMap);
+}
+
+void HtmlOutputDev::saveState(GfxState *state)
+{
+	splash->saveState(state);
+}
+void HtmlOutputDev::restoreState(GfxState *state)
+{
+	splash->restoreState(state);
+}
+
+void HtmlOutputDev::updateAll(GfxState *state)
+{
+	splash->updateAll(state);
+}
+void HtmlOutputDev::updateCTM(GfxState *state, double m11, double m12, double m21, double m22, double m31, double m32)
+{
+	splash->updateCTM(state, m11, m12, m21, m22, m31, m32);
+}
+void HtmlOutputDev::updateLineDash(GfxState *state)
+{
+	splash->updateLineDash(state);
+}
+void HtmlOutputDev::updateFlatness(GfxState *state)
+{
+	splash->updateFlatness(state);
+}
+void HtmlOutputDev::updateLineJoin(GfxState *state)
+{
+	splash->updateLineJoin(state);
+}
+void HtmlOutputDev::updateLineCap(GfxState *state){ splash->updateLineCap(state); }
+void HtmlOutputDev::updateMiterLimit(GfxState *state){ splash->updateMiterLimit(state); }
+void HtmlOutputDev::updateLineWidth(GfxState *state){ splash->updateLineWidth(state); }
+void HtmlOutputDev::updateStrokeAdjust(GfxState *state){ splash->updateStrokeAdjust(state); }
+void HtmlOutputDev::updateFillColorSpace(GfxState *state){ splash->updateFillColorSpace(state); }
+void HtmlOutputDev::updateStrokeColorSpace(GfxState *state){ splash->updateStrokeColorSpace(state); }
+void HtmlOutputDev::updateFillColor(GfxState *state){ splash->updateFillColor(state); }
+void HtmlOutputDev::updateStrokeColor(GfxState *state){ splash->updateStrokeColor(state); }
+void HtmlOutputDev::updateBlendMode(GfxState *state){ splash->updateBlendMode(state); }
+void HtmlOutputDev::updateFillOpacity(GfxState *state){ splash->updateFillOpacity(state); }
+void HtmlOutputDev::updateStrokeOpacity(GfxState *state){ splash->updateStrokeOpacity(state); }
+void HtmlOutputDev::updateFillOverprint(GfxState *state){ splash->updateFillOverprint(state); }
+void HtmlOutputDev::updateStrokeOverprint(GfxState *state){ splash->updateStrokeOverprint(state);}
+void HtmlOutputDev::updateTransfer(GfxState *state){ splash->updateTransfer(state); }
+void HtmlOutputDev::updateTextMat(GfxState *state){ splash->updateTextMat(state); }
+void HtmlOutputDev::updateRender(GfxState *state){ splash->updateRender(state); }
+void HtmlOutputDev::updateRise(GfxState *state){ splash->updateRise(state); }
+void HtmlOutputDev::updateWordSpace(GfxState *state){ splash->updateWordSpace(state); }
+void HtmlOutputDev::updateHorizScaling(GfxState *state){ splash->updateHorizScaling(state); }
+void HtmlOutputDev::updateTextPos(GfxState *state){ splash->updateTextPos(state); }
+void HtmlOutputDev::updateTextShift(GfxState *state, double shift){ splash->updateTextShift(state, shift); }
+
+void HtmlOutputDev::stroke(GfxState *state){ splash->stroke(state); }
+void HtmlOutputDev::fill(GfxState *state){ splash->fill(state); }
+void HtmlOutputDev::eoFill(GfxState *state){ splash->eoFill(state); }
+
+void HtmlOutputDev::tilingPatternFill(GfxState *state, Object *str, int paintType, Dict *resDict, double *mat, double *bbox, int x0, int y0, int x1, int y1, double xStep, double yStep){ splash->tilingPatternFill(state, str, paintType, resDict, mat, bbox, x0,y0,x1,y1,xStep,yStep); }
+GBool HtmlOutputDev::functionShadedFill(GfxState *state, GfxFunctionShading *shading){ return splash->functionShadedFill(state, shading); }
+GBool HtmlOutputDev::axialShadedFill(GfxState *state, GfxAxialShading *shading){ return splash->axialShadedFill(state, shading); }
+GBool HtmlOutputDev::radialShadedFill(GfxState *state, GfxRadialShading *shading){ return splash->radialShadedFill(state, shading); }
+
+void HtmlOutputDev::clip(GfxState *state){ splash->clip(state); }
+void HtmlOutputDev::eoClip(GfxState *state){ splash->eoClip(state); }
+void HtmlOutputDev::clipToStrokePath(GfxState *state){ splash->clipToStrokePath(state); }

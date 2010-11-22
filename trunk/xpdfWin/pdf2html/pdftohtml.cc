@@ -12,6 +12,7 @@
 #include <string.h>
 #include <aconf.h>
 #include <time.h>
+#include "GVector.h"
 #include "parseargs.h"
 #include "GString.h"
 #include "gmem.h"
@@ -29,7 +30,7 @@
 #include "Error.h"
 #include "config.h"
 #include "gfile.h"
-
+#include "pdftohtml.h"
 static int firstPage = 1;
 static int lastPage = 0;
 static GBool rawOrder = gTrue;
@@ -46,7 +47,7 @@ GBool xml=gFalse;
 GBool errQuiet=gFalse;
 
 GBool showHidden = gFalse;
-GBool noMerge = gFalse;
+GBool noMerge = gTrue;
 static char ownerPassword[33] = "";
 static char userPassword[33] = "";
 static char gsDevice[33] = "png16m";
@@ -56,53 +57,35 @@ static GString* getInfoString(Dict *infoDict, char *key);
 static GString* getInfoDate(Dict *infoDict, char *key);
 
 static char textEncName[128] = "";
-
+static int jpegQuality = 85;
 static ArgDesc argDesc[] = {
-  {"-f",      argInt,      &firstPage,     0,
-   "first page to convert"},
-  {"-l",      argInt,      &lastPage,      0,
-   "last page to convert"},
+  {"-f",      argInt,      &firstPage,     0,   "first page to convert"},
+  {"-l",      argInt,      &lastPage,      0,   "last page to convert"},
   /*{"-raw",    argFlag,     &rawOrder,      0,
     "keep strings in content stream order"},*/
-  {"-q",      argFlag,     &errQuiet,      0,
-   "don't print any messages or errors"},
-  {"-h",      argFlag,     &printHelp,     0,
-   "print usage information"},
-  {"-help",   argFlag,     &printHelp,     0,
-   "print usage information"},
-  {"-p",      argFlag,     &printHtml,     0,
-   "exchange .pdf links by .html"}, 
-  {"-c",      argFlag,     &complexMode,          0,
-   "generate complex document"},
-  {"-i",      argFlag,     &ignore,        0,
-   "ignore images"},
-  {"-noframes", argFlag,   &noframes,      0,
-   "generate no frames"},
-  {"-stdout"  ,argFlag,    &stout,         0,
-   "use standard output"},
-  {"-zoom",   argFP,    &scale,         0,
-   "zoom the pdf document (default 1.5)"},
-  {"-xml",    argFlag,    &xml,         0,
-   "output for XML post-processing"},
-  {"-hidden", argFlag,   &showHidden,   0,
-   "output hidden text"},
-  {"-nomerge", argFlag, &noMerge, 0,
-   "do not merge paragraphs"},   
-  {"-enc",    argString,   textEncName,    sizeof(textEncName),
-   "output text encoding name"},
-  {"-dev",    argString,   gsDevice,       sizeof(gsDevice),
-   "output device name for Ghostscript (png16m, jpeg etc)"},
-  {"-v",      argFlag,     &printVersion,  0,
-   "print copyright and version info"},
-  {"-opw",    argString,   ownerPassword,  sizeof(ownerPassword),
-   "owner password (for encrypted files)"},
-  {"-upw",    argString,   userPassword,   sizeof(userPassword),
-   "user password (for encrypted files)"},
+  {"-q",      argFlag,     &errQuiet,      0,   "don't print any messages or errors"},
+  {"-h",      argFlag,     &printHelp,     0,   "print usage information"},
+  {"-help",   argFlag,     &printHelp,     0,   "print usage information"},
+  {"-p",      argFlag,     &printHtml,     0,   "exchange .pdf links by .html"}, 
+  {"-c",      argFlag,     &complexMode,   0,   "generate complex document"},
+  {"-i",      argFlag,     &ignore,        0,   "ignore images"},
+  {"-noframes", argFlag,   &noframes,      0,   "generate no frames"},
+  {"-stdout"  ,argFlag,    &stout,         0,   "use standard output"},
+  {"-zoom",   argFP,    &scale,         0,   "zoom the pdf document (default 1.5)"},
+  {"-xml",    argFlag,    &xml,         0,   "output for XML post-processing"},
+  {"-hidden", argFlag,   &showHidden,   0,   "output hidden text"},
+/*  {"-nomerge", argFlag, &noMerge, 0,   "do not merge paragraphs"}, */  
+  {"-enc",    argString,   textEncName,    sizeof(textEncName),   "output text encoding name"},
+  {"-dev",    argString,   gsDevice,       sizeof(gsDevice),   "output format for images (png, jpeg)"},
+  {"-v",      argFlag,     &printVersion,  0,   "print copyright and version info"},
+  {"-opw",    argString,   ownerPassword,  sizeof(ownerPassword),   "owner password (for encrypted files)"},
+  {"-upw",    argString,   userPassword,   sizeof(userPassword),   "user password (for encrypted files)"},
+  {"-jpegq",	argInt,	&jpegQuality, 0, "jpegQuality"},
   {NULL}
 };
 
-int main(int argc, char *argv[]) {
-  PDFDoc *doc = NULL;
+int mainHtmlExport(int argc, char *argv[], void *stream, void *pdfDoc) {
+  PDFDoc *doc = (PDFDoc *)pdfDoc;
   GString *fileName = NULL;
   GString *docTitle = NULL;
   GString *author = NULL, *keywords = NULL, *subject = NULL, *date = NULL;
@@ -120,20 +103,21 @@ int main(int argc, char *argv[]) {
   // parse args
   ok = parseArgs(argDesc, &argc, argv);
   if (!ok || argc < 2 || argc > 3 || printHelp || printVersion) {
-    fprintf(stderr, "pdftohtml version %s http://pdftohtml.sourceforge.net/, based on Xpdf version %s\n", "0.39", xpdfVersion);
+    fprintf(stderr, "pdftohtml version %s http://pdftohtml.sourceforge.net/, based on Xpdf version %s\n", "0.40", xpdfVersion);
     fprintf(stderr, "%s\n", "Copyright 1999-2003 Gueorgui Ovtcharov and Rainer Dorsch");
     fprintf(stderr, "%s\n\n", xpdfCopyright);
     if (!printVersion) {
       printUsage("pdftohtml", "<PDF-file> [<html-file> <xml-file>]", argDesc);
     }
-    exit(1);
+    return -1;
   }
  
   // init error file
   //errorInit();
 
   // read config file
-  globalParams = new GlobalParams("");
+  if(globalParams == NULL)
+	globalParams = new GlobalParams("");
 
   if (errQuiet) {
     globalParams->setErrQuiet(errQuiet);
@@ -147,36 +131,38 @@ int main(int argc, char *argv[]) {
     }
   }
 
-  // open PDF file
-  if (ownerPassword[0]) {
-    ownerPW = new GString(ownerPassword);
-  } else {
-    ownerPW = NULL;
-  }
-  if (userPassword[0]) {
-    userPW = new GString(userPassword);
-  } else {
-    userPW = NULL;
-  }
+  if(pdfDoc == NULL && stream == NULL)
+  {
+	  // open PDF file
+	  if (ownerPassword[0]) {
+		ownerPW = new GString(ownerPassword);
+	  } else {
+		ownerPW = NULL;
+	  }
+	  if (userPassword[0]) {
+		userPW = new GString(userPassword);
+	  } else {
+		userPW = NULL;
+	  }
 
-  fileName = new GString(argv[1]);
+	  fileName = new GString(argv[1]);
 
-  doc = new PDFDoc(fileName, ownerPW, userPW);
-  if (userPW) {
-    delete userPW;
+	  doc = new PDFDoc(fileName, ownerPW, userPW);
+	  if (userPW) {
+		delete userPW;
+	  }
+	  if (ownerPW) {
+		delete ownerPW;
+	  }
+	  if (!doc->isOk()) {
+		goto error;
+	  }
   }
-  if (ownerPW) {
-    delete ownerPW;
-  }
-  if (!doc->isOk()) {
-    goto error;
-  }
-
   // check for copy permission
-  if (!doc->okToCopy()) {
+  /*if (!doc->okToCopy()) {
     error(-1, "Copying of text from this document is not allowed.");
     goto error;
-  }
+  }*/
 
   // construct text file name
   if (argc == 3) {
@@ -206,17 +192,8 @@ int main(int argc, char *argv[]) {
   
    if (scale>3.0) scale=3.0;
    if (scale<0.5) scale=0.5;
+   stout=gFalse;
    
-   if (complexMode) {
-     //noframes=gFalse;
-     stout=gFalse;
-   } 
-
-   if (stout) {
-     noframes=gTrue;
-     complexMode=gFalse;
-   }
-
    if (xml)
    { 
        complexMode = gTrue;
@@ -257,105 +234,38 @@ int main(int argc, char *argv[]) {
   rawOrder = complexMode; // todo: figure out what exactly rawOrder do :)
 
   // write text file
-  htmlOut = new HtmlOutputDev(htmlFileName->getCString(), 
-	  docTitle->getCString(), 
+  htmlOut = new HtmlOutputDev(htmlFileName->getCString(), docTitle->getCString(), 
 	  author ? author->getCString() : NULL,
 	  keywords ? keywords->getCString() : NULL, 
-          subject ? subject->getCString() : NULL, 
+      subject ? subject->getCString() : NULL, 
 	  date ? date->getCString() : NULL,
-	  extension,
-	  rawOrder, 
-	  firstPage,
-	  doc->getCatalog()->getOutline()->isDict());
+	  extension, rawOrder, firstPage,
+	  doc->getCatalog()->getOutline()->isDict(), scale);
+  htmlOut->xref = doc->getXRef();
   delete docTitle;
-  if( author )
-  {   
-      delete author;
-  }
-  if( keywords )
-  {
-      delete keywords;
-  }
-  if( subject )
-  {
-      delete subject;
-  }
-  if( date )
-  {
-      delete date;
-  }
+  if( author )			delete author;
+  if( keywords )		delete keywords;
+  if( subject )		    delete subject;
+  if( date )			delete date;
 
   if (htmlOut->isOk())
   {
-	doc->displayPages(htmlOut, firstPage, lastPage, static_cast<int>(72*scale), static_cast<int>(72*scale), 0, gTrue, gTrue,gTrue);
-  	if (!xml)
-	{
+	doc->displayPages(htmlOut, firstPage, lastPage, static_cast<int>(72*scale), static_cast<int>(72*scale), 0, gTrue, gTrue,gTrue,NULL);
+  	
+	if (!xml)
 		htmlOut->dumpDocOutline(doc->getCatalog());
-	}
   }
   
-  /*
-  if( complexMode && !xml && !ignore ) {
-    int h=xoutRound(htmlOut->getPageHeight()/scale);
-    int w=xoutRound(htmlOut->getPageWidth()/scale);
-    //int h=xoutRound(doc->getPageHeight(1)/scale);
-    //int w=xoutRound(doc->getPageWidth(1)/scale);
-
-    psFileName = new GString(htmlFileName->getCString());
-    psFileName->append(".ps");
-
-    globalParams->setPSPaperWidth(w);
-    globalParams->setPSPaperHeight(h);
-    //globalParams->setPSNoText(gTrue);
-    psOut = new PSOutputDev(psFileName->getCString(), doc->getXRef(),
-			    doc->getCatalog(), firstPage, lastPage, psModePS);
-    doc->displayPages(psOut, firstPage, lastPage, static_cast<int>(72*scale), static_cast<int>(72*scale), 0, gTrue, gTrue,gTrue);
-    delete psOut;
-
-    //sprintf(buf, "%s -sDEVICE=png16m -dBATCH -dNOPROMPT -dNOPAUSE -r72 -sOutputFile=%s%%03d.png -g%dx%d -q %s", GHOSTSCRIPT, htmlFileName->getCString(), w, h,
-     //psFileName->getCString());
-    
-    GString *gsCmd = new GString(GHOSTSCRIPT);
-    GString *tw, *th, *sc;
-    gsCmd->append(" -sDEVICE=");
-	gsCmd->append(gsDevice);
-	gsCmd->append(" -dBATCH -dNOPROMPT -dNOPAUSE -r");
-    sc = GString::fromInt(static_cast<int>(72*scale));
-    gsCmd->append(sc);
-    gsCmd->append(" -sOutputFile=");
-    gsCmd->append("\"");
-    gsCmd->append(htmlFileName);
-    gsCmd->append("%03d.");
-	gsCmd->append(extension);
-	gsCmd->append("\" -g");
-    tw = GString::fromInt(static_cast<int>(scale*w));
-    gsCmd->append(tw);
-    gsCmd->append("x");
-    th = GString::fromInt(static_cast<int>(scale*h));
-    gsCmd->append(th);
-    gsCmd->append(" -q \"");
-    gsCmd->append(psFileName);
-    gsCmd->append("\"");
-//    printf("running: %s\n", gsCmd->getCString());
-    if( !executeCommand(gsCmd->getCString()) && !errQuiet) {
-      error(-1, "Failed to launch Ghostscript!\n");
-    }
-    unlink(psFileName->getCString());
-    delete tw;
-    delete th;
-    delete sc;
-    delete gsCmd;
-    delete psFileName;
-  }
-  */
   delete htmlOut;
 
   // clean up
  error:
-  if(doc) delete doc;
-  if(globalParams) delete globalParams;
-
-  if(htmlFileName) delete htmlFileName;
+  if(doc && !pdfDoc) 
+	  delete doc;
+  //if(globalParams) delete globalParams;
+ 
+  if(htmlFileName) 
+	  delete htmlFileName;
   HtmlFont::clear();
   
   // check for memory leaks

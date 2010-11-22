@@ -10,6 +10,7 @@
 #include "CRect.h"
 #include "AuxOutputDev.h"
 #include "SaveSWFParams.h"
+#include "pdftohtml.h"
 #ifdef _PDF2SWF
 	#include "../swftools-0.9.1/pdf2swf.h"
 #endif
@@ -162,7 +163,9 @@ public:
 
 	int SaveJpg(char *fileName,float renderDPI,int fromPage, int toPage, int quality, int waitProc);
 	int SaveTxt(char *fileName,int firstPage, int lastPage, bool htmlMeta,bool physLayout, bool rawOrder);
-	//int SaveHtml(char *outFileName, int firstPage, int lastPage, bool noFrames, bool nomerge, bool complexmode);
+	int SaveHtml(char *outFileName, int firstPage, int lastPage, double zoom, bool noFrames, bool complexMode, bool htmlLinks,bool ignoreImages, bool outputHiddenText, char *encName, char *imgExt, int jpegQuality);
+	int SaveXML(char *outFilename, int firstPage, int lastPage, char *encName);
+
 	int SaveSWF(char *fileName, SaveSWFParams *params);
 
 	void CancelJpgSave();
