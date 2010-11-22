@@ -68,7 +68,6 @@ namespace PDFViewer
             this.toolStripButton5 = new System.Windows.Forms.ToolStripButton();
             this.tsbAntialias = new System.Windows.Forms.ToolStripButton();
             this.tsbVectorAntialias = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
             this.tsbUseMuPDF = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
             this.printDialog1 = new System.Windows.Forms.PrintDialog();
@@ -296,7 +295,6 @@ namespace PDFViewer
             this.toolStripButton5,
             this.tsbAntialias,
             this.tsbVectorAntialias,
-            this.toolStripButton3,
             this.tsbUseMuPDF,
             this.toolStripButton4});
             resources.ApplyResources(this.toolStrip1, "toolStrip1");
@@ -404,13 +402,6 @@ namespace PDFViewer
             this.tsbVectorAntialias.Name = "tsbVectorAntialias";
             this.tsbVectorAntialias.Click += new System.EventHandler(this.tsbVectorAntialias_Click);
             // 
-            // toolStripButton3
-            // 
-            this.toolStripButton3.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            resources.ApplyResources(this.toolStripButton3, "toolStripButton3");
-            this.toolStripButton3.Name = "toolStripButton3";
-            this.toolStripButton3.Click += new System.EventHandler(this.toolStripButton3_Click);
-            // 
             // tsbUseMuPDF
             // 
             this.tsbUseMuPDF.CheckOnClick = true;
@@ -517,7 +508,6 @@ namespace PDFViewer
         private System.Windows.Forms.TabPage tabPage2;
         private System.ComponentModel.BackgroundWorker bgLoadPages;
         private System.Windows.Forms.ListView listView2;
-        private System.Windows.Forms.ToolStripButton toolStripButton3;
         private System.Windows.Forms.ToolStripButton tsbUseMuPDF;
         private System.Windows.Forms.ToolStripButton toolStripButton4;
         private System.Windows.Forms.ToolStripButton toolStripButton5;

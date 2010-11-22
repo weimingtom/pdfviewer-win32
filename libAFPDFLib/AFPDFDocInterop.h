@@ -33,7 +33,9 @@ public:
 	//long SavePDF(char *fileName);
 	long SaveJpg(char *fileName,int firstPage, int lastPage,float renderDPI, int quality, int waitProc);
 	long SaveTxt(char *fileName,int firstPage, int lastPage,bool physLayout, bool rawOrder,bool htmlMeta);
-	//long SaveHtml(char *fileName, int firstPage, int lastPage, bool noFrames, bool nomerge, bool complexmode);
+	long SaveHtml(char *outFileName, int firstPage, int lastPage, double zoom, bool noFrames, bool complexMode, bool htmlLinks,bool ignoreImages, bool outputHiddenText, char *encName, char *imgExt, int jpegQuality);
+	long SaveXML(char *outFilename, int firstPage, int lastPage, char *encName);
+
 
 	void CancelJpgExport();
 	void SetExportProgressHandler(void *);

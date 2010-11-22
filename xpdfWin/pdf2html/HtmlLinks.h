@@ -3,6 +3,12 @@
 
 #include "GVector.h"
 #include "GString.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#ifndef _WIN32
+#include <sys/unistd.h>
+#endif
 
 class HtmlLink{
 
@@ -19,7 +25,8 @@ public:
   HtmlLink& operator=(const HtmlLink& x);
   HtmlLink(double xmin,double ymin,double xmax,double ymax,GString *_dest);
   ~HtmlLink();
-  GBool HtmlLink::isEqualDest(const HtmlLink& x) const;
+  //GBool HtmlLink::isEqualDest(const HtmlLink& x) const; // this kills gcc 4.*
+  GBool isEqualDest(const HtmlLink& x) const;
   GString *getDest(){return new GString(dest);}
   double getX1() const {return Xmin;}
   double getX2() const {return Xmax;}

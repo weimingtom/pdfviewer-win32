@@ -695,7 +695,7 @@ void Gfx::go(GBool topLevel) {
 	args[i].free();
       numArgs = 0;
 
-      // periodically update display
+       // periodically update display
       if (++updateLevel >= 20000) {
 	out->dump();
 	updateLevel = 0;

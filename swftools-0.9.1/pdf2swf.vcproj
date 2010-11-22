@@ -454,34 +454,6 @@
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath=".\lib\jpeg.c"
-					>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							CompileAs="2"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							CompileAs="2"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Console release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							CompileAs="2"
-						/>
-					</FileConfiguration>
-				</File>
-				<File
 					RelativePath=".\lib\log.c"
 					>
 					<FileConfiguration
@@ -595,34 +567,6 @@
 						<Tool
 							Name="VCCLCompilerTool"
 							DisableLanguageExtensions="false"
-							CompileAs="2"
-						/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath=".\lib\png.c"
-					>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							CompileAs="2"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							CompileAs="2"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Console release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
 							CompileAs="2"
 						/>
 					</FileConfiguration>

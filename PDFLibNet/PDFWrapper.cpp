@@ -1,5 +1,5 @@
 #include "PDFWrapper.h"
-
+#include "ExportSWFParams.h"
 
 using namespace System::Runtime::InteropServices;
 
@@ -351,15 +351,22 @@ namespace PDFLibNet{
 		}
 		return ret;		
 	}
-	long PDFWrapper::ExportHtml(System::String ^fileName, System::Int32 firstPage, System::Int32 lastPage,System::Boolean noFrames,System::Boolean noMerge, System::Boolean complexMode)
+	long PDFWrapper::ExportHtml(System::String ^fileName, System::Int32 firstPage, System::Int32 lastPage, ExportHtmlParams ^params)
 	{
 		IntPtr ptr = Marshal::StringToCoTaskMemAnsi(fileName);
+		IntPtr ptrEncName = Marshal::StringToCoTaskMemAnsi(params->EncodeName);
+		IntPtr ptrImgExt = Marshal::StringToCoTaskMemAnsi(params->ImageExtension);
+
 		char *singleByte= (char*)ptr.ToPointer();
+		char *encName = (char*)ptrEncName.ToPointer();
+		char *imgExt = (char*)ptrImgExt.ToPointer();
 		int ret;
 		try{
-//			_pdfDoc->SaveHtml(singleByte,firstPage,lastPage,noFrames,noMerge,complexMode);
+			_pdfDoc->SaveHtml(singleByte,firstPage,lastPage, params->Zoom, params->NoFrames, params->ComplexMode, params->HtmlLinks, params->IgnoreImages,params->OutputHiddenText, encName, imgExt, params->JpegQuality);
 		}finally{
 			Marshal::FreeCoTaskMem(ptr);
+			Marshal::FreeCoTaskMem(ptrEncName);
+			Marshal::FreeCoTaskMem(ptrImgExt);
 		}
 		return 0;		
 	}
@@ -415,16 +422,15 @@ namespace PDFLibNet{
 		}
 	}
 
-	long PDFWrapper::ExportSWF(System::String ^fileName)
+	long PDFWrapper::ExportSWF(System::String ^fileName, ExportSWFParams ^params)
 	{
 		IntPtr ptr = Marshal::StringToCoTaskMemAnsi(fileName);
 		char *singleByte= (char*)ptr.ToPointer();
-		SaveSWFParams *s = new SaveSWFParams();
+		
 		long ret=0;
 		try{
-			ret = _pdfDoc->SaveSWF(singleByte, s);
+			ret = _pdfDoc->SaveSWF(singleByte, params->getParams());
 		}finally{
-			delete s;
 			Marshal::FreeCoTaskMem(ptr);
 		}
 		return ret;		

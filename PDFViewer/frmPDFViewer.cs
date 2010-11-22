@@ -834,7 +834,7 @@ namespace PDFViewer
         {
             try
             {
-                saveFileDialog1.Filter = "PostScript file (*.ps)|*.ps|Plain text (*.txt)|*.txt|HTML Markup(*.html)|*.html|Jpg Image (*.jpg)|*.jpg";
+                saveFileDialog1.Filter = "PostScript file (*.ps)|*.ps|Plain text (*.txt)|*.txt|HTML Markup(*.html)|*.html|Jpg Image (*.jpg)|*.jpg|SWF Movie Flash (*.swf)|*.swf";
                 if (saveFileDialog1.ShowDialog() == DialogResult.OK)
                 {
                     using (StatusBusy sb = new StatusBusy(Resources.UIStrings.StatusExporting))
@@ -856,7 +856,7 @@ namespace PDFViewer
                         }
                         else if (saveFileDialog1.FileName.EndsWith(".html"))
                         {
-                            //_pdfDoc.ExportHtml(saveFileDialog1.FileName, 1, _pdfDoc.PageCount,false,false,true);
+                            _pdfDoc.ExportHtml(saveFileDialog1.FileName, 1, _pdfDoc.PageCount, new ExportHtmlParams() { ImageExtension = "png", JpegQuality =60 });
                         }
                         else if (saveFileDialog1.FileName.EndsWith(".eps"))
                         {
@@ -864,7 +864,15 @@ namespace PDFViewer
                         }
                         else if (saveFileDialog1.FileName.EndsWith(".swf"))
                         {
-                            //_pdfDoc.ExportSWF(saveFileDialog1.FileName, 1, _pdfDoc.PageCount);
+                            var settings = new ExportSWFParams();
+                            settings.FlashVersion = 9;
+                            //settings.DefaultLoaderViewer = false;
+                            //settings.FlattenSWF = true;
+                            //settings.IgnoreDrawOrder = true;
+
+                            settings.Loader = @"C:\Users\Antonio\Documents\Visual Studio 2005\Projects\xpdfwin\swftools-0.9.1\swfs\swft_loader.swf";
+                            settings.Viewer = @"C:\Users\Antonio\Documents\Visual Studio 2005\Projects\xpdfwin\swftools-0.9.1\swfs\keyboard_viewer.swf";
+                            _pdfDoc.ExportSWF(saveFileDialog1.FileName, settings);
                         }
                     }
                 }
@@ -1085,7 +1093,7 @@ namespace PDFViewer
             /*PDFPage pg = _pdfDoc.Pages[_pdfDoc.CurrentPage];
             Bitmap bmp = pg.GetBitmap(96,false);
             bmp.Save("C:\\bmp.png", System.Drawing.Imaging.ImageFormat.Png); */
-            _pdfDoc.ExportSWF(@"C:\niño out.swf");
+            
         }
 
         private void tsbUseMuPDF_Click(object sender, EventArgs e)
