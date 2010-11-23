@@ -242,7 +242,7 @@ namespace PDFLibNet
 						manbytes[i]=bytes[i];
 
 					if(nComp==4)	
-						bmp = gcnew System::Drawing::Bitmap(width,height,System::Drawing::Imaging::PixelFormat::Format32bppRgb);
+						bmp = gcnew System::Drawing::Bitmap(width,height,System::Drawing::Imaging::PixelFormat::Format32bppArgb);
 					else if(nComp==3)
 						bmp = gcnew System::Drawing::Bitmap(width,height,System::Drawing::Imaging::PixelFormat::Format24bppRgb);
 					else if(nComp==2)

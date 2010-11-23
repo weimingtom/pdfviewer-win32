@@ -72,6 +72,12 @@ namespace PDFLibNet {
 		ExportJpgProgressHandler ^_evExportJpgProgress;
 		ExportJpgFinishedHandler ^_internalExportJpgFinished;
 		ExportJpgFinishedHandler ^_evExportJpgFinished;
+
+		ExportJpgProgressHandler ^_internalExportSwfProgress;
+		ExportJpgProgressHandler ^_evExportSwfProgress;
+		ExportJpgFinishedHandler ^_internalExportSwfFinished;
+		ExportJpgFinishedHandler ^_evExportSwfFinished;
+
 		RenderFinishedHandler ^_internalRenderFinished;
 		RenderFinishedHandler ^_evRenderFinished;
 
@@ -532,6 +538,40 @@ namespace PDFLibNet {
 				 }
 				 return false;
 			  }
+
+		}
+
+		event ExportJpgProgressHandler ^ExportSwfProgress{
+			void add(ExportJpgProgressHandler ^ ev){
+				this->_evExportSwfProgress += ev;
+			}
+			void remove(ExportJpgProgressHandler ^ev){
+				this->_evExportSwfProgress -= ev;
+			}
+			 bool raise(int a,int b) {
+				 ExportJpgProgressHandler^ tmp = _evExportSwfProgress;
+				 if (tmp) {
+					return tmp->Invoke(a,b);
+				 }
+				 return false;
+			  }
+
+		}
+
+
+		event ExportJpgFinishedHandler ^ExportSwfFinished{
+			void add(ExportJpgFinishedHandler ^ev){
+				_evExportSwfFinished+=ev;
+			}
+			void remove(ExportJpgFinishedHandler ^ev){
+				_evExportSwfFinished-=ev;
+			}
+			void raise()
+			{
+				ExportJpgFinishedHandler ^tmp =_evExportSwfFinished;
+				if(tmp)
+					_evExportSwfFinished->Invoke();
+			}
 
 		}
 

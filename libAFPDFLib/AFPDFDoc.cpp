@@ -19,8 +19,14 @@
 	#define			SPACE_Y				16
 	#define			MAX(a,b)			a>b?a:b			
 	#define			IFZERO(a,b)			a==0?b:a;
-	
-	static wchar_t		EmptyChar[1]						={'\0'};
+
+	wchar_t  *EmptyCharFunc()
+	{
+		wchar_t *empty = new wchar_t[1]; 
+		empty[0] = '\0';
+		return empty;
+	}
+	#define EmptyChar   EmptyCharFunc()
 	
 
 	struct threadParam {
@@ -462,6 +468,7 @@
 				delete infoDict;
 			return ret;
 		}
+		
 		return (EmptyChar);
 	}
 
@@ -582,7 +589,9 @@
 	, __x0(0)
 	, __y0(0)
 	, m_ExportProgressHandle(0)
+	, m_ExportSwfProgressHandle(0)
 	, m_exportJpgThread(0)
+	, m_exportSwfThread(0)
 	, hExportJpgCancel(0)
 	, _countCached(-1)
 	, m_RenderFinishHandle(0)
@@ -597,7 +606,6 @@
 	, _mupdf(0)
 #endif
 	, _useMuPDF(false)
-
 	{
 		
 		// GMutex m;

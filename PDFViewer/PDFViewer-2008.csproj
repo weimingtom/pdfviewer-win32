@@ -128,16 +128,41 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DevExpress.Data.v9.3, Version=9.3.2.0, Culture=neutral, PublicKeyToken=1fde649032da4154" />
+    <Reference Include="DevExpress.Utils.v9.3, Version=9.3.2.0, Culture=neutral, PublicKeyToken=1fde649032da4154" />
+    <Reference Include="DevExpress.XtraEditors.v9.3, Version=9.3.2.0, Culture=neutral, PublicKeyToken=1fde649032da4154, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\DevExpress 2009.3\Components\Sources\DevExpress.DLL\DevExpress.XtraEditors.v9.3.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
+    <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Management" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="PJLControls\ColourPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="PJLControls\ColourPanelForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PJLControls\ColourPanelWithCapture.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="PJLControls\ColourPicker.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="frmExportSWF.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmExportSWF.Designer.cs">
+      <DependentUpon>frmExportSWF.cs</DependentUpon>
+    </Compile>
     <Compile Include="frmExportJpg.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -193,6 +218,30 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="PJLControls\ColourPanel.resx">
+      <DependentUpon>ColourPanel.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PJLControls\ColourPanelForm.resx">
+      <DependentUpon>ColourPanelForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PJLControls\ColourPanelWithCapture.resx">
+      <DependentUpon>ColourPanelWithCapture.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PJLControls\ColourPicker.resx">
+      <DependentUpon>ColourPicker.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmExportSWF.es.resx">
+      <DependentUpon>frmExportSWF.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmExportSWF.resx">
+      <DependentUpon>frmExportSWF.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="frmExportJpg.es.resx">
       <SubType>Designer</SubType>
       <DependentUpon>frmExportJpg.cs</DependentUpon>
@@ -272,6 +321,7 @@
     <Compile Include="UserActivityMonitor\HookManager.Structures.cs" />
     <Compile Include="UserActivityMonitor\HookManager.Windows.cs" />
     <Compile Include="UserActivityMonitor\MouseEventExtArgs.cs" />
+    <Compile Include="PJLControls\Utils.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\dmdskres_373_9_16x16x32.png" />

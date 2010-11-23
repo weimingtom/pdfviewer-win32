@@ -67,15 +67,25 @@ protected:
 	bool m_PageRenderedByThread;
 	bool getNeedNonText();
 	void setNeedNonText(bool needs);
-	HANDLE hExportJpgCancel;
 	HANDLE hRenderFinished;
+
+	HANDLE hExportJpgCancel;
 	HANDLE hExportJpgCancelled;
 	HANDLE hExportJpgFinished;
+
+	HANDLE hExportSwfCancel;
+	HANDLE hExportSwfCancelled;
+	HANDLE hExportSwfFinished;
+
 	CRITICAL_SECTION hgMutex;
 	PDFDoc *createDoc(char *FileName);
 public:
 	PROGRESSHANDLE m_ExportProgressHandle;
 	NOTIFYHANDLE m_ExportFinishHandle;
+
+	PROGRESSHANDLE m_ExportSwfProgressHandle;
+	NOTIFYHANDLE m_ExportSwfFinishHandle;
+
 	NOTIFYHANDLE m_RenderFinishHandle;
 	PAGERENDERNOTIFY m_RenderNotifyFinishHandle;
 private:
@@ -83,6 +93,7 @@ private:
 	BaseStream *m_LastOpenedStream;
 	HANDLE m_renderingThread;
 	HANDLE m_exportJpgThread;
+	HANDLE m_exportSwfThread;
 	HANDLE m_renderThumbs;
 	Queue m_QueuedThumbs;
 	DynArray<CPDFSearchResult> m_Selection;
