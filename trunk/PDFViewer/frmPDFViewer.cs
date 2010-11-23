@@ -736,7 +736,7 @@ namespace PDFViewer
         {
             try
             {
-                Invoke(new frmExportJpg.FinishedInvoker(Render));
+                Invoke(new frmExportSWF.FinishedInvoker(Render));
             }
             catch (Exception) { }
         }
@@ -847,7 +847,7 @@ namespace PDFViewer
                         {
                             _pdfDoc.ExportJpgProgress += new ExportJpgProgressHandler(_pdfDoc_ExportJpgProgress);
                             _pdfDoc.ExportJpgFinished += new ExportJpgFinishedHandler(_pdfDoc_ExportJpgFinished);
-                            frmExportJpg frm = new frmExportJpg(_pdfDoc, saveFileDialog1.FileName);
+                            frmExportSWF frm = new frmExportSWF(_pdfDoc, saveFileDialog1.FileName);
                             frm.Show();
                         }
                         else if (saveFileDialog1.FileName.EndsWith(".txt"))
@@ -869,7 +869,7 @@ namespace PDFViewer
                             //settings.DefaultLoaderViewer = false;
                             //settings.FlattenSWF = true;
                             //settings.IgnoreDrawOrder = true;
-
+                            
                             settings.Loader = @"C:\Users\Antonio\Documents\Visual Studio 2005\Projects\xpdfwin\swftools-0.9.1\swfs\swft_loader.swf";
                             settings.Viewer = @"C:\Users\Antonio\Documents\Visual Studio 2005\Projects\xpdfwin\swftools-0.9.1\swfs\keyboard_viewer.swf";
                             _pdfDoc.ExportSWF(saveFileDialog1.FileName, settings);
@@ -1037,14 +1037,14 @@ namespace PDFViewer
 
         private void tsImagesUpdate_Click(object sender, EventArgs e)
         {
-            if (_pdfDoc!=null && !_pdfDoc.IsBusy)
+            if (_pdfDoc!=null /*&& !_pdfDoc.IsBusy*/)
             {
                 pdfImagesThumbView1.LoadImageList(_pdfDoc, _pdfDoc.CurrentPage);
             }
-            else if (_pdfDoc != null && _pdfDoc.IsBusy)
+            /*else if (_pdfDoc != null && _pdfDoc.IsBusy)
             {
                 MessageBox.Show("The document is busy in a background thread, try again in a moment", "PDFLibNet", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
+            }*/
         }
 
        

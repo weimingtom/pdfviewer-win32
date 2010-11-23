@@ -39,13 +39,13 @@ namespace PDFViewer
 
         public void LoadImageList(PDFLibNet.PDFWrapper pdfDoc,int pageNumber)
         {
-            while (pdfDoc.IsBusy) System.Threading.Thread.Sleep(50);
+            //while (pdfDoc.IsBusy) System.Threading.Thread.Sleep(50);
             System.ComponentModel.BackgroundWorker bg = new BackgroundWorker();
             bg.DoWork += new DoWorkEventHandler(bg_DoWork);
             bg.ProgressChanged += new ProgressChangedEventHandler(bg_ProgressChanged);
             bg.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bg_RunWorkerCompleted);
 
-            //.procData..bg.RunWorkerAsync(new procData(this,_largeImages, pdfDoc,pageNumber));
+            //bg.RunWorkerAsync(new procData(this,_largeImages, pdfDoc,pageNumber));
             this.AddImages(new procData(this, _largeImages, pdfDoc, pageNumber));
         }
 
@@ -62,7 +62,7 @@ namespace PDFViewer
         void bg_DoWork(object sender, DoWorkEventArgs e)
         {
             procData st = (e.Argument as procData);
-            while (st.pdfDoc.IsBusy) System.Threading.Thread.Sleep(50);
+            //while (st.pdfDoc.IsBusy) System.Threading.Thread.Sleep(50);
             int imgCount = st.pdfDoc.Pages[st.pageNumber].ImagesCount;
             st.imageList.Images.Clear();
             st.listView.Items.Clear();
@@ -77,7 +77,7 @@ namespace PDFViewer
 
         private void AddImages(procData st)
         {
-            while (st.pdfDoc.IsBusy) System.Threading.Thread.Sleep(50);
+            //while (st.pdfDoc.IsBusy) System.Threading.Thread.Sleep(50);
             int imgCount = st.pdfDoc.Pages[st.pageNumber].ImagesCount;
             st.imageList.Images.Clear();
             st.listView.Items.Clear();

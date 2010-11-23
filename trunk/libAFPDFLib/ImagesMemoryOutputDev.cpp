@@ -214,20 +214,27 @@ void ImagesMemoryOutputDev::drawImage(GfxState *state, Object *ref, Stream *str,
 			//byte rgbc = RGB(colToByte(rgb.r),colToByte(rgb.g),colToByte(rgb.b));
 			//img->bytes[count]= rgbc;
 			//we need a bitmap of 24 bits
-			img->bytes[count]  =(byte)colToByte(rgb.r);
 			
-			if(img->numcomps==1){
-				GfxColor colr;
-				colorMap->getColor(p,&colr);
+			
+			if(img->numcomps==1) //mono
+			{
+				//GfxColor colr;
+				//colorMap->getColor(p,&colr);
 				img->bytes[count]= RGB(colToByte(rgb.r),colToByte(rgb.g),colToByte(rgb.b));
 			}
-			if(img->numcomps>=2)
-				img->bytes[count+1]=(byte)colToByte(rgb.g);
-			if(img->numcomps>=3)
-				img->bytes[count+2]=(byte)colToByte(rgb.b);
-			if(img->numcomps==4)
+			else if(img->numcomps == 4) //ARGB 32bits
+			{
 				img->bytes[count+3]=255;
-			
+				img->bytes[count+2]= (byte)colToByte(rgb.r);
+				img->bytes[count+1]= (byte)colToByte(rgb.g);
+				img->bytes[count]  = (byte)colToByte(rgb.b);
+			}
+			else if(img->numcomps == 3)	//RGB 24bits
+			{
+				img->bytes[count+2]=(byte)colToByte(rgb.r);
+				img->bytes[count+1]=(byte)colToByte(rgb.g);
+				img->bytes[count]  =(byte)colToByte(rgb.b);
+			}
 			p += colorMap->getNumPixelComps();
 			count+=colorMap->getNumPixelComps();
 		}
