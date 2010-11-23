@@ -2139,6 +2139,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\stdint.h"
+				>
+			</File>
+			<File
 				RelativePath=".\targetver.h"
 				>
 			</File>

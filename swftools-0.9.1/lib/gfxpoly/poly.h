@@ -6,7 +6,7 @@ extern "C"
 {
 #endif
 
-#include <stdint.h>
+#include "..\..\stdint.h"
 #include "../q.h"
 #include "../types.h"
 #include "wind.h"
