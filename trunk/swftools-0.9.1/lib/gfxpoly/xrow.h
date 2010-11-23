@@ -1,7 +1,7 @@
 #ifndef __xrow_h__
 #define __xrow_h__
 
-#include <stdint.h>
+#include "..\..\stdint.h"
 
 #include "poly.h"
 

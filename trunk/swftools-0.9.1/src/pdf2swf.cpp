@@ -651,7 +651,6 @@ int main(int argn, char *argv[])
 int mainPDF2SWF(int argn, char *argv[], void *stream, void *pdfDoc)
 #endif
 {
-	int ret;
 	char buf[256];
 	int numfonts = 0;
 	int t;
@@ -659,6 +658,8 @@ int mainPDF2SWF(int argn, char *argv[], void *stream, void *pdfDoc)
 	int nup_pos = 0;
 	int x,y;
 	int one_file_per_page = 0;
+
+	int ret = 0;
 
 	initLog(0,-1,0,0,-1,loglevel);
 
@@ -884,7 +885,7 @@ int mainPDF2SWF(int argn, char *argv[], void *stream, void *pdfDoc)
 				delete ymax;
 		}
 	}
-
+	
 	if(one_file_per_page) {
 		// remove empty device
 		gfxresult_t*result = out->finish(out);out=0;
@@ -893,13 +894,13 @@ int mainPDF2SWF(int argn, char *argv[], void *stream, void *pdfDoc)
 		gfxresult_t*result = out->finish(out);
 		msg("<notice> Writing SWF file %s", outputname);
 		if(result->save(result, outputname) < 0) 
-			RETERROR(7);
+			ret = 7;
 		
 		int width = (int)(ptroff_t)result->get(result, "width");
 		int height = (int)(ptroff_t)result->get(result, "height");
 		result->destroy(result);result=0;
 
-		if(preloader && viewer) 
+		if(preloader && viewer && ret == 0) 
 		{
 
 #ifdef HAVE_MKSTEMP
@@ -928,12 +929,12 @@ int mainPDF2SWF(int argn, char *argv[], void *stream, void *pdfDoc)
 			if(zlib)
 			{
 				char *argvCombine2[9] = {"swfcombine","-z", buf5, buf6, buf7, buf, buf2, buf3, buf4 };
-				mainCombine(9, argvCombine2);
+				ret = mainCombine(9, argvCombine2);
 			}
 			else
 			{
 				char *argvCombine2[8] = {"swfcombine", buf5, buf6, buf7, buf, buf2, buf3, buf4 };
-				mainCombine(8, argvCombine2);
+				ret = mainCombine(8, argvCombine2);
 			}
 
 			remove(tmpname);
@@ -960,6 +961,6 @@ int mainPDF2SWF(int argn, char *argv[], void *stream, void *pdfDoc)
 		free(filters);
 	}
 	filters=0;
-	return 0;
+	return ret;
 }
 

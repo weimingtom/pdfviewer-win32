@@ -903,15 +903,15 @@ void adjustheader(SWF*swf)
 	swf->fileVersion = config.flashversion;
 }
 
-void catcombine(SWF*master, char*slave_name, SWF*slave, SWF*newswf)
+int catcombine(SWF*master, char*slave_name, SWF*slave, SWF*newswf)
 {
     char* depths;
     int t;
     TAG*tag;
     TAG*mtag,*stag;
     if(config.isframe) {
-	msg("<fatal> Can't combine --cat and --frame");
-	exit(1);
+		msg("<fatal> Can't combine --cat and --frame");
+		return 101;
     }
     if(config.flashversion)
 	master->fileVersion = config.flashversion;
@@ -938,7 +938,7 @@ void catcombine(SWF*master, char*slave_name, SWF*slave, SWF*newswf)
     depths = malloc_safe(65536);
     if(!depths) {
 	msg("<fatal> Couldn't allocate %d bytes of memory", 65536);
-	return;
+	return 111;
     }
     memset(depths, 0, 65536);
     mtag = master->firstTag;
@@ -995,9 +995,11 @@ void catcombine(SWF*master, char*slave_name, SWF*slave, SWF*newswf)
     tag = swf_InsertTag(tag, ST_END);
 
     swf_DeleteTag(newswf, tag);
+
+	return 0;
 }
 
-void normalcombine(SWF*master, char*slave_name, SWF*slave, SWF*newswf)
+int normalcombine(SWF*master, char*slave_name, SWF*slave, SWF*newswf)
 {
     int spriteid = -1;
     int replaceddefine = -1;
@@ -1135,9 +1137,11 @@ void normalcombine(SWF*master, char*slave_name, SWF*slave, SWF*newswf)
     }
 
     swf_DeleteTag(newswf, newswf->firstTag);
+
+	return 0;
 }
 
-void combine(SWF*master, char*slave_name, SWF*slave, SWF*newswf)
+int combine(SWF*master, char*slave_name, SWF*slave, SWF*newswf)
 {
     slavename = slave_name;
     slaveid = -1;
@@ -1239,23 +1243,23 @@ int mainCombine(int argn, char *argv[])
     initLog(0,-1,0,0,-1,config.loglevel);
 
     if(config.merge && config.cat) {
-	msg("<error> Can't combine --cat and --merge");
-	exit(1);
+		msg("<error> Can't combine --cat and --merge");
+		return 102;
     }
     
     if(config.stack && config.cat) {
-	msg("<error> Can't combine --cat and --stack");
-	exit(1);
+		msg("<error> Can't combine --cat and --stack");
+		return 103;
     }
 
     if(config.stack) {
 	if(config.overlay) {
 	    msg("<error> Can't combine -l and -t");
-	    exit(1);
+	    return 104;
 	}
 	if(config.clip) {
 	    msg("<error> Can't combine -c and -t");
-	    exit(1);
+	    return 105;
 	}
 	msg("<verbose> (stacking) %d files found\n", numslaves);
 
@@ -1267,12 +1271,12 @@ int mainCombine(int argn, char *argv[])
 	fi = open(master_filename, O_RDONLY|O_BINARY);
 	if(fi<0) {
 	    msg("<fatal> Failed to open %s\n", master_filename);
-	    exit(1);
+	    return 106;
 	}
 	ret = swf_ReadSWF(fi, &master);
 	if(ret<0) {
 	    msg("<fatal> Failed to read from %s\n", master_filename);
-	    exit(1);
+	    return 107;
 	}
 	swf_RemoveJPEGTables(&master);
 	removeCommonTags(&master);
@@ -1290,7 +1294,7 @@ int mainCombine(int argn, char *argv[])
 	if(numslaves)
 	{
 	    msg("<error> --dummy (-d) implies there are zero slave objects. You supplied %d.", numslaves);
-	    exit(1);
+	    return 108;
 	}
 	numslaves = 1;
 	slave_filename[0] = "!!dummy!!";
@@ -1334,12 +1338,12 @@ int mainCombine(int argn, char *argv[])
 		fi = open(slave_filename[t], O_RDONLY|O_BINARY);
 		if(!fi) {
 		    msg("<fatal> Failed to open %s\n", slave_filename[t]);
-		    exit(1);
+		    return 109;
 		}
 		ret = swf_ReadSWF(fi, &slave);
 		if(ret<0) {
 		    msg("<fatal> Failed to read from %s\n", slave_filename[t]);
-		    exit(1);
+			return 110;
 		}
 		msg("<debug> Read %d bytes from slavefile\n", ret);
 		close(fi);
@@ -1355,7 +1359,9 @@ int mainCombine(int argn, char *argv[])
 		slave.frameCount = 0;
 	    }
 
-	    combine(&master, slave_name[t], &slave, &newswf);
+	    int ret = combine(&master, slave_name[t], &slave, &newswf);
+		if(ret != 0)
+			return ret;
 	    master = newswf;
 	}
 	if(config.dummy && !config.hassizex && !config.hassizey && !config.mastermovex && !config.mastermovey) {
