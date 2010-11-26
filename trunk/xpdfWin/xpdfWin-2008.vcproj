@@ -131,7 +131,7 @@
 			<Tool
 				Name="VCLibrarianTool"
 				LinkLibraryDependencies="true"
-				AdditionalDependencies="..\bin\freetype231.lib ..\bin\zlib.lib ..\libjpeg.lib"
+				AdditionalDependencies="..\bin\freetype231.lib ..\bin\zlib.lib ..\bin\libjpeg.lib"
 				OutputFile="..\bin\$(ProjectName).lib"
 			/>
 			<Tool
@@ -713,6 +713,14 @@
 							CompileAs="2"
 						/>
 					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							CompileAs="2"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath=".\pdf2html\pdftohtml.cc"
@@ -723,6 +731,14 @@
 					>
 					<FileConfiguration
 						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							CompileAs="2"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
 						>
 						<Tool
 							Name="VCCLCompilerTool"
