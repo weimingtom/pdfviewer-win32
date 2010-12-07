@@ -32,8 +32,13 @@
 #include "HtmlFonts.h"
 #include "SplashOutputDev.h"
 #include "SplashBitmap.h"
+
+extern "C"
+{
 #include "png.h"
 #include "jpeg.h"
+}
+#include "jpeg.c"
 
 int HtmlPage::pgNum=0;
 int HtmlOutputDev::imgNum=1;

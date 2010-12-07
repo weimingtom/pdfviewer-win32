@@ -25,14 +25,17 @@ void CDECL error(int pos, char *msg, ...) {
   if (globalParams && globalParams->getErrQuiet()) {
     return;
   }
-  if (pos >= 0) {
-    fprintf(stderr, "Error (%d): ", pos);
-  } else {
-    fprintf(stderr, "Error: ");
+  if(_fileno(stderr) != -1)
+  {
+	  if (pos >= 0) {
+		fprintf(stderr, "Error (%d): ", pos);
+	  } else {
+		fprintf(stderr, "Error: ");
+	  }
+	  va_start(args, msg);
+	  vfprintf(stderr, msg, args);
+	  va_end(args);
+	  fprintf(stderr, "\n");
+	  fflush(stderr);
   }
-  va_start(args, msg);
-  vfprintf(stderr, msg, args);
-  va_end(args);
-  fprintf(stderr, "\n");
-  fflush(stderr);
 }

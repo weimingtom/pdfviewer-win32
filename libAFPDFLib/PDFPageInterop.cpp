@@ -119,20 +119,20 @@ int PDFPageInterop::getPage()
 //Extract selected text
 wchar_t *PDFPageInterop::extractText()
 {
-	CString str;
+	CUnicodeString str;
 	DynArray<pdfPageSelection> *arr =(DynArray<pdfPageSelection> *)this->_selectionArray;
 	char *buf;
 	size_t bytes_c;
 	int bufSize=4096;
 	for(int i=0; i<arr->GetSize();++i){
-		str.AppendChar('\n');
+		str += '\n';
 		wchar_t *txt =((pdfPageSelection)arr->operator [](i)).text;
 		bufSize = wcslen(txt);
 		buf = (char *)malloc(bufSize+2);
 		wcstombs_s(&bytes_c,buf,bufSize,txt,bufSize);
 		
 		if(buf){
-			str.Append(buf);
+			str += buf;
 			free(buf);
 		}
 	}
@@ -293,8 +293,8 @@ static void WriteToGString(void *stream,char *str, int len)
 }
 static void WriteToCString(void *stream,char *str, int len)
 {
-	CString *gstr =(CString *)stream;
-	gstr->Append(str);
+	CUnicodeString *gstr =(CUnicodeString *)stream;
+	(*gstr) += str;
 }
 	
 void PDFPageInterop::getTextStream(void *stream){
@@ -310,7 +310,7 @@ void PDFPageInterop::getTextStream(void *stream){
 wchar_t *PDFPageInterop::getText(){
 	AFPDFDoc *doc = (AFPDFDoc *)_pdfDoc;
 	GString *s1 = new GString();
-	CString *s2 = new CString();
+	CUnicodeString *s2 = new CUnicodeString();
 
 	globalParams->setTextEncoding("UTF-8");
 	UnicodeMap *map=globalParams->getTextEncoding();

@@ -268,13 +268,29 @@ void AFPDFDocInterop::SetSearchCaseSensitive(bool newVal){
 	void AFPDFDocInterop::SetRenderNotifyFinishedHandler(void *handler){
 		((AFPDFDoc *)_ptr)->m_RenderNotifyFinishHandle = static_cast<PAGERENDERNOTIFY>(handler);
 	}
+
+	void AFPDFDocInterop::SetExportSwfFinishedHandler(void *handler){
+		((AFPDFDoc *)_ptr)->m_ExportSwfFinishHandle = static_cast<NOTIFYHANDLE>(handler);
+	}
 	
+	void AFPDFDocInterop::SetExportSwfProgressHandler(void *handler){
+		((AFPDFDoc *)_ptr)->m_ExportSwfProgressHandle = static_cast<PROGRESSHANDLE>(handler);
+	}
+	
+	void AFPDFDocInterop::CancelSwfExport()
+	{
+		((AFPDFDoc *)_ptr)->CancelSwfSave();
+	}
 
 	void AFPDFDocInterop::CancelJpgExport(){
 		((AFPDFDoc *)_ptr)->CancelJpgSave();
 	}
 
-		//Returns true if there is a process running
+	//Returns true if there is a process running
+	bool AFPDFDocInterop::IsSwfBusy(){
+		return ((AFPDFDoc *)_ptr)->SwfIsBusy();
+	}
+	//Returns true if there is a process running
 	bool AFPDFDocInterop::IsJpgBusy(){
 		return ((AFPDFDoc *)_ptr)->JpgIsBusy();
 	}

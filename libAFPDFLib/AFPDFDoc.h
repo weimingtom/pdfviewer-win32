@@ -10,13 +10,15 @@
 #include "CRect.h"
 #include "AuxOutputDev.h"
 #include "SaveSWFParams.h"
-#include "pdftohtml.h"
+#include "../pdf2html/pdftohtml.h" 
+
 #ifdef _PDF2SWF
 	#include "../swftools-0.9.1/pdf2swf.h"
 #endif
 #ifdef _MUPDF
 	#include "mupdfEngine.h"
 #endif
+#include "UnicodeString.h"
 
 void InitGlobalParams(char *configFile);
 typedef int (__stdcall *NOTIFYHANDLE)();
@@ -105,8 +107,8 @@ private:
 	//SplashOutputDev	*m_splashOutThread;
 	Outline *m_Outline;
 	PageMemory *m_Bitmap;
-	CString m_OwnerPassword;
-	CString m_UserPassword;
+	CUnicodeString m_OwnerPassword;
+	CUnicodeString m_UserPassword;
 	CRect m_bbox;
 	CRect m_sliceBox;
 	double __x0;
@@ -178,6 +180,8 @@ public:
 	int SaveXML(char *outFilename, int firstPage, int lastPage, char *encName);
 
 	int SaveSWF(char *fileName, SaveSWFParams *params);
+	void CancelSwfSave();
+	bool SwfIsBusy();
 
 	void CancelJpgSave();
 	//Returns true if exists a background thread of jpg export is running
@@ -261,6 +265,19 @@ public:
 			//InvalidateBitmapCache();
 		#endif
 	}
+};
+
+struct ExportSWFParams {
+	PROGRESSHANDLE m_ExportSwfProgressHandle;
+	NOTIFYHANDLE m_ExportSwfFinishHandle;
+	HANDLE hExportSwfCancel;
+	HANDLE hExportSwfCancelled;
+	HANDLE hExportSwfFinished;
+
+	PDFDoc * doc;
+	char *fileName;
+	char **argv;
+	int argc;
 };
 
 struct ExportParams{
