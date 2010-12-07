@@ -5,14 +5,14 @@
 #include "mem.h"
 
 // memory allocation
-/*#ifndef rfx_free
+#ifndef rfx_free
 void rfx_free(void*ptr)
 {
   if(!ptr)
     return;
   free(ptr);
 }
-#endif*/
+#endif
 void start_debugger()
 {
     //*(int*)0=0;

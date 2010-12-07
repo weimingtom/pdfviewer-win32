@@ -864,63 +864,32 @@ namespace PDFViewer
                         }
                         else if (saveFileDialog1.FileName.EndsWith(".swf"))
                         {
-                            var settings = new ExportSWFParams();
-                            settings.FlashVersion = 9;
-                            //settings.DefaultLoaderViewer = false;
-                            //settings.FlattenSWF = true;
-                            //settings.IgnoreDrawOrder = true;
-                            string subKey = @"Software\xPDFWin\swftools\InstallPath";
-                            var sk = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(subKey);
-                            if (sk == null)
-                            {
-                                string sPath = Environment.CurrentDirectory;
-                                FolderBrowserDialog dlg = new FolderBrowserDialog();
-                                dlg.Description = "Select the path to swfs";
-                                if (dlg.ShowDialog() == DialogResult.OK)
-                                {
-                                    if (!System.IO.File.Exists(dlg.SelectedPath + @"\PreLoaderTemplate.swf"))
-                                    {
-                                        MessageBox.Show("PreLoaderTemplate.swf not found!");
-                                        return;
-                                    }
-                                    else
-                                        sPath = System.IO.Path.GetDirectoryName(dlg.SelectedPath);
-                                }
 
-                                var key = Microsoft.Win32.Registry.CurrentUser.CreateSubKey(subKey);
-                                key.SetValue(null, sPath);
-                                key.Close();
-                                
-                            }
-                            else
-                                sk.Close();
-                        
-                            settings.Loader = @"C:\Users\Antonio\Documents\Visual Studio 2008\Projects\xpdfWin\swftools-0.9.1\swfs\swft_loader.swf";
-                            settings.Viewer = @"C:\Users\Antonio\Documents\Visual Studio 2008\Projects\xpdfWin\swftools-0.9.1\swfs\keyboard_viewer.swf";
                             /*
-                             * 2: Please use -o to specify an output file\n"
-                            3: <error> only one %% allowed in filename
-                            4: <error> -b/-l/-B/-L not supported together with %% in filename
-                            5: "<error> Couldn't open %s", filename
-                            6:  "No pages in range %s", pagerange
-                            7: Error on save
-                            101: <fatal> Can't combine --cat and --frame
-                            102: <error> Can't combine --cat and --merge
-                            103: <error> Can't combine --cat and --stack
-                            104: <error> Can't combine -l and -t
-                            105: <error> Can't combine -c and -t
-                            106: <fatal> Failed to open MasterFile
-                            107: <fatal> Failed to read MasterFile
-                            108: <error> --dummy (-d) implies there are zero slave objects. You supplied num slaves
-                            109: <fatal> Failed to open %s\n", slave_filename[t]
-                            110: "<fatal> Failed to read from %s\n", slave_filename[t]
-                            111: <fatal> Couldn't allocate %d bytes of memory", 65536
+                                settings.Loader = @"C:\Users\Antonio\Documents\Visual Studio 2008\Projects\xpdfWin\swftools-0.9.1\swfs\swft_loader.swf";
+                                settings.Viewer = @"C:\Users\Antonio\Documents\Visual Studio 2008\Projects\xpdfWin\swftools-0.9.1\swfs\keyboard_viewer.swf";
+                            
+                                 * 2: Please use -o to specify an output file\n"
+                                3: <error> only one %% allowed in filename
+                                4: <error> -b/-l/-B/-L not supported together with %% in filename
+                                5: "<error> Couldn't open %s", filename
+                                6:  "No pages in range %s", pagerange
+                                7: Error on save
+                                101: <fatal> Can't combine --cat and --frame
+                                102: <error> Can't combine --cat and --merge
+                                103: <error> Can't combine --cat and --stack
+                                104: <error> Can't combine -l and -t
+                                105: <error> Can't combine -c and -t
+                                106: <fatal> Failed to open MasterFile
+                                107: <fatal> Failed to read MasterFile
+                                108: <error> --dummy (-d) implies there are zero slave objects. You supplied num slaves
+                                109: <fatal> Failed to open %s\n", slave_filename[t]
+                                110: "<fatal> Failed to read from %s\n", slave_filename[t]
+                                111: <fatal> Couldn't allocate %d bytes of memory", 65536
 
-                             */
-                            int res = _pdfDoc.ExportSWF(saveFileDialog1.FileName, settings);
-                            if (res != 0)
-                            {
-                            }
+                                 */
+                            frmExportSWF frm = new frmExportSWF(_pdfDoc,  saveFileDialog1.FileName);
+                            frm.ShowDialog();
                         }
                     }
                 }

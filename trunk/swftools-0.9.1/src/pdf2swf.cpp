@@ -43,6 +43,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA */
 #include "../lib/pdf/pdf.h"
 #include "../lib/log.h"
 #include "../pdf2swf.h"
+#include "../../libAFPDFLib/AFPDFDoc.h"
 
 extern int mainCombine(int argn, char *argv[]);
 #define SWFDIR concatPaths(getInstallationPath(), "swfs")
@@ -648,7 +649,7 @@ gfxdevice_t*create_output_device()
 #ifdef _CONSOLE
 int main(int argn, char *argv[])
 #else
-int mainPDF2SWF(int argn, char *argv[], void *stream, void *pdfDoc)
+int mainPDF2SWF(int argn, char *argv[], void *stream, void *pdfDoc, ExportSWFParams *exportParams)
 #endif
 {
 	char buf[256];
@@ -805,6 +806,21 @@ int mainPDF2SWF(int argn, char *argv[], void *stream, void *pdfDoc)
 
 	for(pagenr = 1; pagenr <= pdf->num_pages; pagenr++) 
 	{
+		DWORD waitRes = WaitForSingleObject(exportParams->hExportSwfCancel,0);
+		if(waitRes ==  WAIT_OBJECT_0){
+			SetEvent(exportParams->hExportSwfCancelled);
+			ret = 1;
+			goto clean;
+		}else{
+			if(exportParams->m_ExportSwfProgressHandle != 0){
+				if(!exportParams->m_ExportSwfProgressHandle(pdf->num_pages,pagenr) !=0){
+					SetEvent(exportParams->hExportSwfCancelled);
+					ret = 4;
+					goto clean;
+				}
+			}
+		}
+				
 		if(is_in_range(pagenr, pagerange)) {
 			gfxpage_t* page = pages[pagenum].page = pdf->getpage(pdf, pagenr);
 			pages[pagenum].x = 0;
@@ -940,11 +956,13 @@ int mainPDF2SWF(int argn, char *argv[], void *stream, void *pdfDoc)
 			remove(tmpname);
 		}
 	}
-
+clean:
 	pdf->destroy(pdf);
 	driver->destroy(driver);
 
-
+	SetEvent(exportParams->hExportSwfFinished); 
+	if(exportParams->m_ExportSwfFinishHandle !=0)
+		exportParams->m_ExportSwfFinishHandle();
 	/* free global parameters */
 
 	p = device_config;

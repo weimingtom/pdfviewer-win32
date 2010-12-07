@@ -1,7 +1,8 @@
 #ifndef __config_h__
 #define __config_h__
-
+#ifndef _M_X64
 #define HAVE_AS3 1
+#endif
 /* Define to empty if the keyword does not work.  */
 //#undef const
 

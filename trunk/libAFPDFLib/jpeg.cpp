@@ -16,8 +16,8 @@
 int JpegFromDib(HANDLE     hDib,  //Handle to RAW data
 				 LPBITMAPINFO lpbi,    
                  int        nQuality, //JPEG quality (0-100)
-                 CString    csJpeg,   //Pathname to jpeg file
-                 CString*   pcsMsg)   //Error msg to return
+                 CUnicodeString    csJpeg,   //Pathname to jpeg file
+                 CUnicodeString*   pcsMsg)   //Error msg to return
 {
     //Basic sanity checks...
     if (nQuality < 0 || nQuality > 100 ||
@@ -44,16 +44,16 @@ int JpegFromDib(HANDLE     hDib,  //Handle to RAW data
     cinfo.err = jpeg_std_error(&jerr); //Use default error handling (ugly!)
 
     jpeg_create_compress(&cinfo);
-	USES_CONVERSION;
-    if ((pOutFile = fopen(csJpeg.GetBuffer(), "wb")) == NULL)
+	//USES_CONVERSION;
+    if ((pOutFile = fopen(csJpeg, "wb")) == NULL)
     {
         *pcsMsg = "Cannot open ";
 		*pcsMsg += csJpeg;
-		csJpeg.ReleaseBuffer();
+		//csJpeg.ReleaseBuffer();
         jpeg_destroy_compress(&cinfo);
         return 30002;
     }
-	csJpeg.ReleaseBuffer();
+	//csJpeg.ReleaseBuffer();
 	//Redirect error out for jpeg
     jpeg_stdio_dest(&cinfo, pOutFile);
     cinfo.image_width      = lpbi->bmiHeader.biWidth;  //Image width and height, in pixels
@@ -123,7 +123,7 @@ BOOL DibToSamps(HANDLE                      hDib,
                 int                         nSampsPerRow,
                 struct jpeg_compress_struct cinfo,
                 JSAMPARRAY                  jsmpPixels,
-                CString*                    pcsMsg,
+                CUnicodeString*                    pcsMsg,
 				LPSTR						lpBits)
 {
    //Sanity...

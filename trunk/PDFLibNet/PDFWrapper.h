@@ -68,6 +68,9 @@ namespace PDFLibNet {
 		void _RenderFinished();
 		void _RenderNotifyFinished(int, bool);
 
+		bool _ExportSwfProgress(int pageCount, int currentPage);
+		void _ExportSwfFinished();
+
 		ExportJpgProgressHandler ^_internalExportJpgProgress;
 		ExportJpgProgressHandler ^_evExportJpgProgress;
 		ExportJpgFinishedHandler ^_internalExportJpgFinished;
@@ -83,6 +86,9 @@ namespace PDFLibNet {
 
 		RenderNotifyFinishedHandler ^_internalRenderNotifyFinished;
 		RenderNotifyFinishedHandler ^_evRenderNotifyFinished;
+
+		GCHandle _gchSwfProgress;
+		GCHandle _gchSwfFinished;
 
 		GCHandle _gchProgress;
 		GCHandle _gchFinished;
@@ -153,6 +159,10 @@ namespace PDFLibNet {
 		long ExportJpg(System::String ^fileName,System::Int32 fromPage, System::Int32 toPage, System::Double renderDPI, System::Int32 quality);
 		long ExportJpg(System::String ^fileName,System::Int32 fromPage, System::Int32 toPage, System::Double renderDPI, System::Int32 quality, System::Int32 waitProc);
 
+		void CancelSwfExport(){
+			_pdfDoc->CancelSwfExport();
+		}
+
 		void CancelJpgExport(){
 			_pdfDoc->CancelJpgExport();
 		}
@@ -177,6 +187,16 @@ namespace PDFLibNet {
 				_pdfDoc->SetUseMuPDF(bUse);
 			}
 		}
+		
+		///<sumary>
+		/// Returns true if exist a background process exporting to jpeg
+		///</sumary>
+		property bool IsSwfBusy{
+			bool get(){
+				return _pdfDoc->IsSwfBusy();
+			}
+		}
+
 		///<sumary>
 		/// Returns true if exist a background process exporting to jpeg
 		///</sumary>
@@ -603,6 +623,10 @@ namespace PDFLibNet {
 				_gchProgress.Free();
 			if(_gchFinished.IsAllocated)
 				_gchFinished.Free();
+			if(_gchSwfProgress.IsAllocated)
+				_gchSwfProgress.Free();
+			if(_gchSwfFinished.IsAllocated)
+				_gchSwfFinished.Free();
 			if(_binaryReader!=nullptr)
 			{
 				_binaryReader->Close();

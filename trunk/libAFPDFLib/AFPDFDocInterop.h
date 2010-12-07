@@ -28,20 +28,25 @@ public:
 	void SetUserPassword(char *pass);
 	void SetOwnerPassword(char *pass);
 	void SetSliceBox(int x, int y, int w, int h);
-	long SaveSWF(char *fileName, SaveSWFParams *params);
-
-	//long SavePDF(char *fileName);
+	
 	long SaveJpg(char *fileName,int firstPage, int lastPage,float renderDPI, int quality, int waitProc);
 	long SaveTxt(char *fileName,int firstPage, int lastPage,bool physLayout, bool rawOrder,bool htmlMeta);
 	long SaveHtml(char *outFileName, int firstPage, int lastPage, double zoom, bool noFrames, bool complexMode, bool htmlLinks,bool ignoreImages, bool outputHiddenText, char *encName, char *imgExt, int jpegQuality);
 	long SaveXML(char *outFilename, int firstPage, int lastPage, char *encName);
-
+	long SaveSWF(char *fileName, SaveSWFParams *params);
 
 	void CancelJpgExport();
 	void SetExportProgressHandler(void *);
 	void SetExportFinishedHandler(void *);
 	void SetRenderFinishedHandler(void *);
 	void SetRenderNotifyFinishedHandler(void *);
+
+	
+	void CancelSwfExport();
+	void SetExportSwfProgressHandler(void *);
+	void SetExportSwfFinishedHandler(void *);
+	//Returns true if there is a process running
+	bool IsSwfBusy();
 
 	//Returns true if there is a process running
 	bool IsJpgBusy();

@@ -23,6 +23,8 @@ namespace PDFViewer
             udTopage.Maximum = _doc.PageCount;
             udFromPage.Maximum = _doc.PageCount - 1;
             udTopage.Value = _doc.PageCount;
+            LoadDefaults();
+         
         }
 
         private bool UpdateProgress(int pageCount, int currentPage)
@@ -41,23 +43,80 @@ namespace PDFViewer
             btnCancel.Enabled = true;
             cmdChoseFile.Enabled = true;
 
-            _doc.ExportJpgProgress -= new PDFLibNet.ExportJpgProgressHandler(_doc_ExportJpgProgress);
-            _doc.ExportJpgFinished -= new PDFLibNet.ExportJpgFinishedHandler(_doc_ExportJpgFinished);
+            _doc.ExportSwfProgress -= new PDFLibNet.ExportJpgProgressHandler(_doc_ExportSwfProgress);
+            _doc.ExportSwfFinished -= new PDFLibNet.ExportJpgFinishedHandler(_doc_ExportSwfFinished);
+            
         }
 
-        void _doc_ExportJpgFinished()
+        void _doc_ExportSwfFinished()
         {
             Invoke(new FinishedInvoker(Finished));
         }
 
-        bool _doc_ExportJpgProgress(int pageCount, int currentPage)
+        bool _doc_ExportSwfProgress(int pageCount, int currentPage)
         {
             return (bool)Invoke(new ProgressInvoker(UpdateProgress), pageCount, currentPage);
-            
         }
 
         private void btnExport_Click(object sender, EventArgs e)
         {
+            btnExport.Enabled = false;
+
+            _doc.ExportSwfProgress += new PDFLibNet.ExportJpgProgressHandler(_doc_ExportSwfProgress);
+            _doc.ExportSwfFinished += new PDFLibNet.ExportJpgFinishedHandler(_doc_ExportSwfFinished);
+
+            ExportSWFParams ex = new ExportSWFParams();
+            ex.AddPageStop = chkAddPageStop.Checked;
+            ex.DefaultLoaderViewer = string.IsNullOrEmpty(txtLoaderSWF.Text) && string.IsNullOrEmpty(txtViewerSWF.Text);
+            ex.EnableLinks = chkEnableLinks.Checked;
+            int flashVersion = 9;
+            if (int.TryParse(cboFlashVersion.Text, out flashVersion))
+                ex.FlashVersion =(short)flashVersion;
+            ex.FlattenSWF = chkFlattenSWF.Checked;
+            ex.FontsToShapes = chkFontsToShapes.Checked;
+            ex.IgnoreDrawOrder = chkIgnoreDrawOrder.Checked;
+            ex.LinksColor = string.Format("{0:x}{1:x}{2:x}", colorPicker1.Color.R, colorPicker1.Color.G, colorPicker1.Color.B);
+            ex.Loader = txtLoaderSWF.Text;
+            ex.OpenLinksInSameWindow = !chkOpenInNewWindow.Checked;
+            if (optFromPage.Checked)
+                ex.PageRange = string.Format("{0}-{1}", udFromPage.Value, udTopage.Value);
+            else if (optRange.Checked)
+                ex.PageRange = txtPagesRange.Text;
+            else if (optPrintCurrent.Checked)
+                ex.PageRange = _doc.CurrentPage.ToString();
+            ex.PolyToBitmap = optPolyToBitmap.Checked;
+            ex.StoreFonts = chkStoreFonts.Checked;
+            ex.ToFullBitmap = optFullBitmap.Checked;
+            ex.Viewer = txtViewerSWF.Text;
+
+            string subKey = @"Software\xPDFWin\swftools\InstallPath";
+            var sk = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(subKey);
+            if (sk == null)
+            {
+                string sPath = Environment.CurrentDirectory;
+                FolderBrowserDialog dlg = new FolderBrowserDialog();
+                dlg.Description = "Select the path to swfs";
+                if (dlg.ShowDialog() == DialogResult.OK)
+                {
+                    if (!System.IO.File.Exists(dlg.SelectedPath + @"\PreLoaderTemplate.swf"))
+                    {
+                        MessageBox.Show("PreLoaderTemplate.swf not found!");
+                        return;
+                    }
+                    else
+                        sPath = System.IO.Path.GetDirectoryName(dlg.SelectedPath);
+                }
+
+                var key = Microsoft.Win32.Registry.CurrentUser.CreateSubKey(subKey);
+                key.SetValue(null, sPath);
+                key.Close();
+
+            }
+            else
+                sk.Close();
+
+
+            _doc.ExportSWF(txtFileName.Text, ex);
             
         }
 
@@ -79,7 +138,7 @@ namespace PDFViewer
             {
                 _bCancel = true;
                 btnCancel.Enabled = false;
-                _doc.CancelJpgExport();
+                _doc.CancelSwfExport();
             }
         }
 
@@ -91,8 +150,23 @@ namespace PDFViewer
 
         private void frmExportJpg_FormClosing(object sender, FormClosingEventArgs e)
         {
-            _doc.ExportJpgProgress -= new PDFLibNet.ExportJpgProgressHandler(_doc_ExportJpgProgress);
-            _doc.ExportJpgFinished -= new PDFLibNet.ExportJpgFinishedHandler(_doc_ExportJpgFinished);
+           /* if(_doc.IsSwfBusy)
+            {
+                switch (MessageBox.Show("Cancel exporting?", "Close form", MessageBoxButtons.YesNoCancel))
+                {
+                    case System.Windows.Forms.DialogResult.Yes:
+                        _doc.CancelSwfExport();
+                        while(_doc.IsSwfBusy);
+                        break;
+                    case System.Windows.Forms.DialogResult.No:
+                        break;
+                    case System.Windows.Forms.DialogResult.Cancel:
+                        e.Cancel = true;
+                        return;
+                }
+            }*/
+            _doc.ExportSwfProgress -= new PDFLibNet.ExportJpgProgressHandler(_doc_ExportSwfProgress);
+            _doc.ExportSwfFinished -= new PDFLibNet.ExportJpgFinishedHandler(_doc_ExportSwfFinished);
         }
 
         private void optFromPage_CheckedChanged(object sender, EventArgs e)
@@ -113,8 +187,11 @@ namespace PDFViewer
 
         private void button1_Click(object sender, EventArgs e)
         {
+            dlgSave.Filter = "Movie Flash (*.swf)|*.swf";
+            dlgSave.OverwritePrompt = false;
             if (dlgSave.ShowDialog() == DialogResult.OK)
             {
+                
                 this.txtLoaderSWF.Text = dlgSave.FileName;
                 btnExport.Enabled = System.IO.File.Exists(txtViewerSWF.Text) && System.IO.File.Exists(txtLoaderSWF.Text) && !string.IsNullOrEmpty(txtFileName.Text);
             }
@@ -123,11 +200,35 @@ namespace PDFViewer
 
         private void button2_Click(object sender, EventArgs e)
         {
+            dlgSave.Filter = "Movie Flash (*.swf)|*.swf";
+            dlgSave.OverwritePrompt = false;
             if (dlgSave.ShowDialog() == DialogResult.OK)
             {
                 this.txtViewerSWF.Text = dlgSave.FileName;
                 btnExport.Enabled = System.IO.File.Exists(txtViewerSWF.Text) && System.IO.File.Exists(txtLoaderSWF.Text) && !string.IsNullOrEmpty(txtFileName.Text);
             }
+        }
+
+        private void LoadDefaults()
+        {
+            ExportSWFParams ex = new ExportSWFParams();
+            chkAddPageStop.Checked = ex.AddPageStop;
+            chkEnableLinks.Checked = ex.EnableLinks;
+            chkFlattenSWF.Checked = ex.FlattenSWF;
+            chkFontsToShapes.Checked = ex.FontsToShapes;
+            chkIgnoreDrawOrder.Checked = ex.IgnoreDrawOrder;
+            chkOpenInNewWindow.Checked = !ex.OpenLinksInSameWindow;
+            chkStoreFonts.Checked = ex.StoreFonts;
+            cboFlashVersion.Text = ex.FlashVersion.ToString();
+            optPolyToBitmap.Checked = ex.PolyToBitmap;
+            optFullBitmap.Checked = ex.ToFullBitmap;
+            txtLoaderSWF.Text = ex.Loader;
+            txtViewerSWF.Text = ex.Viewer;
+
+        }
+        private void cmdToDefault_Click(object sender, EventArgs e)
+        {
+            LoadDefaults();
         }
     }
 }

@@ -33,7 +33,7 @@ namespace PDFViewer
             this.txtFileName = new System.Windows.Forms.TextBox();
             this.cmdChoseFile = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.radioButton1 = new System.Windows.Forms.RadioButton();
+            this.optRange = new System.Windows.Forms.RadioButton();
             this.txtPagesRange = new System.Windows.Forms.TextBox();
             this.optPrintCurrent = new System.Windows.Forms.RadioButton();
             this.udTopage = new System.Windows.Forms.NumericUpDown();
@@ -62,6 +62,7 @@ namespace PDFViewer
             this.optPolyToBitmap = new System.Windows.Forms.RadioButton();
             this.cmdToDefault = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.cboFlashVersion = new System.Windows.Forms.ComboBox();
             this.chkOpenInNewWindow = new System.Windows.Forms.CheckBox();
             this.chkStoreFonts = new System.Windows.Forms.CheckBox();
             this.chkFontsToShapes = new System.Windows.Forms.CheckBox();
@@ -69,9 +70,9 @@ namespace PDFViewer
             this.chkEnableLinks = new System.Windows.Forms.CheckBox();
             this.chkIgnoreDrawOrder = new System.Windows.Forms.CheckBox();
             this.chkFlattenSWF = new System.Windows.Forms.CheckBox();
+            this.label10 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
-            this.cboFlashVersion = new DevExpress.XtraEditors.ComboBoxEdit();
-            this.labelControl1 = new DevExpress.XtraEditors.LabelControl();
+            this.dlgOpen = new System.Windows.Forms.OpenFileDialog();
             this.colorPicker1 = new PJLControls.ColorPicker();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.udTopage)).BeginInit();
@@ -80,7 +81,6 @@ namespace PDFViewer
             ((System.ComponentModel.ISupportInitialize)(this.udResolution)).BeginInit();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.cboFlashVersion.Properties)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -103,7 +103,7 @@ namespace PDFViewer
             // groupBox1
             // 
             resources.ApplyResources(this.groupBox1, "groupBox1");
-            this.groupBox1.Controls.Add(this.radioButton1);
+            this.groupBox1.Controls.Add(this.optRange);
             this.groupBox1.Controls.Add(this.txtPagesRange);
             this.groupBox1.Controls.Add(this.optPrintCurrent);
             this.groupBox1.Controls.Add(this.udTopage);
@@ -114,12 +114,12 @@ namespace PDFViewer
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.TabStop = false;
             // 
-            // radioButton1
+            // optRange
             // 
-            resources.ApplyResources(this.radioButton1, "radioButton1");
-            this.radioButton1.Name = "radioButton1";
-            this.radioButton1.TabStop = true;
-            this.radioButton1.UseVisualStyleBackColor = true;
+            resources.ApplyResources(this.optRange, "optRange");
+            this.optRange.Name = "optRange";
+            this.optRange.TabStop = true;
+            this.optRange.UseVisualStyleBackColor = true;
             // 
             // txtPagesRange
             // 
@@ -329,10 +329,10 @@ namespace PDFViewer
             resources.ApplyResources(this.cmdToDefault, "cmdToDefault");
             this.cmdToDefault.Name = "cmdToDefault";
             this.cmdToDefault.UseVisualStyleBackColor = true;
+            this.cmdToDefault.Click += new System.EventHandler(this.cmdToDefault_Click);
             // 
             // groupBox3
             // 
-            this.groupBox3.Controls.Add(this.labelControl1);
             this.groupBox3.Controls.Add(this.cboFlashVersion);
             this.groupBox3.Controls.Add(this.chkOpenInNewWindow);
             this.groupBox3.Controls.Add(this.colorPicker1);
@@ -342,10 +342,23 @@ namespace PDFViewer
             this.groupBox3.Controls.Add(this.chkEnableLinks);
             this.groupBox3.Controls.Add(this.chkIgnoreDrawOrder);
             this.groupBox3.Controls.Add(this.chkFlattenSWF);
+            this.groupBox3.Controls.Add(this.label10);
             this.groupBox3.Controls.Add(this.label9);
             resources.ApplyResources(this.groupBox3, "groupBox3");
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.TabStop = false;
+            // 
+            // cboFlashVersion
+            // 
+            this.cboFlashVersion.FormattingEnabled = true;
+            this.cboFlashVersion.Items.AddRange(new object[] {
+            resources.GetString("cboFlashVersion.Items"),
+            resources.GetString("cboFlashVersion.Items1"),
+            resources.GetString("cboFlashVersion.Items2"),
+            resources.GetString("cboFlashVersion.Items3"),
+            resources.GetString("cboFlashVersion.Items4")});
+            resources.ApplyResources(this.cboFlashVersion, "cboFlashVersion");
+            this.cboFlashVersion.Name = "cboFlashVersion";
             // 
             // chkOpenInNewWindow
             // 
@@ -389,30 +402,23 @@ namespace PDFViewer
             this.chkFlattenSWF.Name = "chkFlattenSWF";
             this.chkFlattenSWF.UseVisualStyleBackColor = true;
             // 
+            // label10
+            // 
+            resources.ApplyResources(this.label10, "label10");
+            this.label10.Name = "label10";
+            // 
             // label9
             // 
             resources.ApplyResources(this.label9, "label9");
             this.label9.Name = "label9";
             // 
-            // cboFlashVersion
+            // dlgOpen
             // 
-            resources.ApplyResources(this.cboFlashVersion, "cboFlashVersion");
-            this.cboFlashVersion.Name = "cboFlashVersion";
-            this.cboFlashVersion.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
-            new DevExpress.XtraEditors.Controls.EditorButton(((DevExpress.XtraEditors.Controls.ButtonPredefines)(resources.GetObject("comboBoxEdit1.Properties.Buttons"))))});
-            this.cboFlashVersion.Properties.Items.AddRange(new object[] {
-            resources.GetString("comboBoxEdit1.Properties.Items"),
-            resources.GetString("comboBoxEdit1.Properties.Items1"),
-            resources.GetString("comboBoxEdit1.Properties.Items2"),
-            resources.GetString("comboBoxEdit1.Properties.Items3")});
-            // 
-            // labelControl1
-            // 
-            resources.ApplyResources(this.labelControl1, "labelControl1");
-            this.labelControl1.Name = "labelControl1";
+            this.dlgOpen.FileName = "openFileDialog1";
             // 
             // colorPicker1
             // 
+            this.colorPicker1.Color = System.Drawing.Color.Blue;
             this.colorPicker1.DisplayColorName = true;
             resources.ApplyResources(this.colorPicker1, "colorPicker1");
             this.colorPicker1.Name = "colorPicker1";
@@ -439,9 +445,10 @@ namespace PDFViewer
             this.Controls.Add(this.cmdChoseFile);
             this.Controls.Add(this.txtFileName);
             this.Controls.Add(this.label1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Name = "frmExportSWF";
-            this.Load += new System.EventHandler(this.frmExportSWF_Load);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmExportJpg_FormClosing);
+            this.Load += new System.EventHandler(this.frmExportSWF_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.udTopage)).EndInit();
@@ -452,7 +459,6 @@ namespace PDFViewer
             this.groupBox2.PerformLayout();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.cboFlashVersion.Properties)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -482,7 +488,7 @@ namespace PDFViewer
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.TextBox txtViewerSWF;
         private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.RadioButton radioButton1;
+        private System.Windows.Forms.RadioButton optRange;
         private System.Windows.Forms.NumericUpDown udQuality;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label3;
@@ -502,7 +508,9 @@ namespace PDFViewer
         private System.Windows.Forms.CheckBox chkIgnoreDrawOrder;
         private System.Windows.Forms.CheckBox chkFlattenSWF;
         private System.Windows.Forms.Label label9;
-        private DevExpress.XtraEditors.LabelControl labelControl1;
-        private DevExpress.XtraEditors.ComboBoxEdit cboFlashVersion;
+        private System.Windows.Forms.ComboBox cboFlashVersion;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.OpenFileDialog dlgOpen;
+        
     }
 }

@@ -10,7 +10,7 @@
 #include "devices/rescale.h"
 #include "pdf.h"
 #include "args.h"*/
-
+#undef free
 
 	//------DECLARATIONS	
 	#define			FIND_DPI			72
@@ -590,9 +590,12 @@
 	, __y0(0)
 	, m_ExportProgressHandle(0)
 	, m_ExportSwfProgressHandle(0)
+	, m_ExportSwfFinishHandle(0)
+	, m_ExportFinishHandle(0)
 	, m_exportJpgThread(0)
 	, m_exportSwfThread(0)
 	, hExportJpgCancel(0)
+	, hExportSwfCancel(0)
 	, _countCached(-1)
 	, m_RenderFinishHandle(0)
 	, m_PageRenderedByThread(0)
@@ -654,7 +657,7 @@
 		}
 		if(m_exportJpgThread){
 			DWORD exitcode=0;
-			GetExitCodeThread(m_renderingThread,&exitcode);
+			GetExitCodeThread(m_exportJpgThread,&exitcode);
 			if(exitcode==STILL_ACTIVE){
 				::SetEvent(hExportJpgCancel);
 				::WaitForSingleObject(hExportJpgFinished,INFINITE);
@@ -662,6 +665,17 @@
 			}
 			CloseHandle(m_exportJpgThread);
 			m_exportJpgThread=0;
+		}
+		if(m_exportSwfThread)
+		{
+			DWORD exitcode=0;
+			GetExitCodeThread(m_exportSwfThread,&exitcode);
+			if(exitcode==STILL_ACTIVE){
+				::SetEvent(hExportSwfCancel);
+				::WaitForSingleObject(hExportSwfFinished,INFINITE);
+			}
+			CloseHandle(m_exportSwfThread);
+			m_exportSwfThread=0;
 		}
 
 		if(m_LastOpenedStream)
@@ -742,10 +756,10 @@
 					}				
 					//Intentamos abrir con clave
 					pdfDoc = new PDFDoc(new GString(FileName), 
-							new GString(m_OwnerPassword.GetBuffer()), 
-							new GString(m_UserPassword.GetBuffer()));
-					m_OwnerPassword.ReleaseBuffer();
-					m_UserPassword.ReleaseBuffer();
+							new GString(m_OwnerPassword), 
+							new GString(m_UserPassword));
+					//m_OwnerPassword.ReleaseBuffer();
+					//m_UserPassword.ReleaseBuffer();
 
 				}
 			} 
@@ -840,10 +854,10 @@
 					}				
 					//Intentamos abrir con clave
 					m_PDFDoc = new PDFDoc(str, 
-							new GString(m_OwnerPassword.GetBuffer()), 
-							new GString(m_UserPassword.GetBuffer()));
-					m_OwnerPassword.ReleaseBuffer();
-					m_UserPassword.ReleaseBuffer();
+							new GString(m_OwnerPassword), 
+							new GString(m_UserPassword));
+					//m_OwnerPassword.ReleaseBuffer();
+					//m_UserPassword.ReleaseBuffer();
 				}
 			} 
 			if (!m_PDFDoc->isOk())
@@ -940,10 +954,10 @@
 					}				
 					//Intentamos abrir con clave
 					m_PDFDoc = new PDFDoc(new GString(FileName), 
-							new GString(m_OwnerPassword.GetBuffer()), 
-							new GString(m_UserPassword.GetBuffer()));
-					m_OwnerPassword.ReleaseBuffer();
-					m_UserPassword.ReleaseBuffer();
+							new GString(m_OwnerPassword), 
+							new GString(m_UserPassword));
+					//m_OwnerPassword.ReleaseBuffer();
+					//m_UserPassword.ReleaseBuffer();
 				}
 			} 
 			if (!m_PDFDoc->isOk())
@@ -1620,12 +1634,12 @@
 #ifdef _MUPDF
 		if(_mupdf == NULL){
 			_mupdf = new mupdfEngine();
-			if(this->_mupdf->LoadFile(this->m_LastOpenedFile->getCString(),m_OwnerPassword.GetBuffer(),m_UserPassword.GetBuffer())){
+			if(this->_mupdf->LoadFile(this->m_LastOpenedFile->getCString(), (char *) (const char *)m_OwnerPassword, (char *)(const char *)m_UserPassword)){
 				delete _mupdf;
 				_mupdf=NULL;
 			}
-			m_OwnerPassword.ReleaseBuffer();
-			m_UserPassword.ReleaseBuffer();
+			//m_OwnerPassword.ReleaseBuffer();
+			//m_UserPassword.ReleaseBuffer();
 		}
 		return _mupdf!=NULL;
 #else
@@ -2138,7 +2152,7 @@
 	{
 		
 
-		CString strResult;
+		CUnicodeString strResult;
 		char version[32];
 		if(m_PDFDoc){
 			sprintf(version,"%f",m_PDFDoc->getPDFVersion());
@@ -2158,7 +2172,7 @@
 		Unicode * ucstring;
 		TextOutputDev FindPage(NULL, gTrue, gFalse, gFalse);
 
-		CString theString(sText);
+		CUnicodeString theString(sText);
 		int length = theString.GetLength();
 		
 		//Tratar de reservar la cadena
@@ -2273,7 +2287,7 @@
 		Unicode * ucstring;
 		TextOutputDev FindPage(NULL, gTrue, gFalse, gFalse);
 
-		CString theString(sText);
+		CUnicodeString theString(sText);
 		int length = theString.GetLength();
 		
 		//Tratar de reservar la cadena
@@ -2372,7 +2386,7 @@
 		Unicode * ucstring;
 		TextOutputDev FindPage(NULL, gTrue, gFalse, gFalse);
 
-		CString theString(sText);
+		CUnicodeString theString(sText);
 		int length = theString.GetLength();
 		
 		//Tratar de reservar la cadena
@@ -2490,7 +2504,7 @@
 		Unicode * ucstring;
 		TextOutputDev FindPage(NULL, gTrue, gFalse, gFalse);
 
-		CString theString(sText);
+		CUnicodeString theString(sText);
 		int length = theString.GetLength();
 		
 		//Tratar de reservar la cadena
@@ -2638,15 +2652,17 @@
 	char * AFPDFDoc::getCreationDate(){
 		wchar_t * s = getDocInfo("CreationDate",m_PDFDoc);
 		char *datetime = new char[256];
-		USES_CONVERSION;
-		parseDateTime(datetime,W2A(s));
+		//USES_CONVERSION;
+		CUnicodeString buff(s);
+		parseDateTime(datetime, buff);
 		return datetime;
 	}
 	char * AFPDFDoc::getLastModifiedDate(){
 		wchar_t *s = getDocInfo("LastModifiedDate",m_PDFDoc);
 		char *datetime=new char[256];
-		USES_CONVERSION;
-		parseDateTime(datetime,W2A(s));
+		//USES_CONVERSION;
+		CUnicodeString buff(s);
+		parseDateTime(datetime,buff);
 		return datetime;
 	}
 
@@ -2685,7 +2701,7 @@
 
 	int AFPDFDoc::SaveJpg(char *fileName,float renderDPI,int fromPage, int toPage, int quality, int waitProc)
 	{
-		CString errmsg;
+		CUnicodeString errmsg;
 		DWORD waitRes=0;
 		//If the current rendered page is the same requested
 		if(renderDPI ==  this->m_renderDPI
@@ -2696,7 +2712,6 @@
 			{
 				DWORD exitcode=0;
 				//hurry up!
-				
 				GetExitCodeThread(m_renderingThread,&exitcode);
 				if(exitcode==STILL_ACTIVE)
 					SetThreadPriority(m_renderingThread,THREAD_PRIORITY_ABOVE_NORMAL);
@@ -2727,7 +2742,7 @@
 			bmi.bmiColors[0].rgbRed = 0;
 			bmi.bmiColors[0].rgbReserved = 0;
 			
-			int ret = JpegFromDib((HANDLE)m_splashOut->GetDataPtr(),&bmi,quality,CString(fileName),&errmsg);
+			int ret = JpegFromDib((HANDLE)m_splashOut->GetDataPtr(),&bmi,quality,CUnicodeString(fileName),&errmsg);
 			if(this->m_ExportProgressHandle != 0){
 				if(this->m_ExportProgressHandle(1,1) !=0){
 				}
@@ -2783,6 +2798,10 @@
 		}
 	}
 
+	void AFPDFDoc::CancelSwfSave(){
+		SetEvent(this->hExportSwfCancel);
+	}
+
 	void AFPDFDoc::CancelJpgSave(){
 		SetEvent(this->hExportJpgCancel);
 	}
@@ -2795,8 +2814,8 @@
 		
 		SplashOutputDev	*splashOut=NULL;
 		int eError=0;
-		CString errMessage;
-		CString fileName(exp->fileName);
+		CUnicodeString errMessage;
+		CUnicodeString fileName(exp->fileName);
 		char *filenameBuffer[1024];
 
 		if(doc!=NULL){
@@ -2846,7 +2865,7 @@
 					bmi.bmiHeader.biHeight = splashOut->getBitmap()->getHeight();
 
 					sprintf((char *)filenameBuffer,exp->fileName,page);
-					if(JpegFromDib((HANDLE)splashOut->getBitmap()->getDataPtr(),&bmi,exp->quality,CString((char *)filenameBuffer),&errMessage)!=0){
+					if(JpegFromDib((HANDLE)splashOut->getBitmap()->getDataPtr(),&bmi,exp->quality,CUnicodeString((char *)filenameBuffer),&errMessage)!=0){
 						eError=3;
 						break;
 					}
@@ -3049,6 +3068,18 @@
 	}
 
 
+	bool AFPDFDoc::SwfIsBusy()
+	{
+		if(m_exportSwfThread!=0){
+			DWORD exitcode=0;
+			GetExitCodeThread(m_exportSwfThread,&exitcode);
+			if (exitcode==STILL_ACTIVE){	
+				return true;
+			}
+		}
+		return false;
+	}
+
 	//Returns true if exists a background thread of jpg export is running
 	bool AFPDFDoc::JpgIsBusy(){
 		if(m_exportJpgThread!=0){
@@ -3159,18 +3190,91 @@
 
 		sprintf_s(bufTmp, tmpBufSize, "|-o|%s", fileName);
 		strcat(buf, bufTmp);
-
-	
-		PDFDoc *pdfDoc =this->createDoc(NULL);
-		
+		PDFDoc *pdfDoc = this->createDoc(NULL);
 #ifdef _PDF2SWF
+		if(params->enableThread)
+		{
+			int cCount=0;
+			char *fileNameCopy = new char[strlen(fileName)];
+			char **argv = ::splitString(buf, "|", &cCount);
+			strcpy(fileNameCopy, (const char *)fileName);
+
+			ExportSWFParams *p = new ExportSWFParams();
+			p->doc = pdfDoc;
+			p->argc = cCount;
+			p->argv = argv;
+			p->fileName  = fileNameCopy;
+			
+
+			if (m_renderingThread!=0)
+			{
+				DWORD exitcode=0;
+				//hurry up!
+				GetExitCodeThread(m_renderingThread,&exitcode);
+				if(exitcode==STILL_ACTIVE)
+					SetThreadPriority(m_renderingThread,THREAD_PRIORITY_ABOVE_NORMAL);
+				while (exitcode==STILL_ACTIVE){
+					
+					GetExitCodeThread(m_renderingThread,&exitcode);
+					Sleep(50);
+				}
+				CloseHandle(m_renderingThread);
+				m_renderingThread=NULL;
+			}
+
+			if(m_exportSwfThread!=0){
+				DWORD exitcode=0;
+				GetExitCodeThread(m_exportSwfThread,&exitcode);
+				if (exitcode==STILL_ACTIVE){	
+					//Cancel event
+					SetEvent(this->hExportSwfCancel);
+					//Wait for finished
+					WaitForSingleObject(this->hExportSwfFinished,INFINITE);
+				}
+				CloseHandle(m_exportSwfThread);
+				m_exportSwfThread=0;
+
+			}
+			
+			if(this->hExportSwfCancel ==0){
+				this->hExportSwfCancel = CreateEvent(NULL,TRUE,FALSE,TEXT("CancelSwflEvent"));
+				this->hExportSwfCancelled = CreateEvent(NULL,TRUE,FALSE,TEXT("CancelledSwfEvent"));
+				this->hExportSwfFinished = CreateEvent(NULL,TRUE,FALSE,TEXT("FinishedSwfEvent"));
+			}
+			ResetEvent(this->hExportSwfCancel);
+			ResetEvent(this->hExportSwfCancelled);
+			ResetEvent(this->hExportSwfFinished);
+
+			p->m_ExportSwfProgressHandle = this->m_ExportSwfProgressHandle;
+			p->m_ExportSwfFinishHandle = this->m_ExportSwfFinishHandle;
+			p->hExportSwfCancel = this->hExportSwfCancel;
+			p->hExportSwfCancelled = this->hExportSwfCancelled;
+			p->hExportSwfFinished = this->hExportSwfFinished;
+
+			DWORD dThread;
+			DWORD waitProc = 0;
+			DWORD waitRes = 0;
+			m_exportSwfThread = CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)AFPDFDoc::ExportingSWFThread,(LPVOID)p,THREAD_PRIORITY_NORMAL,&dThread);
+
+			if(waitProc==-1){
+				waitRes = ::WaitForSingleObject(this->hExportJpgFinished,INFINITE);
+			}else if(waitProc>0){
+				waitRes = ::WaitForSingleObject(this->hExportJpgFinished,waitProc);
+			}
+
+			return waitRes;
+		}
+		else
+		{
+		
 			int cCount=0;
 			char **argv = ::splitString(buf, "|", &cCount);
-			int ret = mainPDF2SWF(cCount, argv, NULL,  pdfDoc);
+			int ret = mainPDF2SWF(cCount, argv, NULL,  pdfDoc, NULL);
 			delete buf;
 			delete bufTmp;
 			delete [] argv;
-			return ret;
+			return ret;	
+		}
 #else
 			return -1;
 #endif
@@ -3179,5 +3283,15 @@
 
 	UINT AFPDFDoc::ExportingSWFThread( LPVOID param )
 	{
-		return 0;
+		ExportSWFParams *p = (ExportSWFParams *)param;
+		PDFDoc *pdfDoc = p->doc;
+		char **argv = p->argv;
+		int cCount = p->argc;
+
+		int ret = mainPDF2SWF(cCount, argv, NULL,  pdfDoc, p);
+
+		delete [] argv;
+		delete p;
+
+		return ret;
 	}

@@ -29,8 +29,10 @@ public:
 		polyToBitmap = false;
 		toFullBitmap = false;
 		linkSameWindow = false;
+		enableThread = true;
 	}
 
+	bool enableThread;
 	char *pageRange;
 	bool zip;
 	double dpi;
