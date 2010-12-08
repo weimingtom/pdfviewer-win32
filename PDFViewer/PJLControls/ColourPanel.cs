@@ -34,94 +34,6 @@ using System.Diagnostics;
 namespace PJLControls
 {
 	/// <summary>
-	/// This represents the Z Axis of an RGB color cube.
-	/// </summary>
-	public enum ZAxis
-	{
-		/// <summary>The Z Axis is red</summary>
-		red,
-		/// <summary>The Z Axis is blue</summary>
-		blue,
-		/// <summary>The Z Axis is green</summary>
-		green
-	}
-
-	/// <summary>Specifies the set of colors to be displayed in the color palette.</summary>
-	/// <remarks><I>If any other useful sets of colors are known please let me know.</I></remarks>
-	public enum ColorSet
-	{
-		/// <summary>Show the system color palette.</summary>
-		System,
-		/// <summary>Show the web color palette.</summary>
-		Web,
-		/// <summary>Show user defined color palette.</summary>
-		Custom
-	}
-
-	/// <summary>
-	/// Specifies the order the colors contained in the selected palette should be sorted.
-	/// </summary>
-	/// <remarks><I>If any other useful sort orders are known please let me know.</I></remarks>
-	public enum ColorSortOrder
-	{
-		/// <summary>Sort by name.</summary>
-		Name,
-		/// <summary>Sort by brightness.</summary>
-		Brightness,
-		/// <summary>Sort by hue.</summary>
-		Hue,
-		/// <summary>Sort by saturation.</summary>
-		Saturation,
-		/// <summary>Sort by linear distance from the origin (0,0,0) of the RGB color space.</summary>
-		Distance,
-		/// <summary>
-		/// Colors are sorted according to their original order.<br></br>
-		/// For System and Web color sets this is the same as sort by name.<br></br>
-		/// For custom colors it will be the order of the colors in the array assigned to the CustomColors property
-		/// </summary>
-		Unsorted
-	}
-
-	/// <summary>
-	/// Provides data for the <c>ColorChanged</c> event.
-	/// </summary>
-	/// <remarks>
-	/// The ColorChanged event occurs when a user selects a new color in the
-	/// ColorPicker, ColorPanel or CustomColorPicker controls.
-	/// </remarks>
-	public class ColorChangedEventArgs : System.EventArgs
-	{
-		private System.Drawing.Color color;
-
-		/// <summary>
-		/// Initializes a new instance of the <c>ColorChangedEventArgs</c> class.
-		/// </summary>
-		/// <param name="color">
-		/// The selected color.
-		/// </param>
-		public ColorChangedEventArgs( System.Drawing.Color color )
-		{
-			this.color = color;
-		}
-
-		/// <summary>
-		/// Gets the selected color.
-		/// </summary>
-		public System.Drawing.Color Color
-		{
-			get
-			{
-				return this.color;
-			}
-		}
-	}
-
-	/// <summary>
-	/// The ColorChangedEvent delegate.
-	/// </summary>
-	public delegate void ColorChangedEventHandler( object sender, ColorChangedEventArgs e );
-
-	/// <summary>
 	/// A control that allows the selection of a color
 	/// from a fixed color palette.
 	/// </summary>
@@ -202,18 +114,21 @@ namespace PJLControls
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.components = new System.ComponentModel.Container();
-			this.toolTip = new System.Windows.Forms.ToolTip(this.components);
-			// 
-			// toolTip
-			// 
-			this.toolTip.AutomaticDelay = 0;
-			// 
-			// ColorPanel
-			// 
-			this.Name = "ColorPanel";
-			this.Size = new System.Drawing.Size(152, 184);
-			this.toolTip.SetToolTip(this, "color");
+            this.components = new System.ComponentModel.Container();
+            this.toolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.SuspendLayout();
+            // 
+            // toolTip
+            // 
+            this.toolTip.AutomaticDelay = 0;
+            // 
+            // ColorPanel
+            // 
+            this.Name = "ColorPanel";
+            this.Size = new System.Drawing.Size(177, 228);
+            this.toolTip.SetToolTip(this, "color");
+            this.ResumeLayout(false);
+
 		}
 		#endregion
 
@@ -1519,4 +1434,93 @@ namespace PJLControls
 			return bShouldSerialize;
 		}
 	}
+
+    /// <summary>
+    /// This represents the Z Axis of an RGB color cube.
+    /// </summary>
+    public enum ZAxis
+    {
+        /// <summary>The Z Axis is red</summary>
+        red,
+        /// <summary>The Z Axis is blue</summary>
+        blue,
+        /// <summary>The Z Axis is green</summary>
+        green
+    }
+
+    /// <summary>Specifies the set of colors to be displayed in the color palette.</summary>
+    /// <remarks><I>If any other useful sets of colors are known please let me know.</I></remarks>
+    public enum ColorSet
+    {
+        /// <summary>Show the system color palette.</summary>
+        System,
+        /// <summary>Show the web color palette.</summary>
+        Web,
+        /// <summary>Show user defined color palette.</summary>
+        Custom
+    }
+
+    /// <summary>
+    /// Specifies the order the colors contained in the selected palette should be sorted.
+    /// </summary>
+    /// <remarks><I>If any other useful sort orders are known please let me know.</I></remarks>
+    public enum ColorSortOrder
+    {
+        /// <summary>Sort by name.</summary>
+        Name,
+        /// <summary>Sort by brightness.</summary>
+        Brightness,
+        /// <summary>Sort by hue.</summary>
+        Hue,
+        /// <summary>Sort by saturation.</summary>
+        Saturation,
+        /// <summary>Sort by linear distance from the origin (0,0,0) of the RGB color space.</summary>
+        Distance,
+        /// <summary>
+        /// Colors are sorted according to their original order.<br></br>
+        /// For System and Web color sets this is the same as sort by name.<br></br>
+        /// For custom colors it will be the order of the colors in the array assigned to the CustomColors property
+        /// </summary>
+        Unsorted
+    }
+
+    /// <summary>
+    /// Provides data for the <c>ColorChanged</c> event.
+    /// </summary>
+    /// <remarks>
+    /// The ColorChanged event occurs when a user selects a new color in the
+    /// ColorPicker, ColorPanel or CustomColorPicker controls.
+    /// </remarks>
+    public class ColorChangedEventArgs : System.EventArgs
+    {
+        private System.Drawing.Color color;
+
+        /// <summary>
+        /// Initializes a new instance of the <c>ColorChangedEventArgs</c> class.
+        /// </summary>
+        /// <param name="color">
+        /// The selected color.
+        /// </param>
+        public ColorChangedEventArgs(System.Drawing.Color color)
+        {
+            this.color = color;
+        }
+
+        /// <summary>
+        /// Gets the selected color.
+        /// </summary>
+        public System.Drawing.Color Color
+        {
+            get
+            {
+                return this.color;
+            }
+        }
+    }
+
+    /// <summary>
+    /// The ColorChangedEvent delegate.
+    /// </summary>
+    public delegate void ColorChangedEventHandler(object sender, ColorChangedEventArgs e);
+
 }

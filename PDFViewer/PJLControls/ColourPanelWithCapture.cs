@@ -33,7 +33,6 @@ using System.Windows.Forms;
 
 namespace PJLControls
 {
-	internal delegate void ColorPanelClosingEventHandler( object sender, System.EventArgs e );
 
 	/// <summary>
 	/// This internal class adds mouse capture to the ColorPanel
@@ -154,5 +153,7 @@ namespace PJLControls
 			Capture = true;
 		}
 	}
+
+    internal delegate void ColorPanelClosingEventHandler(object sender, System.EventArgs e);
 }
 

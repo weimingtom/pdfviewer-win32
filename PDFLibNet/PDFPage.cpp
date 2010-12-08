@@ -1,5 +1,9 @@
 #include "PDFPage.h"
-#include <msclr\lock.h>
+//#include <msclr\lock.h>
+
+using namespace System;
+using namespace System::Threading;
+//using namespace msclr;
 
 namespace PDFLibNet
 {
@@ -35,6 +39,7 @@ namespace PDFLibNet
 	{
 		if(!_loaded)
 		{
+			//System::Threading::Monitor::TryEnter( m_object, _timeout, m_locked );
 			PDFPageInterop *p=_pdfDoc->getPage(_pageNumber);
 			if(p){
 				_page=p;
@@ -343,21 +348,26 @@ namespace PDFLibNet
 
 	void xPDFBinaryReader::_ReadFromStreamFunc(unsigned char *buffer,int dir, int pos, int len)
 	{
-		msclr::lock l(_readLock);
-		if(this->BaseStream->Position != pos)
-		{
-			if(this->BaseStream->CanSeek){
-				if(dir==1)
-					this->BaseStream->Seek(pos,System::IO::SeekOrigin::Begin);
-				else if(dir==-1)
-					this->BaseStream->Seek(pos,System::IO::SeekOrigin::End);
-				else if(dir==0)
-					this->BaseStream->Seek(pos,System::IO::SeekOrigin::Current);
-			}else{
-				throw gcnew System::InvalidOperationException();
+		//msclr::lock l(_readLock);
+		try	{
+			System::Threading::Monitor::Enter(_readLock);
+			if(this->BaseStream->Position != pos)
+			{
+				if(this->BaseStream->CanSeek){
+					if(dir==1)
+						this->BaseStream->Seek(pos,System::IO::SeekOrigin::Begin);
+					else if(dir==-1)
+						this->BaseStream->Seek(pos,System::IO::SeekOrigin::End);
+					else if(dir==0)
+						this->BaseStream->Seek(pos,System::IO::SeekOrigin::Current);
+				}else{
+					throw gcnew System::InvalidOperationException();
+				}
 			}
+			System::Runtime::InteropServices::Marshal::Copy(this->ReadBytes(len),0,IntPtr(buffer),len);
+		}finally{
+			System::Threading::Monitor::Exit(_readLock);
 		}
-		System::Runtime::InteropServices::Marshal::Copy(this->ReadBytes(len),0,IntPtr(buffer),len);
 	}
 
 	void *xPDFBinaryReader::GetReadPointer()
