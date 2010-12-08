@@ -6,12 +6,14 @@
 
 // memory allocation
 #ifndef rfx_free
+#ifdef _M_X64
 void rfx_free(void*ptr)
 {
   if(!ptr)
     return;
   free(ptr);
 }
+#endif
 #endif
 void start_debugger()
 {
