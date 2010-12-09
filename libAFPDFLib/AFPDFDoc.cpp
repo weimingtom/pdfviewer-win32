@@ -34,11 +34,18 @@
 			doc=pdfDoc;
 			enablePreRender=true;
 			pageToRender=page;
+			sliceBox = new CRect(pdfDoc->GetSliceBox());
+			rotation = pdfDoc->GetRotation();
+		}
+		~threadParam(){
+			delete sliceBox;
 		}
 		AFPDFDoc *doc;	
 		AuxOutputDev *out;
 		bool enablePreRender;
 		int pageToRender;
+		int rotation;
+		CRect *sliceBox;
 	};
 
 
@@ -691,7 +698,7 @@
 
 		if (m_splashOut!=NULL)
 		{
-//			delete m_splashOut;
+			//delete m_splashOut;
 			m_splashOut=0;
 		}
 
@@ -799,7 +806,7 @@
 			m_OwnerPassword = owner_password;
 		//Si la existia lo eliminamos
 		if (m_splashOut!=NULL){
-			//delete m_splashOut;
+			delete m_splashOut;
 			m_splashOut=0;
 		}
 		//Close the stream
@@ -1100,8 +1107,9 @@
 		AddBitmapCache(bmpMem,page);
 		//If was called by render current, then update the current Bitmap, if not just save in cache	
 		if(byThread){
-			m_PageHeight = bmHeight;
-			m_PageWidth  = bmWidth;
+			/*m_PageHeight = out->GetPageHeight();
+			m_PageWidth  = out->GetPageWidth();
+			*/
 			//Update current bitmap
 			m_Bitmap =bmpMem;
 
@@ -1117,7 +1125,7 @@
 		bool newThreadRunned=false;
 		//prerender next page
 		PageMemory *nextBmp = this->GetBitmapCache(page+1);
-		if (0 && nextBmp==0 && (page+1 <= m_PDFDoc->getNumPages() && enablePreRender && byThread))
+		if (nextBmp==0 && (page+1 <= m_PDFDoc->getNumPages() && enablePreRender && byThread))
 		{   
 			m_PageToRenderByThread = page+1;
 			
@@ -1128,8 +1136,8 @@
 			paperColor[2] = 0xff;
 
 			//Delete splash
-			if(m_splashOut>0){
-				//delete m_splashOut;
+			if(m_splashOut){
+				delete m_splashOut;
 				m_splashOut=0;
 			}
 			
@@ -1221,6 +1229,7 @@
 					CloseHandle(m_renderingThread);
 					m_renderingThread=NULL;
 				}
+				//this->m_sliceBox.NotEmpty
 				//Read from cache
 				m_Bitmap = GetBitmapCache(m_CurrentPage);
 				//Check if the last bitmap is valid
@@ -1230,7 +1239,7 @@
 
 				if(m_Bitmap==0){	
 					m_PageToRenderByThread = m_CurrentPage;
-
+					
 					m_splashOut=0;
 					threadParam *tp=new threadParam(this,m_PageToRenderByThread);
 					tp->out=new AuxOutputDev(new SplashOutputDev(splashModeBGR8, 4, gFalse, paperColor,gTrue,globalParams->getAntialias()));
@@ -1246,13 +1255,12 @@
 					//At this point the m_Bitmap now contains the full page
 					//delete tp;
 					m_Bitmap=GetBitmapCache(m_CurrentPage);
-					
 				} 
+
 				//Update Size
-				if(m_Bitmap){
-					m_PageWidth = m_Bitmap->Width;
-					m_PageHeight = m_Bitmap->Height;
-				}
+				m_PageWidth = this->m_renderDPI/72 * m_PDFDoc->getPageMediaWidth(this->m_CurrentPage);
+				m_PageHeight =  this->m_renderDPI/72 * m_PDFDoc->getPageMediaHeight(this->m_CurrentPage);
+				
 				
 				//prerender next page
 				PageMemory *nextBmp =GetBitmapCache(m_CurrentPage+1);
@@ -1566,8 +1574,18 @@
 				if(pdfDoc->LoadFromMuPDF())
 				{
 #ifdef _MUPDF_GDIPLUS
+					fz_rect *fzRect = NULL;
+					if(param->sliceBox->NotEmpty())
+					{
+						fzRect = new fz_rect();
+						fzRect->x0 = param->sliceBox->left;
+						fzRect->x1 = param->sliceBox->right;
+						fzRect->y0 = param->sliceBox->top;
+						fzRect->y1 = param->sliceBox->bottom;
+					}
+					
 					int w =0; int h=0;
-					HBITMAP im = pdfDoc->_mupdf->renderBitmap(page,renderDPI/72,pdfDoc->m_Rotation,NULL,callbackAbortDisplay,pdfDoc, &w, &h);
+					HBITMAP im = pdfDoc->_mupdf->renderBitmap(page,renderDPI/72,pdfDoc->m_Rotation,fzRect,callbackAbortDisplay,pdfDoc, &w, &h);
 					param->out->SetBitmap(im);
 					param->out->setSize(w,h);
 #else
@@ -1599,25 +1617,31 @@
 				}
 			}
 #endif
-			if(render){
-				if(pdfDoc->m_sliceBox.NotEmpty()){
-					pdfDoc->m_PDFDoc->displayPageSlice(param->out->getSplash(),page,
-												renderDPI,renderDPI, pdfDoc->m_Rotation,
-												gFalse,gTrue,gFalse,
-												pdfDoc->m_sliceBox.left ,pdfDoc->m_sliceBox.top,
-												pdfDoc->m_sliceBox.width,pdfDoc->m_sliceBox.height,callbackAbortDisplay,pdfDoc);					
-				}else{
-					if(pdfDoc->m_PDFDoc->getCatalog() && pdfDoc->m_PDFDoc->getCatalog()->isOk()){
-						Page *p = pdfDoc->m_PDFDoc->getCatalog()->getPage(page);
-						if(p && p->isOk()){
-							p->display(param->out->getSplash(),renderDPI, renderDPI, pdfDoc->m_Rotation, 
-												gFalse, gTrue, gFalse,pdfDoc->m_PDFDoc->getCatalog(),
-												callbackAbortDisplay,pdfDoc);
-							param->out->SetDataPtr(param->out->getSplash()->getBitmap()->getDataPtr());
-							param->out->setDefCTM(param->out->getSplash()->getDefCTM());
-							param->out->setDefICTM(param->out->getSplash()->getDefICTM());
-							param->out->setSize(param->out->getSplash()->getBitmapWidth(),param->out->getSplash()->getBitmapHeight());
+			if(render)
+			{
+				if(pdfDoc->m_PDFDoc->getCatalog() && pdfDoc->m_PDFDoc->getCatalog()->isOk())
+				{
+					Catalog *cat = pdfDoc->m_PDFDoc->getCatalog();
+					Page *p = cat->getPage(page);
+					if(p && p->isOk())
+					{
+						if(param->sliceBox->NotEmpty())
+						{
+							p->displaySlice(param->out->getSplash(),
+								renderDPI,renderDPI,param->rotation,	gFalse,gTrue,
+								param->sliceBox->left, param->sliceBox->top,
+								param->sliceBox->width, param->sliceBox->height,
+								gFalse,cat,callbackAbortDisplay,pdfDoc);
+						}else{
+							p->display(param->out->getSplash(),renderDPI, 
+								renderDPI, param->rotation, gFalse, gTrue, 
+								gFalse, cat, callbackAbortDisplay,pdfDoc);
 						}
+						param->out->SetDataPtr(param->out->getSplash()->getBitmap()->getDataPtr());
+						param->out->setDefCTM(param->out->getSplash()->getDefCTM());
+						param->out->setDefICTM(param->out->getSplash()->getDefICTM());
+						param->out->setSize(param->out->getSplash()->getBitmapWidth(),param->out->getSplash()->getBitmapHeight());
+						param->out->setPageSize(p->getCropWidth()*renderDPI/72,p->getCropHeight()*renderDPI/72);
 					}
 				}
 			}
@@ -1625,7 +1649,6 @@
 			pdfDoc->RenderThreadFinished(param->out,param->pageToRender, param->enablePreRender);
 			delete param;
 			::gUnlockMutex(&pdfDoc->hgMutex);
-
 		}
 		return true;
 	}
@@ -1659,6 +1682,8 @@
 	void AFPDFDoc::SetCurrentPage(long newVal)
 	{
 		m_CurrentPage = newVal;
+		m_PageWidth = this->m_renderDPI * this->m_PDFDoc->getPageMediaWidth(newVal) / 72;
+		m_PageHeight = this->m_renderDPI * this->m_PDFDoc->getPageMediaHeight(newVal) / 72;
 	}
 
 	long AFPDFDoc::GetCurrentX(void)
@@ -1693,6 +1718,8 @@
 		if (m_Bitmap != NULL) 
 		{
 			
+			m_PageWidth = this->m_renderDPI * this->m_PDFDoc->getPageMediaWidth(this->m_CurrentPage) / 72;
+			m_PageHeight = this->m_renderDPI * this->m_PDFDoc->getPageMediaHeight(this->m_CurrentPage) / 72;
 
 			// Draw the rendered document
 			m_Bitmap->Draw(
@@ -3108,7 +3135,7 @@
 		m_sliceBox.left=x;
 		m_sliceBox.right = x+w;
 		m_sliceBox.bottom = y+h;
-		m_sliceBox.top=x;
+		m_sliceBox.top=y;
 		m_sliceBox.width=w;
 		m_sliceBox.height=h;
 	}

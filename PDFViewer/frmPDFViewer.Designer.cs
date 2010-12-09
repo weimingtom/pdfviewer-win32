@@ -63,6 +63,7 @@ namespace PDFViewer
             this.tsbSearch = new System.Windows.Forms.ToolStripButton();
             this.tsbAbout = new System.Windows.Forms.ToolStripButton();
             this.tsbPrint = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton5 = new System.Windows.Forms.ToolStripButton();
@@ -290,6 +291,7 @@ namespace PDFViewer
             this.tsbSearch,
             this.tsbAbout,
             this.tsbPrint,
+            this.toolStripButton3,
             this.toolStripButton1,
             this.toolStripButton2,
             this.toolStripButton5,
@@ -361,6 +363,13 @@ namespace PDFViewer
             resources.ApplyResources(this.tsbPrint, "tsbPrint");
             this.tsbPrint.Name = "tsbPrint";
             this.tsbPrint.Click += new System.EventHandler(this.toolStripButton1_Click);
+            // 
+            // toolStripButton3
+            // 
+            this.toolStripButton3.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            resources.ApplyResources(this.toolStripButton3, "toolStripButton3");
+            this.toolStripButton3.Name = "toolStripButton3";
+            this.toolStripButton3.Click += new System.EventHandler(this.toolStripButton3_Click_1);
             // 
             // toolStripButton1
             // 
@@ -519,6 +528,7 @@ namespace PDFViewer
         private System.Windows.Forms.ColumnHeader columnHeader4;
         private System.Windows.Forms.ColumnHeader columnHeader5;
         private System.Windows.Forms.ColumnHeader columnHeader6;
+        private System.Windows.Forms.ToolStripButton toolStripButton3;
     }
 }
 

@@ -309,7 +309,8 @@ void Page::displaySlice(OutputDev *out, double hDPI, double vDPI,
   }
 
   gfx = new Gfx(xref, out, num, attrs->getResourceDict(),
-		hDPI, vDPI, &box, crop ? cropBox : (PDFRectangle *)NULL,
+//		hDPI, vDPI, &box, crop ? cropBox : (PDFRectangle *)NULL,
+		hDPI, vDPI, &box, crop ? &box : (PDFRectangle *)NULL,
 		rotate, abortCheckCbk, abortCheckCbkData);
   contents.fetch(xref, &obj);
   if (!obj.isNull()) {

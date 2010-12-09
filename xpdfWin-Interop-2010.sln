@@ -21,6 +21,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mapsfonts", "mapsfonts\maps
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pdf2swf", "swftools-0.9.1\pdf2swf.vcxproj", "{1778C608-BD7F-4E4A-A4DA-0D861992F46B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsFormsApplication1", "WindowsFormsApplication1\WindowsFormsApplication1.csproj", "{9D1C38D7-DB3A-4676-8A55-28A8FD1B0886}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Console release|Any CPU = Console release|Any CPU
@@ -409,6 +411,41 @@ Global
 		{1778C608-BD7F-4E4A-A4DA-0D861992F46B}.Release|Win32.Build.0 = Release|Win32
 		{1778C608-BD7F-4E4A-A4DA-0D861992F46B}.Release|x64.ActiveCfg = Release|x64
 		{1778C608-BD7F-4E4A-A4DA-0D861992F46B}.Release|x86.ActiveCfg = Release|Win32
+		{9D1C38D7-DB3A-4676-8A55-28A8FD1B0886}.Console release|Any CPU.ActiveCfg = Release|x86
+		{9D1C38D7-DB3A-4676-8A55-28A8FD1B0886}.Console release|Mixed Platforms.ActiveCfg = Release|x86
+		{9D1C38D7-DB3A-4676-8A55-28A8FD1B0886}.Console release|Mixed Platforms.Build.0 = Release|x86
+		{9D1C38D7-DB3A-4676-8A55-28A8FD1B0886}.Console release|Win32.ActiveCfg = Release|x86
+		{9D1C38D7-DB3A-4676-8A55-28A8FD1B0886}.Console release|x64.ActiveCfg = Release|x86
+		{9D1C38D7-DB3A-4676-8A55-28A8FD1B0886}.Console release|x86.ActiveCfg = Release|x86
+		{9D1C38D7-DB3A-4676-8A55-28A8FD1B0886}.Console release|x86.Build.0 = Release|x86
+		{9D1C38D7-DB3A-4676-8A55-28A8FD1B0886}.Debug no MuPDF|Any CPU.ActiveCfg = Debug|x86
+		{9D1C38D7-DB3A-4676-8A55-28A8FD1B0886}.Debug no MuPDF|Mixed Platforms.ActiveCfg = Debug|x86
+		{9D1C38D7-DB3A-4676-8A55-28A8FD1B0886}.Debug no MuPDF|Mixed Platforms.Build.0 = Debug|x86
+		{9D1C38D7-DB3A-4676-8A55-28A8FD1B0886}.Debug no MuPDF|Win32.ActiveCfg = Debug|x86
+		{9D1C38D7-DB3A-4676-8A55-28A8FD1B0886}.Debug no MuPDF|x64.ActiveCfg = Debug|x86
+		{9D1C38D7-DB3A-4676-8A55-28A8FD1B0886}.Debug no MuPDF|x86.ActiveCfg = Debug|x86
+		{9D1C38D7-DB3A-4676-8A55-28A8FD1B0886}.Debug no MuPDF|x86.Build.0 = Debug|x86
+		{9D1C38D7-DB3A-4676-8A55-28A8FD1B0886}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{9D1C38D7-DB3A-4676-8A55-28A8FD1B0886}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{9D1C38D7-DB3A-4676-8A55-28A8FD1B0886}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{9D1C38D7-DB3A-4676-8A55-28A8FD1B0886}.Debug|Win32.ActiveCfg = Debug|x86
+		{9D1C38D7-DB3A-4676-8A55-28A8FD1B0886}.Debug|x64.ActiveCfg = Debug|x86
+		{9D1C38D7-DB3A-4676-8A55-28A8FD1B0886}.Debug|x86.ActiveCfg = Debug|x86
+		{9D1C38D7-DB3A-4676-8A55-28A8FD1B0886}.Debug|x86.Build.0 = Debug|x86
+		{9D1C38D7-DB3A-4676-8A55-28A8FD1B0886}.Release no MuPDF|Any CPU.ActiveCfg = Release|x86
+		{9D1C38D7-DB3A-4676-8A55-28A8FD1B0886}.Release no MuPDF|Mixed Platforms.ActiveCfg = Release|x86
+		{9D1C38D7-DB3A-4676-8A55-28A8FD1B0886}.Release no MuPDF|Mixed Platforms.Build.0 = Release|x86
+		{9D1C38D7-DB3A-4676-8A55-28A8FD1B0886}.Release no MuPDF|Win32.ActiveCfg = Release|x86
+		{9D1C38D7-DB3A-4676-8A55-28A8FD1B0886}.Release no MuPDF|x64.ActiveCfg = Release|x86
+		{9D1C38D7-DB3A-4676-8A55-28A8FD1B0886}.Release no MuPDF|x86.ActiveCfg = Release|x86
+		{9D1C38D7-DB3A-4676-8A55-28A8FD1B0886}.Release no MuPDF|x86.Build.0 = Release|x86
+		{9D1C38D7-DB3A-4676-8A55-28A8FD1B0886}.Release|Any CPU.ActiveCfg = Release|x86
+		{9D1C38D7-DB3A-4676-8A55-28A8FD1B0886}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{9D1C38D7-DB3A-4676-8A55-28A8FD1B0886}.Release|Mixed Platforms.Build.0 = Release|x86
+		{9D1C38D7-DB3A-4676-8A55-28A8FD1B0886}.Release|Win32.ActiveCfg = Release|x86
+		{9D1C38D7-DB3A-4676-8A55-28A8FD1B0886}.Release|x64.ActiveCfg = Release|x86
+		{9D1C38D7-DB3A-4676-8A55-28A8FD1B0886}.Release|x86.ActiveCfg = Release|x86
+		{9D1C38D7-DB3A-4676-8A55-28A8FD1B0886}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
