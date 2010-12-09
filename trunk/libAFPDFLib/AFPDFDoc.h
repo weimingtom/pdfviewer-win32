@@ -141,6 +141,8 @@ public:
 	PDFDoc *getDoc(){
 		return m_PDFDoc;
 	}
+	int GetRotation() { return m_Rotation; }
+	CRect GetSliceBox() { return m_sliceBox; }
 	long DrawPage(int page,long hdc, int width, int height, double dpi,bool bThread, void *callback, bool bAntialising);
 	bool ThumbInQueue(int page);
 	long LoadFromStream(void *callback,long fullLenght, char *user_password, char *owner_password);

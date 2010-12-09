@@ -1,5 +1,6 @@
 #pragma once
 #include "stdafx.h"
+#include "CRect.h";
 #define			DIB_COPY_BATCH_SIZE 2048
 class AuxOutputDev;
 
@@ -19,7 +20,10 @@ private:
 	double defCTM[6];
 	double defICTM[6];
 	AuxOutputDev *_aux;
+	
 public:
+	CRect *sliceBox;
+
 	PageMemory(AuxOutputDev *aux);
 	~PageMemory(void);
 
@@ -48,4 +52,6 @@ public:
 	int Width;
 	int Height;
 
+	int PageWidth;
+	int PageHeight;
 };

@@ -18,6 +18,8 @@ private:
 	double *_ictm;
 	double _width;
 	double _height;
+	double _pageWidth;
+	double _pageHeight;
 	bool _antialias;
 	bool _isBitmap;
 public:
@@ -43,8 +45,10 @@ public:
 
 	double GetWidth();
 	double GetHeight();
+	double GetPageWidth() { return _pageWidth; }
+	double GetPageHeight() { return _pageHeight; }
 	void setSize(double w, double h){ _width = w; _height = h; }
-
+	void setPageSize(double w, double h) { _pageWidth = w; _pageHeight = h; }
 	//xpdf
 	SplashOutputDev *getSplash();
 	void startDoc(XRef *xrefA);

@@ -14,6 +14,7 @@ PageLinksInterop::PageLinksInterop(void *lptr, AFPDFDocInterop *pdfdoc)
 
 PageLinksInterop::~PageLinksInterop(void)
 {
+	delete _links;
 	//free(_cache);
 }
 

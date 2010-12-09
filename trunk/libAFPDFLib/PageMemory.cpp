@@ -8,6 +8,7 @@ PageMemory::PageMemory(AuxOutputDev *aux)
 , _factorH(1)
 , _renderDPI(0)
 , _aux(aux)
+, sliceBox(0)
 {
 	Width=0;
 	Height=0;
@@ -202,6 +203,8 @@ void PageMemory::Dispose()
 	if(_bitmap!=NULL){
 		DeleteObject(_bitmap);
 	}
+	delete sliceBox;
+	sliceBox=NULL;
 	_bitmap=NULL;
 	_bits=NULL;
 

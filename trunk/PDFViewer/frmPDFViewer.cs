@@ -282,6 +282,7 @@ namespace PDFViewer
         {
             pageViewControl1.PageSize = new Size(_pdfDoc.PageWidth, _pdfDoc.PageHeight);
             txtPage.Text = string.Format("{0}/{1}", _pdfDoc.CurrentPage, _pdfDoc.PageCount);
+            pageViewControl1.Refresh();
         }
 
         private void FitWidth()
@@ -295,6 +296,7 @@ namespace PDFViewer
                 }
                 _pdfDoc.RenderFinished -= new RenderFinishedHandler(_pdfDoc_RenderFinished);
                 _pdfDoc.RenderFinished += new RenderFinishedHandler(_pdfDoc_RenderFinished);
+
                 _pdfDoc.RenderPageThread(pageViewControl1.Handle,true);
             }
         }
@@ -428,7 +430,6 @@ namespace PDFViewer
                     _pdfDoc.RenderPage(pageViewControl1.Handle);
                     Render();
                     
-
                 }
             }
         }
@@ -927,7 +928,20 @@ namespace PDFViewer
                 _pdfDoc.CurrentY = view.Y;
                 _pdfDoc.DrawPageHDC(g.GetHdc());
                 g.ReleaseHdc();
-                
+
+                /*
+                Size sF = new Size(view.Right, view.Bottom);
+                Rectangle r = new Rectangle(location, sF);
+
+                _pdfDoc.SliceBox = new Rectangle(Convert.ToInt32(view.X * _pdfDoc.Zoom / 72), Convert.ToInt32(view.Y * _pdfDoc.Zoom / 72), view.Width, view.Height);
+                _pdfDoc.RenderPage(pageViewControl1.Handle, true);
+
+                _pdfDoc.ClientBounds = r;
+                _pdfDoc.CurrentX = 0;
+                _pdfDoc.CurrentY = 0;
+
+                _pdfDoc.DrawPageHDC(g.GetHdc());
+                g.ReleaseHdc();*/
                 /*
                 if (_pdfDoc.RenderDPI >= g.DpiX)
                 {
@@ -1161,6 +1175,14 @@ namespace PDFViewer
         private void listView1_SelectedIndexChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void toolStripButton3_Click_1(object sender, EventArgs e)
+        {
+
+            _pdfDoc.SliceBox = new Rectangle(pageViewControl1.PageLocation.X, pageViewControl1.PageLocation.Y, pageViewControl1.ViewBounds.Width, pageViewControl1.ViewBounds.Height);
+            _pdfDoc.RenderPage(pageViewControl1.Handle, true);
+            //FitWidth();
         }
     }
 
