@@ -149,6 +149,19 @@ found:
 	return 1;
 }
 
+fz_bbox
+fz_roundxpdf(fz_rect f)
+{
+	fz_bbox i;
+	/* cf. http://code.google.com/p/sumatrapdf/issues/detail?id=271 */
+#define ROUND_EPSILON 0.001f
+	i.x0 = floorf(f.x0 + ROUND_EPSILON);
+	i.y0 = floorf(f.y0 + ROUND_EPSILON);
+	i.x1 = floorf(f.x1 - ROUND_EPSILON);
+	i.y1 = floorf(f.y1 - ROUND_EPSILON);
+	return i;
+}
+
 fz_error
 pdf_loadpage(pdf_page **pagep, pdf_xref *xref, fz_obj *dict)
 {
@@ -181,7 +194,8 @@ pdf_loadpage(pdf_page **pagep, pdf_xref *xref, fz_obj *dict)
 		bbox.x0 = 0; bbox.x1 = 612;
 		bbox.y0 = 0; bbox.y1 = 792;
 	} else
-	bbox = fz_roundrect(pdf_torect(obj));
+	/* http://code.google.com/p/pdfviewer-win32/issues/detail?id=17 */
+	bbox = fz_roundxpdf(pdf_torect(obj));
 
 	obj = fz_dictgets(dict, "CropBox");
 	if (fz_isarray(obj))
