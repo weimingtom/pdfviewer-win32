@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace Gma.UserActivityMonitor
 {
-    public static partial class HookManager
+    static partial class HookManager
     {
         #region Windows constants
 

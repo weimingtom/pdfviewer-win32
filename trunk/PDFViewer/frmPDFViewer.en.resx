@@ -117,382 +117,68 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="tabView.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
-    <value>Fill</value>
-  </data>
-  <assembly alias="mscorlib" name="mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="tabControl1.TabIndex" type="System.Int32, mscorlib">
-    <value>8</value>
-  </data>
-  <data name="&gt;&gt;columnHeader2.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ColumnHeader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="txtTextView.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="tabView.Appearance" type="System.Windows.Forms.TabAppearance, System.Windows.Forms">
-    <value>FlatButtons</value>
-  </data>
-  <data name="toolStrip1.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="&gt;&gt;listView2.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ListView, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;statusStrip1.Type" xml:space="preserve">
-    <value>System.Windows.Forms.StatusStrip, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="splitContainer1.Panel1.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>5, 5, 5, 5</value>
-  </data>
-  <data name="&gt;&gt;statusStrip1.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
-  <data name="&gt;&gt;tabPage1.Parent" xml:space="preserve">
-    <value>tabControl1</value>
-  </data>
-  <data name="&gt;&gt;listView1.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ListView, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="toolStripButton1.Text" xml:space="preserve">
-    <value>Acercar</value>
-  </data>
-  <data name="&gt;&gt;splitContainer1.Panel2.Type" xml:space="preserve">
-    <value>System.Windows.Forms.SplitterPanel, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;tpvText.Type" xml:space="preserve">
-    <value>System.Windows.Forms.TabPage, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="tsbNext.Text" xml:space="preserve">
-    <value>Pagi&amp;na siguiente</value>
-  </data>
-  <data name="&gt;&gt;tsbAntialias.Name" xml:space="preserve">
-    <value>tsbAntialias</value>
-  </data>
-  <data name="&gt;&gt;tabView.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="&gt;&gt;pageViewControl1.Type" xml:space="preserve">
-    <value>PDFViewer.PageViewer, PDFViewer, Version=1.0.6.5, Culture=neutral, PublicKeyToken=6b300d71b62fc496</value>
-  </data>
-  <assembly alias="System.Drawing" name="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-  <data name="toolStripButton3.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
-    <value>Magenta</value>
-  </data>
-  <data name="&gt;&gt;toolStripButton2.Name" xml:space="preserve">
-    <value>toolStripButton2</value>
-  </data>
-  <data name="tsImagesUpdate.Size" type="System.Drawing.Size, System.Drawing">
-    <value>103, 22</value>
-  </data>
-  <data name="&gt;&gt;tsbOpen.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="tpvPDF.Size" type="System.Drawing.Size, System.Drawing">
-    <value>519, 427</value>
-  </data>
-  <data name="toolStripButton2.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
-    <value>Magenta</value>
-  </data>
-  <data name="tsbVectorAntialias.Text" xml:space="preserve">
-    <value>Vector antialias</value>
-  </data>
-  <data name="&gt;&gt;printDialog1.Type" xml:space="preserve">
-    <value>System.Windows.Forms.PrintDialog, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;splitContainer1.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
-  <data name="&gt;&gt;tabPage1.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="&gt;&gt;pdfImagesThumbView1.Type" xml:space="preserve">
-    <value>PDFViewer.PDFImagesThumbView, PDFViewer, Version=1.0.6.5, Culture=neutral, PublicKeyToken=6b300d71b62fc496</value>
-  </data>
-  <data name="&gt;&gt;tsbPrintAs.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;tsbSearch.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="statusStrip1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>737, 22</value>
-  </data>
-  <data name="tsImages.Size" type="System.Drawing.Size, System.Drawing">
-    <value>513, 25</value>
-  </data>
-  <data name="&gt;&gt;tpvPDF.Name" xml:space="preserve">
-    <value>tpvPDF</value>
-  </data>
-  <data name="columnHeader6.Width" type="System.Int32, mscorlib">
-    <value>120</value>
-  </data>
-  <data name="toolStripButton4.Size" type="System.Drawing.Size, System.Drawing">
-    <value>114, 22</value>
-  </data>
-  <data name="&gt;&gt;toolStrip1.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStrip, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;columnHeader6.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ColumnHeader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="tabControl1.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
-    <value>Fill</value>
-  </data>
-  <data name="&gt;&gt;pdfImagesThumbView1.Name" xml:space="preserve">
-    <value>pdfImagesThumbView1</value>
-  </data>
-  <data name="&gt;&gt;tpvPDF.Type" xml:space="preserve">
-    <value>System.Windows.Forms.TabPage, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="tsbPrint.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
-    <value>Magenta</value>
-  </data>
-  <data name="&gt;&gt;splitContainer1.Name" xml:space="preserve">
-    <value>splitContainer1</value>
-  </data>
-  <data name="toolStrip1.TabIndex" type="System.Int32, mscorlib">
-    <value>8</value>
-  </data>
-  <data name="&gt;&gt;splitContainer1.Panel1.Name" xml:space="preserve">
-    <value>splitContainer1.Panel1</value>
-  </data>
-  <data name="tsImagesUpdate.Text" xml:space="preserve">
-    <value>Actualizar lista</value>
-  </data>
-  <data name="toolStripButton5.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
-    <value>Magenta</value>
-  </data>
-  <data name="tabPage1.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="tabView.Location" type="System.Drawing.Point, System.Drawing">
-    <value>5, 5</value>
-  </data>
-  <data name="&gt;&gt;tpWordList.Parent" xml:space="preserve">
-    <value>tabView</value>
-  </data>
-  <data name="splitContainer1.SplitterDistance" type="System.Int32, mscorlib">
-    <value>196</value>
-  </data>
-  <data name="tpvPDF.Text" xml:space="preserve">
-    <value>Vista PDF</value>
-  </data>
-  <data name="tsbAntialias.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
-    <value>Magenta</value>
-  </data>
-  <data name="pdfImagesThumbView1.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 31</value>
-  </data>
-  <data name="columnHeader1.Width" type="System.Int32, mscorlib">
-    <value>20</value>
-  </data>
-  <data name="&gt;&gt;tvwOutline.Name" xml:space="preserve">
-    <value>tvwOutline</value>
-  </data>
-  <data name="tsbAntialias.Enabled" type="System.Boolean, mscorlib">
-    <value>False</value>
-  </data>
-  <data name="&gt;&gt;tabView.Type" xml:space="preserve">
-    <value>System.Windows.Forms.TabControl, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="tabPage1.Text" xml:space="preserve">
-    <value>Indice</value>
-  </data>
-  <data name="tabView.Size" type="System.Drawing.Size, System.Drawing">
-    <value>527, 456</value>
-  </data>
-  <data name="&gt;&gt;statusStrip1.Name" xml:space="preserve">
-    <value>statusStrip1</value>
-  </data>
-  <data name="tsbPrintAs.Text" xml:space="preserve">
-    <value>Exportar</value>
-  </data>
-  <data name="&gt;&gt;tpvImages.Type" xml:space="preserve">
-    <value>System.Windows.Forms.TabPage, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="txtTextView.Size" type="System.Drawing.Size, System.Drawing">
-    <value>513, 421</value>
-  </data>
-  <data name="tabPage2.TabIndex" type="System.Int32, mscorlib">
-    <value>1</value>
-  </data>
-  <data name="tabControl1.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="&gt;&gt;toolStripButton1.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;tsbUseMuPDF.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="tsImagesSave.Text" xml:space="preserve">
-    <value>Guardar imagen</value>
-  </data>
-  <data name="&gt;&gt;pageViewControl1.Name" xml:space="preserve">
-    <value>pageViewControl1</value>
-  </data>
-  <data name="&gt;&gt;tsbAntialias.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="tsbAntialias.Size" type="System.Drawing.Size, System.Drawing">
-    <value>56, 22</value>
-  </data>
-  <data name="tabControl1.Location" type="System.Drawing.Point, System.Drawing">
-    <value>5, 5</value>
-  </data>
-  <data name="tabPage1.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>3, 3, 3, 3</value>
-  </data>
-  <data name="&gt;&gt;pageViewControl1.Parent" xml:space="preserve">
-    <value>tpvPDF</value>
-  </data>
-  <data name="StatusLabel.Size" type="System.Drawing.Size, System.Drawing">
-    <value>61, 17</value>
-  </data>
-  <data name="&gt;&gt;toolStripButton3.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="splitContainer1.ToolTip" xml:space="preserve">
-    <value />
+    <value>Index</value>
   </data>
   <data name="tabPage2.Text" xml:space="preserve">
-    <value>Miniaturas</value>
+    <value>Thumbnails</value>
   </data>
-  <data name="&gt;&gt;columnHeader3.Name" xml:space="preserve">
-    <value>columnHeader3</value>
+  <data name="tpvPDF.Text" xml:space="preserve">
+    <value>PDF View</value>
   </data>
-  <data name="tpvImages.Size" type="System.Drawing.Size, System.Drawing">
-    <value>519, 427</value>
+  <data name="tpvText.Text" xml:space="preserve">
+    <value>Text View</value>
   </data>
-  <data name="pageViewControl1.TabIndex" type="System.Int32, mscorlib">
-    <value>10</value>
+  <data name="tpvImages.Text" xml:space="preserve">
+    <value>Images View</value>
   </data>
-  <data name="&gt;&gt;tabPage2.Type" xml:space="preserve">
-    <value>System.Windows.Forms.TabPage, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="tpWordList.Text" xml:space="preserve">
+    <value>Words list</value>
   </data>
-  <data name="pdfImagesThumbView1.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Top, Bottom, Left, Right</value>
+  <data name="tsbPrev.Text" xml:space="preserve">
+    <value>P&amp;revious page</value>
   </data>
-  <data name="$this.Text" xml:space="preserve">
-    <value>Visor de archivos PDF</value>
-  </data>
-  <data name="toolStripButton4.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
-    <value>Magenta</value>
-  </data>
-  <data name="&gt;&gt;tvwOutline.Parent" xml:space="preserve">
-    <value>tabPage1</value>
-  </data>
-  <data name="pageViewControl1.Location" type="System.Drawing.Point, System.Drawing">
-    <value>3, 3</value>
-  </data>
-  <data name="tsbPrint.Text" xml:space="preserve">
-    <value>Im&amp;primir</value>
-  </data>
-  <data name="$this.AutoScaleDimensions" type="System.Drawing.SizeF, System.Drawing">
-    <value>6, 13</value>
-  </data>
-  <data name="&gt;&gt;tabControl1.Parent" xml:space="preserve">
-    <value>splitContainer1.Panel1</value>
-  </data>
-  <data name="toolStripButton1.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
-    <value>Magenta</value>
-  </data>
-  <data name="tsbAbout.Text" xml:space="preserve">
-    <value>&amp;Acerca de</value>
-  </data>
-  <data name="&gt;&gt;columnHeader1.Name" xml:space="preserve">
-    <value>columnHeader1</value>
-  </data>
-  <data name="tpWordList.TabIndex" type="System.Int32, mscorlib">
-    <value>3</value>
-  </data>
-  <data name="&gt;&gt;toolStrip1.ZOrder" xml:space="preserve">
-    <value>1</value>
-  </data>
-  <data name="tsbPrintAs.Size" type="System.Drawing.Size, System.Drawing">
-    <value>23, 22</value>
-  </data>
-  <data name="&gt;&gt;listView1.Name" xml:space="preserve">
-    <value>listView1</value>
-  </data>
-  <data name="&gt;&gt;printDocument1.Type" xml:space="preserve">
-    <value>System.Drawing.Printing.PrintDocument, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="tpvText.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="&gt;&gt;tabControl1.Name" xml:space="preserve">
-    <value>tabControl1</value>
-  </data>
-  <data name="&gt;&gt;tsbPrint.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="tsbUseMuPDF.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
-    <value>Magenta</value>
-  </data>
-  <data name="&gt;&gt;tabPage2.Name" xml:space="preserve">
-    <value>tabPage2</value>
-  </data>
-  <data name="&gt;&gt;splitContainer1.Type" xml:space="preserve">
-    <value>System.Windows.Forms.SplitContainer, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;tabPage1.Name" xml:space="preserve">
-    <value>tabPage1</value>
-  </data>
-  <data name="tsbPrev.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
-    <value>Magenta</value>
-  </data>
-  <data name="&gt;&gt;toolStripButton5.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="tsbNext.Text" xml:space="preserve">
+    <value>&amp;Next page</value>
   </data>
   <data name="tsbSearch.Text" xml:space="preserve">
-    <value>&amp;Buscar</value>
+    <value>&amp;Search</value>
   </data>
-  <data name="&gt;&gt;tpvPDF.Parent" xml:space="preserve">
-    <value>tabView</value>
+  <data name="tsbPrint.Text" xml:space="preserve">
+    <value>&amp;Print</value>
   </data>
-  <data name="tsImagesSave.Size" type="System.Drawing.Size, System.Drawing">
-    <value>112, 22</value>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="toolStripButton3.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAALWSURBVDhPzZJdSJNRGMffzW3vu7373sxtzTk/N5sYbEMr
+        Ncs5nV/TbUbzKzR1mpVKJRmoiVTYBwamzY85cWqoGFrBVBDFLITQiqCLqIi6ELopJLpIkKfjkoV40W0H
+        /jxwDv/feZ7zPxj236zs7Gx1QV5BI/lofyzpFrgZ/aRLMhbo0s6qXJbVRNeldav77PdcW1Z87jHbCVv1
+        nsaTDcmp5pSsFcGY3E4OkMBwBUDwpAgSl1RQ8f443NsshdYNe69eebQuPTN9CgGYSDQ/SKZQGCIkoYt4
+        u6CK1kcHlpsByoeBkLwcDVUfU6FrswwuvMkbZWDcFkWochsQgsT2A3AcNzIx5jJ2kWig9lKBP0yC6rEU
+        0ldioe5LBji3yqF63jSDDB10gtiuWiTRXwALN+FUfJV6mdVCDhIgmxCCdi4MLK/i4MpXC/RsVYJjIeMp
+        hlG66UxiERnjkAL9AB6GCdgYkRAgx02sEm4z28rrFJsFHrlN6jlwKsyjPR05LNKL2pDBgmTbA5B1a4K5
+        HUHnqXVEE83BasQLyVvkSY5TWCR0SkvFzvBKufNQs6bLPJR4Q9+msSOABkng7yBqRJcrGZEC1kMBfIAO
+        olEOhE8HQfx8BJhXdeBAD3ltw+4bpf6ddQIZg3aS+MMIG4rJFA6JEAADAgHED7gQOS2BwwuRkPdSDzWf
+        jND+owD6wQHn1rLGkUW5C8DvluXQ+xhA7aUAexAHyRgfop/IIGlJDfmv46H2swnu/Cz2AcpmjfPInIDE
+        948Q0MHJoaD4cBcNBChCxaQYDs6EgOF5DBS9TYCG9Rzo/FXqAxRPpTxDxrRdMTLu8qzEAAP4HtIXoRrd
+        fmQxCsxrOqj8YIDWb/noL1RAHwKUzBlfILNxN+CqOIrZyr3NPsMZ5zl43n01Im9wvcyrblB6tU0R3qTr
+        sd60m1qv8bZuRlWovL+nA7RB7ERTiGrtP1SOzpO2Y/wNZQgNdy8Yem4AAAAASUVORK5CYII=
+</value>
   </data>
-  <data name="tpvPDF.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>3, 3, 3, 3</value>
+  <data name="toolStripButton3.Text" xml:space="preserve">
+    <value>Fit &amp;width</value>
   </data>
-  <data name="txtPage.Size" type="System.Drawing.Size, System.Drawing">
-    <value>80, 25</value>
+  <data name="toolStripButton1.Text" xml:space="preserve">
+    <value>Zoom in</value>
   </data>
-  <data name="&gt;&gt;tsImages.Name" xml:space="preserve">
-    <value>tsImages</value>
-  </data>
-  <data name="tsImages.TabIndex" type="System.Int32, mscorlib">
-    <value>1</value>
-  </data>
-  <data name="tpWordList.Location" type="System.Drawing.Point, System.Drawing">
-    <value>4, 25</value>
-  </data>
-  <data name="&gt;&gt;columnHeader5.Name" xml:space="preserve">
-    <value>columnHeader5</value>
-  </data>
-  <data name="txtTextView.ScrollBars" type="System.Windows.Forms.ScrollBars, System.Windows.Forms">
-    <value>Both</value>
-  </data>
-  <data name="&gt;&gt;bgLoadPages.Type" xml:space="preserve">
-    <value>System.ComponentModel.BackgroundWorker, System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;StatusLabel.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripStatusLabel, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;toolStrip1.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
-  <data name="&gt;&gt;tsbUseMuPDF.Name" xml:space="preserve">
-    <value>tsbUseMuPDF</value>
+  <data name="toolStripButton2.Text" xml:space="preserve">
+    <value>Zoom out</value>
   </data>
   <data name="tsbAntialias.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAADrwAAA68AZW8ckkAAAIISURBVDhPpZP7S1NxGMbPPxKaXVUkMEq8IpKUCoY/hGgI
+        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAIISURBVDhPpZP7S1NxGMbPPxKaXVUkMEq8IpKUCoY/hGgI
         ymqkDYYXcCjDZOANURSjCNGFQUTsl4GXVMxKk62YU4fXQpaIlygHQxBRH8/zwvyaIAYe+HLgnPN8nue9
         HA3nvDTq63oW/jm13XOwvPTB3DYFY5MH+bXfcN8ygfTSMSSXfESicQDxBqdYHwH29g9w2tnZ3UcguIvN
         rR3417exuBJE5N1n/wfwLgXEOc38Bc6xNRHb+/y4nm49G0Bnit2zf9H6bkliE/jKuYxrd6oVgDWfjB+K
@@ -504,83 +190,143 @@
         KlSA8/zRh9ABIDUG+1JpAAAAAElFTkSuQmCC
 </value>
   </data>
-  <data name="tsImages.Text" xml:space="preserve">
-    <value>toolStrip2</value>
+  <data name="tsbVectorAntialias.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAIISURBVDhPpZP7S1NxGMbPPxKaXVUkMEq8IpKUCoY/hGgI
+        ymqkDYYXcCjDZOANURSjCNGFQUTsl4GXVMxKk62YU4fXQpaIlygHQxBRH8/zwvyaIAYe+HLgnPN8nue9
+        HA3nvDTq63oW/jm13XOwvPTB3DYFY5MH+bXfcN8ygfTSMSSXfESicQDxBqdYHwH29g9w2tnZ3UcguIvN
+        rR3417exuBJE5N1n/wfwLgXEOc38Bc6xNRHb+/y4nm49G0Bnit2zf9H6bkliE/jKuYxrd6oVgDWfjB+K
+        TWeKMyrGEVfowITvD9re/9ABVQrAhh0HHK+ZselMMaN/mvwtDb+aVqkA7HYIwIj3ysfluPTorJnP6Ezx
+        oHsD1s5ZXEktUwCOioB5f1CEPR9+wTG6iuiserTo8dkwng7HT/R+XUPF8xlcTjErAOdMcW6NW8STiwG8
+        7vej8oUPN/PsEv3t8Ao0TZP3T1u8uJRkUgAuSYHtO97oLxmXd5t9Ho8aPTK+GzntqNfrLm2fFoihwYOI
+        xGIF4KjoGBLzY1OrF9k6OOFxnwDC4wxIMX1G0pMhgVyMNyoA13PAtS7OrJk1PrC69LUdQWxuF6IybHrX
+        LRI7JrtZdoDAo1XmbjMyD+tjSXxGcXRmnYg5ttD9QuxDhN0uUgDOmbvNTpPOJaGAo2K36cyaGZvOFIfd
+        KlSA8/zRh9ABIDUG+1JpAAAAAElFTkSuQmCC
+</value>
   </data>
-  <data name="tsbNext.Size" type="System.Drawing.Size, System.Drawing">
-    <value>23, 22</value>
+  <data name="toolStripButton4.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        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
+</value>
   </data>
-  <data name="&gt;&gt;splitContainer1.Panel1.Type" xml:space="preserve">
-    <value>System.Windows.Forms.SplitterPanel, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="toolStripButton4.Size" type="System.Drawing.Size, System.Drawing">
+    <value>107, 22</value>
   </data>
-  <data name="&gt;&gt;tsImages.ZOrder" xml:space="preserve">
-    <value>0</value>
+  <data name="toolStripButton4.Text" xml:space="preserve">
+    <value>Build words list</value>
   </data>
-  <data name="columnHeader5.Width" type="System.Int32, mscorlib">
-    <value>136</value>
+  <data name="tsbUseMuPDF.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAIISURBVDhPpZP7S1NxGMbPPxKaXVUkMEq8IpKUCoY/hGgI
+        ymqkDYYXcCjDZOANURSjCNGFQUTsl4GXVMxKk62YU4fXQpaIlygHQxBRH8/zwvyaIAYe+HLgnPN8nue9
+        HA3nvDTq63oW/jm13XOwvPTB3DYFY5MH+bXfcN8ygfTSMSSXfESicQDxBqdYHwH29g9w2tnZ3UcguIvN
+        rR3417exuBJE5N1n/wfwLgXEOc38Bc6xNRHb+/y4nm49G0Bnit2zf9H6bkliE/jKuYxrd6oVgDWfjB+K
+        TWeKMyrGEVfowITvD9re/9ABVQrAhh0HHK+ZselMMaN/mvwtDb+aVqkA7HYIwIj3ysfluPTorJnP6Ezx
+        oHsD1s5ZXEktUwCOioB5f1CEPR9+wTG6iuiserTo8dkwng7HT/R+XUPF8xlcTjErAOdMcW6NW8STiwG8
+        7vej8oUPN/PsEv3t8Ao0TZP3T1u8uJRkUgAuSYHtO97oLxmXd5t9Ho8aPTK+GzntqNfrLm2fFoihwYOI
+        xGIF4KjoGBLzY1OrF9k6OOFxnwDC4wxIMX1G0pMhgVyMNyoA13PAtS7OrJk1PrC69LUdQWxuF6IybHrX
+        LRI7JrtZdoDAo1XmbjMyD+tjSXxGcXRmnYg5ttD9QuxDhN0uUgDOmbvNTpPOJaGAo2K36cyaGZvOFIfd
+        KlSA8/zRh9ABIDUG+1JpAAAAAElFTkSuQmCC
+</value>
   </data>
-  <data name="txtTextView.TabIndex" type="System.Int32, mscorlib">
-    <value>0</value>
+  <data name="tsbUseMuPDF.Size" type="System.Drawing.Size, System.Drawing">
+    <value>72, 22</value>
   </data>
-  <data name="listView2.Alignment" type="System.Windows.Forms.ListViewAlignment, System.Windows.Forms">
-    <value>Default</value>
+  <data name="tsbUseMuPDF.Text" xml:space="preserve">
+    <value>Use MuPDF</value>
   </data>
-  <data name="columnHeader5.Text" xml:space="preserve">
-    <value>Font Color</value>
+  <data name="toolStripButton5.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        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
+</value>
   </data>
-  <data name="&gt;&gt;StatusLabel.Name" xml:space="preserve">
-    <value>StatusLabel</value>
+  <data name="toolStripButton5.Size" type="System.Drawing.Size, System.Drawing">
+    <value>56, 22</value>
   </data>
-  <data name="&gt;&gt;txtTextView.Name" xml:space="preserve">
-    <value>txtTextView</value>
+  <data name="toolStripButton5.Text" xml:space="preserve">
+    <value>&amp;Close</value>
   </data>
-  <data name="&gt;&gt;tsbNext.Name" xml:space="preserve">
-    <value>tsbNext</value>
+  <data name="tsbAbout.Text" xml:space="preserve">
+    <value>&amp;About</value>
   </data>
-  <data name="&gt;&gt;txtPage.Name" xml:space="preserve">
-    <value>txtPage</value>
+  <data name="StatusLabel.Size" type="System.Drawing.Size, System.Drawing">
+    <value>39, 17</value>
   </data>
-  <data name="tpWordList.Size" type="System.Drawing.Size, System.Drawing">
-    <value>519, 427</value>
-  </data>
-  <data name="&gt;&gt;tsImages.Parent" xml:space="preserve">
-    <value>tpvImages</value>
-  </data>
-  <data name="listView2.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="tsbVectorAntialias.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
-    <value>Magenta</value>
-  </data>
-  <data name="tsImagesUpdate.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
-    <value>Magenta</value>
-  </data>
-  <data name="listView2.Location" type="System.Drawing.Point, System.Drawing">
-    <value>3, 3</value>
-  </data>
-  <data name="&gt;&gt;tabPage1.Type" xml:space="preserve">
-    <value>System.Windows.Forms.TabPage, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="splitContainer1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>737, 466</value>
-  </data>
-  <data name="&gt;&gt;splitContainer1.Panel2.Name" xml:space="preserve">
-    <value>splitContainer1.Panel2</value>
-  </data>
-  <data name="tpWordList.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>3, 3, 3, 3</value>
-  </data>
-  <data name="&gt;&gt;tpWordList.Type" xml:space="preserve">
-    <value>System.Windows.Forms.TabPage, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="txtTextView.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
-    <value>Fill</value>
-  </data>
-  <data name="&gt;&gt;tsbNext.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;tpWordList.Name" xml:space="preserve">
-    <value>tpWordList</value>
+  <data name="StatusLabel.Text" xml:space="preserve">
+    <value>Ready</value>
   </data>
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
@@ -1161,667 +907,7 @@
         AACAAQAAgAEAAIABAACAAQAAgAEAAIABAACAAQAAgAEAAIABAACAAQAAgAMAAIAHAACADwAA
 </value>
   </data>
-  <data name="&gt;&gt;listView2.Parent" xml:space="preserve">
-    <value>tabPage2</value>
+  <data name="$this.Text" xml:space="preserve">
+    <value>PDF Viewer</value>
   </data>
-  <data name="&gt;&gt;tpWordList.ZOrder" xml:space="preserve">
-    <value>3</value>
-  </data>
-  <data name="tsbOpen.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
-    <value>Magenta</value>
-  </data>
-  <data name="tabView.TabIndex" type="System.Int32, mscorlib">
-    <value>10</value>
-  </data>
-  <data name="toolStripButton1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>23, 22</value>
-  </data>
-  <data name="&gt;&gt;pdfImagesThumbView1.ZOrder" xml:space="preserve">
-    <value>1</value>
-  </data>
-  <data name="&gt;&gt;listView1.Parent" xml:space="preserve">
-    <value>tpWordList</value>
-  </data>
-  <data name="&gt;&gt;listView1.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="&gt;&gt;tsImagesUpdate.Name" xml:space="preserve">
-    <value>tsImagesUpdate</value>
-  </data>
-  <data name="&gt;&gt;tsbAbout.Name" xml:space="preserve">
-    <value>tsbAbout</value>
-  </data>
-  <data name="tpvImages.Location" type="System.Drawing.Point, System.Drawing">
-    <value>4, 25</value>
-  </data>
-  <data name="pageViewControl1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>513, 421</value>
-  </data>
-  <data name="&gt;&gt;tsImagesSave.Name" xml:space="preserve">
-    <value>tsImagesSave</value>
-  </data>
-  <data name="&gt;&gt;toolStrip1.Name" xml:space="preserve">
-    <value>toolStrip1</value>
-  </data>
-  <data name="toolStripButton3.Size" type="System.Drawing.Size, System.Drawing">
-    <value>23, 22</value>
-  </data>
-  <data name="&gt;&gt;tabView.Name" xml:space="preserve">
-    <value>tabView</value>
-  </data>
-  <data name="&gt;&gt;columnHeader3.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ColumnHeader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="tvwOutline.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="toolStrip1.Text" xml:space="preserve">
-    <value>toolStrip1</value>
-  </data>
-  <data name="tsImages.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="&gt;&gt;columnHeader1.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ColumnHeader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;tsbOpen.Name" xml:space="preserve">
-    <value>tsbOpen</value>
-  </data>
-  <data name="&gt;&gt;tsbVectorAntialias.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="statusStrip1.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 491</value>
-  </data>
-  <data name="tsbOpen.Size" type="System.Drawing.Size, System.Drawing">
-    <value>23, 22</value>
-  </data>
-  <data name="&gt;&gt;listView2.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="toolStripButton5.Size" type="System.Drawing.Size, System.Drawing">
-    <value>59, 22</value>
-  </data>
-  <data name="&gt;&gt;pageViewControl1.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="columnHeader6.Text" xml:space="preserve">
-    <value>Location</value>
-  </data>
-  <data name="pdfImagesThumbView1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>486, 363</value>
-  </data>
-  <data name="tsbSearch.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
-    <value>Magenta</value>
-  </data>
-  <data name="tpvImages.Text" xml:space="preserve">
-    <value>Imagenes</value>
-  </data>
-  <data name="pageViewControl1.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
-    <value>Fill</value>
-  </data>
-  <data name="toolStripButton3.Text" xml:space="preserve">
-    <value>Ajustar ancho</value>
-  </data>
-  <data name="&gt;&gt;tsbAbout.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="splitContainer1.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 25</value>
-  </data>
-  <data name="listView1.Location" type="System.Drawing.Point, System.Drawing">
-    <value>3, 3</value>
-  </data>
-  <data name="&gt;&gt;toolStripButton1.Name" xml:space="preserve">
-    <value>toolStripButton1</value>
-  </data>
-  <data name="&gt;&gt;listView2.Name" xml:space="preserve">
-    <value>listView2</value>
-  </data>
-  <data name="&gt;&gt;tabControl1.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="toolStripButton5.Text" xml:space="preserve">
-    <value>&amp;Cerrar</value>
-  </data>
-  <data name="&gt;&gt;splitContainer1.Panel1.Parent" xml:space="preserve">
-    <value>splitContainer1</value>
-  </data>
-  <data name="&gt;&gt;$this.Name" xml:space="preserve">
-    <value>frmPDFViewer</value>
-  </data>
-  <data name="&gt;&gt;tvwOutline.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="StatusLabel.Text" xml:space="preserve">
-    <value>Preparado</value>
-  </data>
-  <data name="&gt;&gt;tpvImages.ZOrder" xml:space="preserve">
-    <value>2</value>
-  </data>
-  <data name="tsbUseMuPDF.Size" type="System.Drawing.Size, System.Drawing">
-    <value>76, 22</value>
-  </data>
-  <data name="splitContainer1.Panel1.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>5, 5, 5, 5</value>
-  </data>
-  <data name="&gt;&gt;txtTextView.Type" xml:space="preserve">
-    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;ttpLink.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolTip, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="columnHeader1.Text" xml:space="preserve">
-    <value>#</value>
-  </data>
-  <data name="pageViewControl1.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="tsbVectorAntialias.Size" type="System.Drawing.Size, System.Drawing">
-    <value>91, 22</value>
-  </data>
-  <data name="toolStripButton5.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        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
-</value>
-  </data>
-  <data name="toolStripButton4.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        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
-</value>
-  </data>
-  <data name="&gt;&gt;tpvPDF.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="&gt;&gt;tsbVectorAntialias.Name" xml:space="preserve">
-    <value>tsbVectorAntialias</value>
-  </data>
-  <data name="tsbVectorAntialias.Enabled" type="System.Boolean, mscorlib">
-    <value>False</value>
-  </data>
-  <data name="tabPage2.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="&gt;&gt;printDialog1.Name" xml:space="preserve">
-    <value>printDialog1</value>
-  </data>
-  <data name="tabPage1.Location" type="System.Drawing.Point, System.Drawing">
-    <value>4, 22</value>
-  </data>
-  <data name="pdfImagesThumbView1.TabIndex" type="System.Int32, mscorlib">
-    <value>0</value>
-  </data>
-  <data name="tvwOutline.Location" type="System.Drawing.Point, System.Drawing">
-    <value>3, 3</value>
-  </data>
-  <data name="&gt;&gt;tpvText.Name" xml:space="preserve">
-    <value>tpvText</value>
-  </data>
-  <data name="txtTextView.Location" type="System.Drawing.Point, System.Drawing">
-    <value>3, 3</value>
-  </data>
-  <data name="&gt;&gt;tpvImages.Parent" xml:space="preserve">
-    <value>tabView</value>
-  </data>
-  <data name="tsbPrintAs.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
-    <value>Magenta</value>
-  </data>
-  <data name="listView1.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="tpvImages.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>3, 3, 3, 3</value>
-  </data>
-  <data name="tpvImages.TabIndex" type="System.Int32, mscorlib">
-    <value>2</value>
-  </data>
-  <data name="tpvText.Location" type="System.Drawing.Point, System.Drawing">
-    <value>4, 25</value>
-  </data>
-  <data name="tsImages.Location" type="System.Drawing.Point, System.Drawing">
-    <value>3, 3</value>
-  </data>
-  <data name="&gt;&gt;splitContainer1.Panel2.ZOrder" xml:space="preserve">
-    <value>1</value>
-  </data>
-  <data name="&gt;&gt;tpvImages.Name" xml:space="preserve">
-    <value>tpvImages</value>
-  </data>
-  <data name="tvwOutline.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
-    <value>Fill</value>
-  </data>
-  <data name="tsbPrev.Size" type="System.Drawing.Size, System.Drawing">
-    <value>23, 22</value>
-  </data>
-  <data name="&gt;&gt;tsbPrev.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="statusStrip1.Text" xml:space="preserve">
-    <value>statusStrip1</value>
-  </data>
-  <data name="tabView.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="tvwOutline.Size" type="System.Drawing.Size, System.Drawing">
-    <value>172, 424</value>
-  </data>
-  <data name="listView1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>513, 421</value>
-  </data>
-  <data name="&gt;&gt;ttpLink.Name" xml:space="preserve">
-    <value>ttpLink</value>
-  </data>
-  <data name="tvwOutline.Font" type="System.Drawing.Font, System.Drawing">
-    <value>Courier New, 9.75pt</value>
-  </data>
-  <data name="&gt;&gt;toolStripButton2.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;$this.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Form, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;tsbSearch.Name" xml:space="preserve">
-    <value>tsbSearch</value>
-  </data>
-  <data name="toolStrip1.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 0</value>
-  </data>
-  <data name="&gt;&gt;tvwOutline.Type" xml:space="preserve">
-    <value>System.Windows.Forms.TreeView, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="tsbAbout.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
-    <value>Magenta</value>
-  </data>
-  <data name="pageViewControl1.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>10, 10, 10, 10</value>
-  </data>
-  <data name="&gt;&gt;columnHeader5.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ColumnHeader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;tabView.Parent" xml:space="preserve">
-    <value>splitContainer1.Panel2</value>
-  </data>
-  <data name="toolStripButton2.Text" xml:space="preserve">
-    <value>Alejar</value>
-  </data>
-  <data name="&gt;&gt;tsbPrint.Name" xml:space="preserve">
-    <value>tsbPrint</value>
-  </data>
-  <data name="tsbOpen.Text" xml:space="preserve">
-    <value>Abrir archivo</value>
-  </data>
-  <data name="columnHeader3.Width" type="System.Int32, mscorlib">
-    <value>113</value>
-  </data>
-  <data name="&gt;&gt;txtTextView.Parent" xml:space="preserve">
-    <value>tpvText</value>
-  </data>
-  <data name="tpvPDF.Location" type="System.Drawing.Point, System.Drawing">
-    <value>4, 25</value>
-  </data>
-  <data name="&gt;&gt;toolStripButton4.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;toolStripButton5.Name" xml:space="preserve">
-    <value>toolStripButton5</value>
-  </data>
-  <data name="tsbPrev.Text" xml:space="preserve">
-    <value>Pagina anterio&amp;r</value>
-  </data>
-  <data name="tpvText.Size" type="System.Drawing.Size, System.Drawing">
-    <value>519, 427</value>
-  </data>
-  <data name="&gt;&gt;toolStripButton4.Name" xml:space="preserve">
-    <value>toolStripButton4</value>
-  </data>
-  <data name="listView1.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
-    <value>Fill</value>
-  </data>
-  <data name="listView2.Size" type="System.Drawing.Size, System.Drawing">
-    <value>172, 424</value>
-  </data>
-  <data name="statusStrip1.TabIndex" type="System.Int32, mscorlib">
-    <value>11</value>
-  </data>
-  <data name="splitContainer1.Panel1.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="toolStrip1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>737, 25</value>
-  </data>
-  <data name="toolStripButton4.Text" xml:space="preserve">
-    <value>Lista de palabras</value>
-  </data>
-  <data name="&gt;&gt;tpvText.ZOrder" xml:space="preserve">
-    <value>1</value>
-  </data>
-  <data name="&gt;&gt;txtPage.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripTextBox, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="columnHeader3.Text" xml:space="preserve">
-    <value>Font Name</value>
-  </data>
-  <data name="tabPage2.Size" type="System.Drawing.Size, System.Drawing">
-    <value>178, 430</value>
-  </data>
-  <data name="$this.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="splitContainer1.Panel2.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="&gt;&gt;splitContainer1.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="tsbUseMuPDF.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAADrwAAA68AZW8ckkAAAIISURBVDhPpZP7S1NxGMbPPxKaXVUkMEq8IpKUCoY/hGgI
-        ymqkDYYXcCjDZOANURSjCNGFQUTsl4GXVMxKk62YU4fXQpaIlygHQxBRH8/zwvyaIAYe+HLgnPN8nue9
-        HA3nvDTq63oW/jm13XOwvPTB3DYFY5MH+bXfcN8ygfTSMSSXfESicQDxBqdYHwH29g9w2tnZ3UcguIvN
-        rR3417exuBJE5N1n/wfwLgXEOc38Bc6xNRHb+/y4nm49G0Bnit2zf9H6bkliE/jKuYxrd6oVgDWfjB+K
-        TWeKMyrGEVfowITvD9re/9ABVQrAhh0HHK+ZselMMaN/mvwtDb+aVqkA7HYIwIj3ysfluPTorJnP6Ezx
-        oHsD1s5ZXEktUwCOioB5f1CEPR9+wTG6iuiserTo8dkwng7HT/R+XUPF8xlcTjErAOdMcW6NW8STiwG8
-        7vej8oUPN/PsEv3t8Ao0TZP3T1u8uJRkUgAuSYHtO97oLxmXd5t9Ho8aPTK+GzntqNfrLm2fFoihwYOI
-        xGIF4KjoGBLzY1OrF9k6OOFxnwDC4wxIMX1G0pMhgVyMNyoA13PAtS7OrJk1PrC69LUdQWxuF6IybHrX
-        LRI7JrtZdoDAo1XmbjMyD+tjSXxGcXRmnYg5ttD9QuxDhN0uUgDOmbvNTpPOJaGAo2K36cyaGZvOFIfd
-        KlSA8/zRh9ABIDUG+1JpAAAAAElFTkSuQmCC
-</value>
-  </data>
-  <data name="listView1.TabIndex" type="System.Int32, mscorlib">
-    <value>0</value>
-  </data>
-  <data name="tabPage1.TabIndex" type="System.Int32, mscorlib">
-    <value>0</value>
-  </data>
-  <data name="toolStripButton2.Size" type="System.Drawing.Size, System.Drawing">
-    <value>23, 22</value>
-  </data>
-  <data name="columnHeader2.Width" type="System.Int32, mscorlib">
-    <value>132</value>
-  </data>
-  <data name="tsImagesSave.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
-    <value>Magenta</value>
-  </data>
-  <data name="&gt;&gt;tabPage2.Parent" xml:space="preserve">
-    <value>tabControl1</value>
-  </data>
-  <data name="tpvText.Text" xml:space="preserve">
-    <value>Ver Texto</value>
-  </data>
-  <data name="tabPage1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>178, 430</value>
-  </data>
-  <data name="tsbNext.ImageTransparentColor" type="System.Drawing.Color, System.Drawing">
-    <value>Magenta</value>
-  </data>
-  <data name="&gt;&gt;columnHeader4.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ColumnHeader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;tsbPrintAs.Name" xml:space="preserve">
-    <value>tsbPrintAs</value>
-  </data>
-  <data name="listView2.TabIndex" type="System.Int32, mscorlib">
-    <value>0</value>
-  </data>
-  <data name="listView2.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
-    <value>Fill</value>
-  </data>
-  <data name="tpvPDF.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="columnHeader2.Text" xml:space="preserve">
-    <value>Text</value>
-  </data>
-  <data name="tabControl1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>186, 456</value>
-  </data>
-  <data name="tvwOutline.TabIndex" type="System.Int32, mscorlib">
-    <value>7</value>
-  </data>
-  <data name="&gt;&gt;tsImages.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStrip, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;toolStripButton3.Name" xml:space="preserve">
-    <value>toolStripButton3</value>
-  </data>
-  <data name="&gt;&gt;saveFileDialog1.Type" xml:space="preserve">
-    <value>System.Windows.Forms.SaveFileDialog, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;printDocument1.Name" xml:space="preserve">
-    <value>printDocument1</value>
-  </data>
-  <data name="tpvImages.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
-    <value>737, 513</value>
-  </data>
-  <data name="&gt;&gt;tabControl1.Type" xml:space="preserve">
-    <value>System.Windows.Forms.TabControl, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;tabPage2.ZOrder" xml:space="preserve">
-    <value>1</value>
-  </data>
-  <data name="tsbSearch.Size" type="System.Drawing.Size, System.Drawing">
-    <value>23, 22</value>
-  </data>
-  <data name="tsbUseMuPDF.Text" xml:space="preserve">
-    <value>Usar MuPDF</value>
-  </data>
-  <data name="tabPage2.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>3, 3, 3, 3</value>
-  </data>
-  <data name="&gt;&gt;tsImagesSave.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;columnHeader2.Name" xml:space="preserve">
-    <value>columnHeader2</value>
-  </data>
-  <data name="&gt;&gt;bgLoadPages.Name" xml:space="preserve">
-    <value>bgLoadPages</value>
-  </data>
-  <data name="tpWordList.Text" xml:space="preserve">
-    <value>Lista de palabras</value>
-  </data>
-  <data name="tpvText.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>3, 3, 3, 3</value>
-  </data>
-  <data name="splitContainer1.TabIndex" type="System.Int32, mscorlib">
-    <value>10</value>
-  </data>
-  <data name="tsbPrint.Size" type="System.Drawing.Size, System.Drawing">
-    <value>23, 22</value>
-  </data>
-  <data name="&gt;&gt;tsbPrev.Name" xml:space="preserve">
-    <value>tsbPrev</value>
-  </data>
-  <data name="listView1.LabelWrap" type="System.Boolean, mscorlib">
-    <value>False</value>
-  </data>
-  <data name="&gt;&gt;pdfImagesThumbView1.Parent" xml:space="preserve">
-    <value>tpvImages</value>
-  </data>
-  <data name="tsbVectorAntialias.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAADrwAAA68AZW8ckkAAAIISURBVDhPpZP7S1NxGMbPPxKaXVUkMEq8IpKUCoY/hGgI
-        ymqkDYYXcCjDZOANURSjCNGFQUTsl4GXVMxKk62YU4fXQpaIlygHQxBRH8/zwvyaIAYe+HLgnPN8nue9
-        HA3nvDTq63oW/jm13XOwvPTB3DYFY5MH+bXfcN8ygfTSMSSXfESicQDxBqdYHwH29g9w2tnZ3UcguIvN
-        rR3417exuBJE5N1n/wfwLgXEOc38Bc6xNRHb+/y4nm49G0Bnit2zf9H6bkliE/jKuYxrd6oVgDWfjB+K
-        TWeKMyrGEVfowITvD9re/9ABVQrAhh0HHK+ZselMMaN/mvwtDb+aVqkA7HYIwIj3ysfluPTorJnP6Ezx
-        oHsD1s5ZXEktUwCOioB5f1CEPR9+wTG6iuiserTo8dkwng7HT/R+XUPF8xlcTjErAOdMcW6NW8STiwG8
-        7vej8oUPN/PsEv3t8Ao0TZP3T1u8uJRkUgAuSYHtO97oLxmXd5t9Ho8aPTK+GzntqNfrLm2fFoihwYOI
-        xGIF4KjoGBLzY1OrF9k6OOFxnwDC4wxIMX1G0pMhgVyMNyoA13PAtS7OrJk1PrC69LUdQWxuF6IybHrX
-        LRI7JrtZdoDAo1XmbjMyD+tjSXxGcXRmnYg5ttD9QuxDhN0uUgDOmbvNTpPOJaGAo2K36cyaGZvOFIfd
-        KlSA8/zRh9ABIDUG+1JpAAAAAElFTkSuQmCC
-</value>
-  </data>
-  <data name="tsbAntialias.Text" xml:space="preserve">
-    <value>Antialias</value>
-  </data>
-  <data name="&gt;&gt;columnHeader4.Name" xml:space="preserve">
-    <value>columnHeader4</value>
-  </data>
-  <data name="splitContainer1.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
-    <value>Fill</value>
-  </data>
-  <data name="&gt;&gt;tpvText.Parent" xml:space="preserve">
-    <value>tabView</value>
-  </data>
-  <data name="tpvText.TabIndex" type="System.Int32, mscorlib">
-    <value>1</value>
-  </data>
-  <data name="pdfImagesThumbView1.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="statusStrip1.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="&gt;&gt;columnHeader6.Name" xml:space="preserve">
-    <value>columnHeader6</value>
-  </data>
-  <data name="&gt;&gt;saveFileDialog1.Name" xml:space="preserve">
-    <value>saveFileDialog1</value>
-  </data>
-  <data name="tabPage2.Location" type="System.Drawing.Point, System.Drawing">
-    <value>4, 22</value>
-  </data>
-  <data name="splitContainer1.Panel2.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>5, 5, 5, 5</value>
-  </data>
-  <data name="tpWordList.ToolTip" xml:space="preserve">
-    <value />
-  </data>
-  <data name="&gt;&gt;splitContainer1.Panel2.Parent" xml:space="preserve">
-    <value>splitContainer1</value>
-  </data>
-  <data name="&gt;&gt;splitContainer1.Panel1.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="columnHeader4.Text" xml:space="preserve">
-    <value>Font Size</value>
-  </data>
-  <data name="&gt;&gt;statusStrip1.ZOrder" xml:space="preserve">
-    <value>2</value>
-  </data>
-  <data name="txtTextView.Multiline" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="tpvPDF.TabIndex" type="System.Int32, mscorlib">
-    <value>0</value>
-  </data>
-  <data name="columnHeader4.Width" type="System.Int32, mscorlib">
-    <value>78</value>
-  </data>
-  <data name="tsbAbout.Size" type="System.Drawing.Size, System.Drawing">
-    <value>23, 22</value>
-  </data>
-  <data name="&gt;&gt;txtTextView.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="&gt;&gt;tsImagesUpdate.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <metadata name="statusStrip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>0, 491</value>
-  </metadata>
-  <metadata name="printDocument1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>330, 17</value>
-  </metadata>
-  <metadata name="bgLoadPages.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>116, 58</value>
-  </metadata>
-  <metadata name="toolStrip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>0, 0</value>
-  </metadata>
-  <metadata name="tsImages.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>3, 3</value>
-  </metadata>
-  <metadata name="saveFileDialog1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>471, 17</value>
-  </metadata>
-  <metadata name="ttpLink.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>17, 17</value>
-  </metadata>
-  <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="printDialog1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>211, 17</value>
-  </metadata>
-  <metadata name="$this.Language" type="System.Globalization.CultureInfo, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>English</value>
-  </metadata>
 </root>

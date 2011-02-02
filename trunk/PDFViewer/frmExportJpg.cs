@@ -62,7 +62,7 @@ namespace PDFViewer
             {
                 if (_doc.IsJpgBusy)
                 {
-                    if (MessageBox.Show("The current export process will be cancelled. Continue?", Text, MessageBoxButtons.YesNo,  MessageBoxIcon.Question) == DialogResult.No)
+                    if (MessageBox.Show(Resources.UIStrings.InformationCurrentExportCancelled, Text, MessageBoxButtons.YesNo,  MessageBoxIcon.Question) == DialogResult.No)
                         return;
                 }
                 btnExport.Enabled = false;

@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 namespace Gma.UserActivityMonitor
 {
-    public static partial class HookManager
+    static partial class HookManager
     {
         /// <summary>
         /// The CallWndProc hook procedure is an application-defined or library-defined callback 

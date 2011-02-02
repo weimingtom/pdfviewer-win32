@@ -95,7 +95,7 @@ namespace PDFViewer
             {
                 string sPath = Environment.CurrentDirectory;
                 FolderBrowserDialog dlg = new FolderBrowserDialog();
-                dlg.Description = "Select the path to swfs";
+                dlg.Description = Resources.UIStrings.TitleSelectSWFSDirs;
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
                     if (!System.IO.File.Exists(dlg.SelectedPath + @"\PreLoaderTemplate.swf"))

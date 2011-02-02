@@ -67,6 +67,7 @@ namespace PDFViewer
             // btnCancelSearch
             // 
             this.btnCancelSearch.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.btnCancelSearch.Image = global::PDFViewer.Properties.Resources.cancel_16;
             resources.ApplyResources(this.btnCancelSearch, "btnCancelSearch");
             this.btnCancelSearch.Name = "btnCancelSearch";
             this.btnCancelSearch.UseVisualStyleBackColor = true;
@@ -111,6 +112,9 @@ namespace PDFViewer
             this.Controls.Add(this.btnSearch);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.txtSearch);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "frmSearch";
             this.ResumeLayout(false);
             this.PerformLayout();

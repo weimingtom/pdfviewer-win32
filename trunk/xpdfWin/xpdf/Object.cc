@@ -19,6 +19,7 @@
 #include "Error.h"
 #include "Stream.h"
 #include "XRef.h"
+#include <stdlib.h>
 
 //------------------------------------------------------------------------
 // Object
@@ -121,7 +122,7 @@ void Object::free() {
     break;
   case objDict:
     if (!dict->decRef()) {
-      delete dict;
+		delete dict;
     }
     break;
   case objStream:

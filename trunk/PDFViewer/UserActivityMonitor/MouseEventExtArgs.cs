@@ -6,7 +6,7 @@ namespace Gma.UserActivityMonitor
     /// Provides data for the MouseClickExt and MouseMoveExt events. It also provides a property Handled.
     /// Set this property to <b>true</b> to prevent further processing of the event in other applications.
     /// </summary>
-    public class MouseEventExtArgs : MouseEventArgs
+    class MouseEventExtArgs : MouseEventArgs
     {
         /// <summary>
         /// Initializes a new instance of the MouseEventArgs class. 

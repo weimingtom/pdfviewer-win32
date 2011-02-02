@@ -657,8 +657,8 @@ namespace PDFLibNet {
 		{
 			//Release unmanaged Resources			
 			if(_pdfDoc!=0){
-				_pdfDoc->Dispose();
-				delete _pdfDoc;
+				//_pdfDoc->Dispose();   //Dispose is called by the destructor!
+				delete _pdfDoc;			//So right here!
 			}
 		}
 

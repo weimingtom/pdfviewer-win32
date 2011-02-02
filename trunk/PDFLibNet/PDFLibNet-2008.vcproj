@@ -176,10 +176,10 @@
 				LargeAddressAware="2"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
-				SupportUnloadOfDelayLoadedDLL="false"
+				SupportUnloadOfDelayLoadedDLL="true"
 				TargetMachine="1"
 				KeyFile="PDFLibNet.snk"
-				CLRThreadAttribute="0"
+				CLRThreadAttribute="1"
 				CLRUnmanagedCodeCheck="true"
 			/>
 			<Tool
@@ -187,6 +187,7 @@
 			/>
 			<Tool
 				Name="VCManifestTool"
+				UpdateFileHashes="false"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"

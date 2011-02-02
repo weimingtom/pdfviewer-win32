@@ -7,7 +7,7 @@ namespace Gma.UserActivityMonitor {
     /// This class monitors all mouse activities globally (also outside of the application) 
     /// and provides appropriate events.
     /// </summary>
-    public static partial class HookManager
+    static partial class HookManager
     {
         //################################################################
         #region Mouse events

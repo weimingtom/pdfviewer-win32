@@ -73,6 +73,8 @@ namespace PDFViewer
             pageViewControl1.PageSize = new Size(pageViewControl1.Width,(int)( pageViewControl1.Width*11/8.5));
             pageViewControl1.Visible = true;
             Instance = this;
+            
+            StatusLabel.Text = Resources.UIStrings.StatusReady;
         }
 
         void frmPDFViewer_FormClosing(object sender, FormClosingEventArgs e)
@@ -244,7 +246,7 @@ namespace PDFViewer
                             break;
                         case LinkActionKind.actionURI:
                             PDFLibNet.PageLinkURI uri = (link.Action as PDFLibNet.PageLinkURI);
-                            if (MessageBox.Show("Launching external application" + Environment.NewLine + uri.URL, Text, MessageBoxButtons.OKCancel) == DialogResult.OK)
+                            if (MessageBox.Show("Ejecutar aplicación externa?" + Environment.NewLine + uri.URL, Text, MessageBoxButtons.OKCancel) == DialogResult.OK)
                             {
                                 System.Diagnostics.Process p = new System.Diagnostics.Process();
                                 p.StartInfo.FileName = GetDefaultBrowserPath();
@@ -421,6 +423,8 @@ namespace PDFViewer
 
         private void tsbNext_Click(object sender, EventArgs e)
         {
+            if (!PdfOK())
+                return;
             using (StatusBusy sb = new StatusBusy(Resources.UIStrings.StatusLoadingPage))
             {
                 if (_pdfDoc != null)
@@ -436,6 +440,8 @@ namespace PDFViewer
 
         private void tsbPrev_Click(object sender, EventArgs e)
         {
+            if (!PdfOK())
+                return;
             using (StatusBusy sb = new StatusBusy(Resources.UIStrings.StatusLoadingPage))
             {
                 if (_pdfDoc != null && !IsDisposed)
@@ -450,7 +456,7 @@ namespace PDFViewer
 
         private void tsbOpen_Click(object sender, EventArgs e)
         {
-            //try
+            try
             {
                 OpenFileDialog dlg = new OpenFileDialog();
                 dlg.Filter = "Portable Document Format (*.pdf)|*.pdf";
@@ -477,33 +483,41 @@ namespace PDFViewer
                     {
                         if (LoadFile(dlg.FileName, _pdfDoc))
                         {
-                            Text = "Powered by xPDF: " + _pdfDoc.Author + " - " + _pdfDoc.Title;
+                            Text = string.Format(Resources.UIStrings.StatusFormCaption, _pdfDoc.Author, _pdfDoc.Title);
                             FillTree();
                             _pdfDoc.CurrentPage = 1;
                             UpdateText();
 
                             _pdfDoc.FitToWidth(pageViewControl1.Handle);
                             _pdfDoc.RenderPage(pageViewControl1.Handle);
-                            
+
                             Render();
 
                             PDFPage pg = _pdfDoc.Pages[1];
-                            listView2.TileSize = new Size(134, (int)(128 * pg.Height / pg.Width)+10);
+                            listView2.TileSize = new Size(134, (int)(128 * pg.Height / pg.Width) + 10);
                             listView2.BeginUpdate();
                             listView2.Clear();
                             for (int i = 0; i < _pdfDoc.PageCount; ++i)
                                 listView2.Items.Add((i + 1).ToString());
                             listView2.EndUpdate();
-                            
+
                             //pg.LoadThumbnail(128, (int)(128 * pg.Height / pg.Width));
                         }
                     }
                 }
             }
-            /*catch (Exception ex)
+            catch (System.IO.IOException ex)
             {
-                MessageBox.Show(ex.ToString());
-            }*/
+                MessageBox.Show(ex.Message, "IOException");
+            }
+            catch (System.Security.SecurityException ex)
+            {
+                MessageBox.Show(ex.Message, "SecurityException");
+            }
+            catch (System.IO.InvalidDataException ex)
+            {
+                MessageBox.Show(ex.Message, "InvalidDataException");
+            }
         }
 
         void pg_RenderThumbnailFinishedInvoke(int page, bool bSuccesss)
@@ -528,6 +542,83 @@ namespace PDFViewer
         {
             Invoke(new RenderNotifyInvoker(RenderNotifyFinished), page, bSuccesss);
         }
+
+        public bool LoadStream(System.IO.Stream fileStream)
+        {
+            if (_pdfDoc != null)
+            {
+                _pdfDoc.Dispose();
+                _pdfDoc = null;
+            }
+            //if (_pdfDoc == null)
+            //{
+            _pdfDoc = new PDFWrapper();
+            _pdfDoc.RenderNotifyFinished += new RenderNotifyFinishedHandler(_pdfDoc_RenderNotifyFinished);
+            _pdfDoc.PDFLoadCompeted += new PDFLoadCompletedHandler(_pdfDoc_PDFLoadCompeted);
+            _pdfDoc.PDFLoadBegin += new PDFLoadBeginHandler(_pdfDoc_PDFLoadBegin);
+            _pdfDoc.UseMuPDF = tsbUseMuPDF.Checked;
+
+            try
+            {
+                if (fs != null)
+                {
+                    fs.Close();
+                    fs = null;
+                }
+                //Does not supported by MuPDF.                
+                //fs = new System.IO.FileStream(filename, System.IO.FileMode.Open);                
+                //return pdfDoc.LoadPDF(fs);                
+                bool bRet = _pdfDoc.LoadPDF(fileStream);
+                tsbUseMuPDF.Checked = _pdfDoc.UseMuPDF;
+                return bRet;
+            }
+            catch (System.Security.SecurityException ex)
+            {
+                frmPassword frm = new frmPassword();
+                if (frm.ShowDialog() == DialogResult.OK)
+                {
+                    if (!frm.UserPassword.Equals(String.Empty))
+                        _pdfDoc.UserPassword = frm.UserPassword;
+                    if (!frm.OwnerPassword.Equals(String.Empty))
+                        _pdfDoc.OwnerPassword = frm.OwnerPassword;
+                    bool bRet = _pdfDoc.LoadPDF(fileStream);
+                    tsbUseMuPDF.Checked = _pdfDoc.UseMuPDF;
+                    return bRet;
+                }
+                else
+                {
+                    throw ex;
+                }
+            }
+                            
+        }
+        public bool ShowStream(System.IO.Stream fileStream)
+        {
+            if (LoadStream(fileStream))
+            {
+
+                Text = string.Format(Resources.UIStrings.StatusFormCaption, _pdfDoc.Author, _pdfDoc.Title);
+                FillTree();
+                _pdfDoc.CurrentPage = 1;
+                UpdateText();
+
+                _pdfDoc.FitToWidth(pageViewControl1.Handle);
+                _pdfDoc.RenderPage(pageViewControl1.Handle);
+
+                Render();
+
+                PDFPage pg = _pdfDoc.Pages[1];
+                listView2.TileSize = new Size(134, (int)(128 * pg.Height / pg.Width) + 10);
+                listView2.BeginUpdate();
+                listView2.Clear();
+                for (int i = 0; i < _pdfDoc.PageCount; ++i)
+                    listView2.Items.Add((i + 1).ToString());
+                listView2.EndUpdate();
+                return true;
+            }
+            return false;
+        }
+
         System.IO.FileStream fs = null;
         private bool LoadFile(string filename, PDFLibNet.PDFWrapper pdfDoc)
         {
@@ -542,7 +633,7 @@ namespace PDFViewer
                 //fs = new System.IO.FileStream(filename, System.IO.FileMode.Open);                
                 //return pdfDoc.LoadPDF(fs);                
                 bool bRet =  pdfDoc.LoadPDF(filename);               
-                tsbUseMuPDF.Checked = pdfDoc.UseMuPDF;                
+                tsbUseMuPDF.Checked = pdfDoc.UseMuPDF;
                 return bRet;                
             }
             catch (System.Security.SecurityException)
@@ -558,7 +649,7 @@ namespace PDFViewer
                  }
                  else
                  {
-                     MessageBox.Show("File encrypted",Text);
+                     MessageBox.Show(Resources.UIStrings.ErrorFileEncrypted ,Text);
                      return false;
                  }
             }
@@ -661,6 +752,9 @@ namespace PDFViewer
         {
             try
             {
+                if (!PdfOK())
+                    return;
+                
                 frmSearch frm = new frmSearch(SearchCallBack);
                 frm.ShowDialog();
             }
@@ -683,6 +777,8 @@ namespace PDFViewer
 
         private void toolStripButton1_Click(object sender, EventArgs e)
         {
+            if (!PdfOK())
+                return;
             try
             {
                 string fileName = System.IO.Path.GetTempPath() + Guid.NewGuid().ToString() + ".ps";
@@ -833,8 +929,11 @@ namespace PDFViewer
 
         private void tsbPrintAs_Click(object sender, EventArgs e)
         {
+            if (!PdfOK())
+                return;
             try
             {
+
                 saveFileDialog1.Filter = "PostScript file (*.ps)|*.ps|Plain text (*.txt)|*.txt|HTML Markup(*.html)|*.html|Jpg Image (*.jpg)|*.jpg|SWF Movie Flash (*.swf)|*.swf";
                 if (saveFileDialog1.ShowDialog() == DialogResult.OK)
                 {
@@ -857,7 +956,7 @@ namespace PDFViewer
                         }
                         else if (saveFileDialog1.FileName.EndsWith(".html"))
                         {
-                            _pdfDoc.ExportHtml(saveFileDialog1.FileName, 1, _pdfDoc.PageCount, new ExportHtmlParams() { ImageExtension = "png", JpegQuality =60 });
+                            _pdfDoc.ExportHtml(saveFileDialog1.FileName, 1, _pdfDoc.PageCount, new ExportHtmlParams() { ImageExtension = "png", JpegQuality = 60 });
                         }
                         else if (saveFileDialog1.FileName.EndsWith(".eps"))
                         {
@@ -889,7 +988,7 @@ namespace PDFViewer
                                 111: <fatal> Couldn't allocate %d bytes of memory", 65536
 
                                  */
-                            frmExportSWF frm = new frmExportSWF(_pdfDoc,  saveFileDialog1.FileName);
+                            frmExportSWF frm = new frmExportSWF(_pdfDoc, saveFileDialog1.FileName);
                             frm.ShowDialog();
                         }
                     }
@@ -907,12 +1006,12 @@ namespace PDFViewer
         {
             _pdfDoc.ExportJpgProgress -= new ExportJpgProgressHandler(_pdfDoc_ExportJpgProgress);
             _pdfDoc.ExportJpgFinished -= new ExportJpgFinishedHandler(_pdfDoc_ExportJpgFinished);
-            StatusLabel.Text ="Ready";
+            StatusLabel.Text = Resources.UIStrings.StatusReady;
         }
 
         bool _pdfDoc_ExportJpgProgress(int pageCount, int currentPage)
         {
-            StatusLabel.Text = "Exportando pagina " + currentPage.ToString() + " de " + pageCount.ToString()  + "...";
+            StatusLabel.Text = string.Format(Resources.UIStrings.StatusExportingPage, currentPage, pageCount);
             return true;
         }
 
@@ -1011,12 +1110,14 @@ namespace PDFViewer
 
         private void tsbAntialias_Click(object sender, EventArgs e)
         {
+            PDFLibNet.xPDFParams.Antialias = !PDFLibNet.xPDFParams.Antialias;
+            tsbAntialias.Checked = PDFLibNet.xPDFParams.Antialias;
+            if (!PdfOK())
+                return;
             using (StatusBusy sb = new StatusBusy(Resources.UIStrings.StatusLoadingPage))
             {
                 if (_pdfDoc != null)
                 {
-                    PDFLibNet.xPDFParams.Antialias = !PDFLibNet.xPDFParams.Antialias;
-                    tsbAntialias.Checked = PDFLibNet.xPDFParams.Antialias;
                     _pdfDoc.RenderPage(pageViewControl1.Handle, true);
                     Render();
                     pageViewControl1.Invalidate();
@@ -1026,12 +1127,15 @@ namespace PDFViewer
 
         private void tsbVectorAntialias_Click(object sender, EventArgs e)
         {
+            PDFLibNet.xPDFParams.VectorAntialias = !PDFLibNet.xPDFParams.VectorAntialias;
+            tsbVectorAntialias.Checked = PDFLibNet.xPDFParams.VectorAntialias;
+            if (!PdfOK())
+                return;
             using (StatusBusy sb = new StatusBusy(Resources.UIStrings.StatusLoadingPage))
             {
                 if (_pdfDoc != null)
                 {
-                    PDFLibNet.xPDFParams.VectorAntialias = !PDFLibNet.xPDFParams.VectorAntialias;
-                    tsbVectorAntialias.Checked = PDFLibNet.xPDFParams.VectorAntialias;
+
                     _pdfDoc.RenderPage(pageViewControl1.Handle, true);
                     Render();
                     pageViewControl1.Invalidate();
@@ -1054,7 +1158,10 @@ namespace PDFViewer
 
         private void tabView_Selected(object sender, TabControlEventArgs e)
         {
-            UpdateText();
+            if (PdfOK())
+            {
+                UpdateText();
+            }
         }
 
         private void UpdateText()
@@ -1068,6 +1175,8 @@ namespace PDFViewer
 
         private void tsImagesUpdate_Click(object sender, EventArgs e)
         {
+            if (!PdfOK())
+                return;
             if (_pdfDoc!=null /*&& !_pdfDoc.IsBusy*/)
             {
                 pdfImagesThumbView1.LoadImageList(_pdfDoc, _pdfDoc.CurrentPage);
@@ -1138,9 +1247,12 @@ namespace PDFViewer
                     if (tsbUseMuPDF.Checked != bs)
                     {
                         tsbUseMuPDF.Checked = _pdfDoc.UseMuPDF;
-                        _pdfDoc.RenderPage(pageViewControl1.Handle, true);
-                        Render();
-                        pageViewControl1.Invalidate();
+                        if (PdfOK())
+                        {
+                            _pdfDoc.RenderPage(pageViewControl1.Handle, true);
+                            Render();
+                            pageViewControl1.Invalidate();
+                        }
                     }
                 }
             }
@@ -1148,6 +1260,8 @@ namespace PDFViewer
 
         private void toolStripButton4_Click(object sender, EventArgs e)
         {
+            if (!PdfOK())
+                return;
             PDFPage page = _pdfDoc.Pages[_pdfDoc.CurrentPage];
             var list = page.WordList;
             listView1.Items.Clear();
@@ -1170,6 +1284,7 @@ namespace PDFViewer
                 _pdfDoc.Dispose();
                 _pdfDoc = null;
             }
+            Close();
         }
 
         private void listView1_SelectedIndexChanged(object sender, EventArgs e)
@@ -1179,10 +1294,29 @@ namespace PDFViewer
 
         private void toolStripButton3_Click_1(object sender, EventArgs e)
         {
+            FitWidth();
+        }
 
-            _pdfDoc.SliceBox = new Rectangle(pageViewControl1.PageLocation.X, pageViewControl1.PageLocation.Y, pageViewControl1.ViewBounds.Width, pageViewControl1.ViewBounds.Height);
-            _pdfDoc.RenderPage(pageViewControl1.Handle, true);
-            //FitWidth();
+        private void frmPDFViewer_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            if (_pdfDoc != null)
+            {
+                _pdfDoc.Dispose();
+                _pdfDoc = null;
+            }
+            GC.Collect();
+        }
+
+        bool PdfOK()
+        {
+            if (_pdfDoc != null && _pdfDoc.PageCount > 0)
+                return true;
+            return false;
+        }
+
+        private void tsImagesSave_Click(object sender, EventArgs e)
+        {
+
         }
     }
 
