@@ -8,7 +8,7 @@ namespace Gma.UserActivityMonitor
     /// This component monitors all mouse activities globally (also outside of the application) 
     /// and provides appropriate events.
     /// </summary>
-    public class GlobalEventProvider : Component
+    class GlobalEventProvider : Component
     {
         /// <summary>
         /// This component raises events. The value is always true.

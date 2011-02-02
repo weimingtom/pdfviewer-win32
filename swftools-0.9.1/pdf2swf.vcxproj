@@ -177,6 +177,8 @@
     <Lib>
       <AdditionalDependencies>../bin/freetype231.lib;../bin/xpdf.lib;../bin/zlib.lib;../bin/libjpeg.lib;lib/as3/libas3.a;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>..\bin\$(ProjectName).lib</OutputFile>
+      <TargetMachine>MachineX86</TargetMachine>
+      <SubSystem>Windows</SubSystem>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

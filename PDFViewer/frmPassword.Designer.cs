@@ -28,6 +28,7 @@ namespace PDFViewer
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmPassword));
             this.txtUserPwd = new System.Windows.Forms.TextBox();
             this.txtOwnPwd = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
@@ -38,70 +39,46 @@ namespace PDFViewer
             // 
             // txtUserPwd
             // 
-            this.txtUserPwd.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtUserPwd.Location = new System.Drawing.Point(52, 12);
+            resources.ApplyResources(this.txtUserPwd, "txtUserPwd");
             this.txtUserPwd.Name = "txtUserPwd";
-            this.txtUserPwd.PasswordChar = '*';
-            this.txtUserPwd.Size = new System.Drawing.Size(198, 20);
-            this.txtUserPwd.TabIndex = 0;
             // 
             // txtOwnPwd
             // 
-            this.txtOwnPwd.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtOwnPwd.Location = new System.Drawing.Point(52, 39);
+            resources.ApplyResources(this.txtOwnPwd, "txtOwnPwd");
             this.txtOwnPwd.Name = "txtOwnPwd";
-            this.txtOwnPwd.PasswordChar = '*';
-            this.txtOwnPwd.Size = new System.Drawing.Size(198, 20);
-            this.txtOwnPwd.TabIndex = 1;
             // 
             // label1
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 15);
+            resources.ApplyResources(this.label1, "label1");
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(29, 13);
-            this.label1.TabIndex = 2;
-            this.label1.Text = "User";
             // 
             // label2
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(6, 42);
+            resources.ApplyResources(this.label2, "label2");
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(38, 13);
-            this.label2.TabIndex = 3;
-            this.label2.Text = "Owner";
             // 
             // cmdAccept
             // 
-            this.cmdAccept.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.cmdAccept.Location = new System.Drawing.Point(92, 65);
+            resources.ApplyResources(this.cmdAccept, "cmdAccept");
+            this.cmdAccept.Image = global::PDFViewer.Properties.Resources.button_ok;
             this.cmdAccept.Name = "cmdAccept";
-            this.cmdAccept.Size = new System.Drawing.Size(75, 23);
-            this.cmdAccept.TabIndex = 4;
-            this.cmdAccept.Text = "&Accept";
             this.cmdAccept.UseVisualStyleBackColor = true;
             this.cmdAccept.Click += new System.EventHandler(this.cmdAccept_Click);
             // 
             // cmCancel
             // 
-            this.cmCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.cmCancel.Location = new System.Drawing.Point(173, 65);
+            resources.ApplyResources(this.cmCancel, "cmCancel");
+            this.cmCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.cmCancel.Image = global::PDFViewer.Properties.Resources.cancel_16;
             this.cmCancel.Name = "cmCancel";
-            this.cmCancel.Size = new System.Drawing.Size(75, 23);
-            this.cmCancel.TabIndex = 5;
-            this.cmCancel.Text = "&Cancel";
             this.cmCancel.UseVisualStyleBackColor = true;
             // 
             // frmPassword
             // 
             this.AcceptButton = this.cmdAccept;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            resources.ApplyResources(this, "$this");
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.cmCancel;
-            this.ClientSize = new System.Drawing.Size(260, 96);
             this.ControlBox = false;
             this.Controls.Add(this.cmCancel);
             this.Controls.Add(this.cmdAccept);
@@ -111,7 +88,6 @@ namespace PDFViewer
             this.Controls.Add(this.txtUserPwd);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Name = "frmPassword";
-            this.Text = "User/Owner Password";
             this.ResumeLayout(false);
             this.PerformLayout();
 

@@ -3,6 +3,32 @@
 
 using namespace System::Runtime::InteropServices;
 
+static void RaiseErrorCode(int errCode)
+	{
+		if(errCode > 0)
+		{
+			switch(errCode)
+			{
+				//errorEncrypted
+				case 4: //errEncrypted
+					throw gcnew System::Security::SecurityException();
+					break;
+				case 3: //errDamaged
+					throw gcnew System::IO::InvalidDataException("File is damaged or it is not a PDF File");
+					break;
+				case 2: //errBadCatalog
+					throw gcnew System::IO::InvalidDataException("The catalog of the files is damaged");
+					break;
+				case 10://errFileIO
+				case 1: //errOpenFile
+					throw gcnew System::IO::IOException();
+					break;
+				default:
+					throw gcnew System::Exception("Unexpected exception");
+			}
+		}
+	}
+
 namespace PDFLibNet{
 	#pragma managed
 	
@@ -77,8 +103,10 @@ namespace PDFLibNet{
 			_title=nullptr;
 			_author=nullptr;
 
-			if(_pdfDoc->LoadFromStream(ptr,_binaryReader->BaseStream->Length)==4) //errorEncrypted
-				throw gcnew System::Security::SecurityException();
+			int errCode = _pdfDoc->LoadFromStream(ptr,_binaryReader->BaseStream->Length);
+			
+			RaiseErrorCode(errCode);
+
 			_pdfDoc->SetCurrentPage(1);	
 			_bLoading=false;
 
@@ -107,6 +135,7 @@ namespace PDFLibNet{
 		}
 		return true;
 	}
+	
 	bool PDFWrapper::LoadPDF(System::String ^fileName){
 		
 		
@@ -120,8 +149,10 @@ namespace PDFLibNet{
 			_title=nullptr;
 			_author=nullptr;
 
-			if(_pdfDoc->LoadFromFile(singleByte)==4) //errorEncrypted
-				throw gcnew System::Security::SecurityException();
+			int errCode = _pdfDoc->LoadFromFile(singleByte);
+			
+			RaiseErrorCode(errCode);
+
 			_pdfDoc->SetCurrentPage(1);	
 			_bLoading=false;
 

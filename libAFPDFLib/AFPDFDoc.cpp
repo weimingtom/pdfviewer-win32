@@ -646,6 +646,13 @@
 		this->Dispose();
 		gDestroyMutex(&this->hgMutex);
 		CloseHandle(hRenderFinished);
+
+#ifdef _MUPDF
+		if(_mupdf != NULL){
+			delete _mupdf;
+			_mupdf=NULL;
+		}
+#endif
 	}
 	
 	void AFPDFDoc::Dispose()
@@ -936,9 +943,9 @@
 		//Note: the alignment is given by GDI requirements: bitmaps have to be 16-bit aligned.
 		//m_splashOut = new SplashOutputDev(splashModeBGR8, 4, gFalse, paperColor,gTrue,globalParams->getAntialias());
 		//m_splashOut->setVectorAntialias(globalParams->getVectorAntialias());
-		
+		GString *gsfileName = new GString(FileName);
 		//Intentamos abrir el documento sin clave
-		m_PDFDoc = new PDFDoc(new GString(FileName), NULL,NULL);		
+		m_PDFDoc = new PDFDoc(gsfileName, NULL,NULL);		
 
 		//Esperamos a que se carge correctamente, o que ocurra un error
 		while (!m_PDFDoc->isOk()) 
@@ -1070,6 +1077,12 @@
 
 	int AFPDFDoc::RenderThreadFinished(AuxOutputDev *out, int page, bool enablePreRender)
 	{
+		if(m_renderingThread != NULL)
+		{
+			CloseHandle(m_renderingThread);
+			m_renderingThread = NULL;
+		}
+		
 		//The process was cancelled!
 		if(::InterlockedExchange(&this->g_lLocker,0)!=0)
 		{

@@ -2586,7 +2586,6 @@ void SplashOutputDev::paintTransparencyGroup(GfxState *state, double *bbox) {
   transpGroup = transpGroupStack;
   transpGroupStack = transpGroup->next;
   delete transpGroup;
-
   delete tBitmap;
 }
 
@@ -2700,7 +2699,6 @@ void SplashOutputDev::setSoftMask(GfxState *state, double *bbox,
   transpGroup = transpGroupStack;
   transpGroupStack = transpGroup->next;
   delete transpGroup;
-
   delete tBitmap;
 }
 

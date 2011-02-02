@@ -218,7 +218,7 @@
       </DataExecutionPrevention>
       <SupportUnloadOfDelayLoadedDLL>false</SupportUnloadOfDelayLoadedDLL>
       <TargetMachine>MachineX86</TargetMachine>
-      <KeyFile>PDFLibNet.snk</KeyFile>
+      <KeyFile>$(ProjectDir)PDFLibNet.snk</KeyFile>
       <CLRThreadAttribute>DefaultThreadingAttribute</CLRThreadAttribute>
       <CLRUnmanagedCodeCheck>true</CLRUnmanagedCodeCheck>
     </Link>

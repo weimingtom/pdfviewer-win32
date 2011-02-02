@@ -10,7 +10,8 @@ AFPDFDocInterop::AFPDFDocInterop(char *configFile)
 }
 AFPDFDocInterop::~AFPDFDocInterop(){
 	if(_ptr>0)
-		delete _ptr;
+		delete (AFPDFDoc *)_ptr;	//when deleting cast _ptr to right type, so that 
+									//destructor of AFPDFDoc is called!
 	_ptr=0;
 	if(_resultsPtr!=0)
 		free(_resultsPtr);

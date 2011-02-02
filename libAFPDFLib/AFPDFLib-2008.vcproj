@@ -593,6 +593,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\UnicodeString.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\XPDFParamsInterop.cpp"
 				>
 			</File>
@@ -692,6 +696,10 @@
 			</File>
 			<File
 				RelativePath=".\StreamCallback.h"
+				>
+			</File>
+			<File
+				RelativePath=".\UnicodeString.h"
 				>
 			</File>
 			<File
