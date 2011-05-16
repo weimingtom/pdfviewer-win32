@@ -947,7 +947,7 @@ namespace PDFViewer
                         {
                             _pdfDoc.ExportJpgProgress += new ExportJpgProgressHandler(_pdfDoc_ExportJpgProgress);
                             _pdfDoc.ExportJpgFinished += new ExportJpgFinishedHandler(_pdfDoc_ExportJpgFinished);
-                            frmExportSWF frm = new frmExportSWF(_pdfDoc, saveFileDialog1.FileName);
+                            frmExportJpg frm = new frmExportJpg(_pdfDoc, saveFileDialog1.FileName);
                             frm.Show();
                         }
                         else if (saveFileDialog1.FileName.EndsWith(".txt"))
