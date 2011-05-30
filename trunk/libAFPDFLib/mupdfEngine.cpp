@@ -192,20 +192,24 @@ int mupdfEngine::LoadFile(char *fileName,char *own_pwd,char *usr_pwd){
 
 	fz_error err = 0;
 	fz_stream *file = NULL;
-	//start xref
-	if(_xref==NULL){
-		//_xref=new pdf_xref();
-		int fd = _topen(fileName, O_BINARY | O_RDONLY);
-		fz_stream *file = fz_openfile(fd);
-		// TODO: not sure how to handle passwords
-		err = pdf_openxrefwithstream(&_xref, file, NULL);
-		fz_close(file);
 
-		if (err || !_xref){
-			error(0,"XRef Read error, invalid file");
-			return 1;
-		}
+	if(_xref!=NULL)
+	{
+		pdf_freexref(_xref);
+		_xref = NULL;
 	}
+	//_xref=new pdf_xref();
+	int fd = _topen(fileName, O_BINARY | O_RDONLY);
+	fz_stream *file = fz_openfile(fd);
+	// TODO: not sure how to handle passwords
+	err = pdf_openxrefwithstream(&_xref, file, NULL);
+	fz_close(file);
+
+	if (err || !_xref){
+		error(0,"XRef Read error, invalid file");
+		return 1;
+	}
+	
 
 	if (pdf_needspassword(_xref)) {
         
@@ -255,6 +259,7 @@ fz_pixmap* mupdfEngine::display(AuxOutputDev *out,int pageNo, int rotate, double
     fz_device *dev = fz_newdrawdevice(_drawcache, image);
     //EnterCriticalSection(&_xrefAccess);
     fz_error error = pdf_runpagefortarget(_xref, page, dev, ctm);
+	pdf_agestore(_xref->store, 3);
     //LeaveCriticalSection(&_xrefAccess);
     fz_freedevice(dev);
     
