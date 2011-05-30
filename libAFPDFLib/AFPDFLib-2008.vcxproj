@@ -415,7 +415,7 @@
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
     </ProjectReference>
     <Lib>
-      <AdditionalDependencies>..\bin\xpdf_D.lib;..\bin\libjpeg_D.lib;..\bin\mupdf_D.lib;..\bin\pdf2swf_D.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\bin\xpdf_D.lib;..\bin\libjpeg_D.lib;..\bin\mupdf_D.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>..\bin\$(ProjectName)_D.lib</OutputFile>
       <IgnoreSpecificDefaultLibraries>libc.lib;libcmt.lib;nafxcw.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
     </Lib>

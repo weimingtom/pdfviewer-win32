@@ -709,6 +709,11 @@
 			m_splashOut=0;
 		}
 
+		if(_mupdf!=0){
+			delete _mupdf;
+			_mupdf=0;
+		}
+
 		if (m_PDFDoc!=NULL)
 		{
 			delete m_PDFDoc;

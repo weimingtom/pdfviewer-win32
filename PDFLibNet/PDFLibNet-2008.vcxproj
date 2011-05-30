@@ -137,6 +137,7 @@
       <KeyFile>PDFLibNet.snk</KeyFile>
       <CLRThreadAttribute>STAThreadingAttribute</CLRThreadAttribute>
       <CLRUnmanagedCodeCheck>false</CLRUnmanagedCodeCheck>
+      <AddModuleNamesToAssembly>%(AddModuleNamesToAssembly)</AddModuleNamesToAssembly>
     </Link>
     <Manifest>
       <OutputManifestFile>$(IntDir)$(TargetFileName).embed.manifest</OutputManifestFile>
