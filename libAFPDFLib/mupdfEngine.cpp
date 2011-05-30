@@ -200,7 +200,7 @@ int mupdfEngine::LoadFile(char *fileName,char *own_pwd,char *usr_pwd){
 	}
 	//_xref=new pdf_xref();
 	int fd = _topen(fileName, O_BINARY | O_RDONLY);
-	fz_stream *file = fz_openfile(fd);
+	file = fz_openfile(fd);
 	// TODO: not sure how to handle passwords
 	err = pdf_openxrefwithstream(&_xref, file, NULL);
 	fz_close(file);
@@ -259,6 +259,7 @@ fz_pixmap* mupdfEngine::display(AuxOutputDev *out,int pageNo, int rotate, double
     fz_device *dev = fz_newdrawdevice(_drawcache, image);
     //EnterCriticalSection(&_xrefAccess);
     fz_error error = pdf_runpagefortarget(_xref, page, dev, ctm);
+	//FIX. RON SCHULER, http://www.codeproject.com/script/Forums/Edit.aspx?fid=1542841&select=3908681&floc=/KB/files/xpdf_csharp.aspx&action=r
 	pdf_agestore(_xref->store, 3);
     //LeaveCriticalSection(&_xrefAccess);
     fz_freedevice(dev);
@@ -337,6 +338,7 @@ HBITMAP mupdfEngine::renderBitmap(
     fz_device *dev = fz_newgdiplusdevice(hDCMem, clipBox);
     //EnterCriticalSection(&_xrefAccess);
     fz_error error = pdf_runpagefortarget(_xref, page, dev, ctm);
+	 pdf_agestore(_xref->store, 3);
     //LeaveCriticalSection(&_xrefAccess);
     fz_freedevice(dev);
 
